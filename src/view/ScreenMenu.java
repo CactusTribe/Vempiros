@@ -54,6 +54,7 @@ public class ScreenMenu extends Screen{
 
         Button button_play = new Button("PLAY");
         button_play.setMinSize(350, 50);
+        button_play.setId("button-play");
 
         vbox.getChildren().addAll(title, name_form, button_play);
         vbox.setAlignment(Pos.CENTER);

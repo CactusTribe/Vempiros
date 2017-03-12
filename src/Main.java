@@ -20,8 +20,10 @@ public class Main extends Application {
         mainContainer.loadScreen(Main.GAME_SCREEN, new ScreenGame());
 
         mainContainer.setScreen(Main.MENU_SCREEN);
-        
+
         Scene scene = new Scene(mainContainer, 860, 640);
+        scene.getStylesheets().add("stylesheet.css");
+
         primaryStage.setTitle("Vempiros");
         primaryStage.setScene(scene);
         primaryStage.show();
