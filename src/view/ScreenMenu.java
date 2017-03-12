@@ -1,5 +1,6 @@
 package view;
 
+import controller.ScreenController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -15,9 +16,10 @@ import javafx.scene.text.Text;
 /**
  * Created by cactustribe on 12/03/17.
  */
-public class ScreenMenu extends StackPane{
+public class ScreenMenu extends Screen{
 
     public ScreenMenu(){
+        this.controller = new ScreenController();
 
         VBox vbox = new VBox();
         vbox.setMaxSize(500, 400);
@@ -62,7 +64,13 @@ public class ScreenMenu extends StackPane{
 
         this.getChildren().addAll(background, vbox);
 
-    }
 
+        button_play.setOnAction(
+                event -> {
+                    System.out.println(field_pseudo.getText());
+                    this.controller.screensController.setScreen("game");
+                }
+        );
+    }
 
 }

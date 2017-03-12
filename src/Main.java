@@ -1,24 +1,26 @@
-import controller.ScreenMenuController;
 import controller.ScreensController;
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import view.ScreenGame;
 import view.ScreenMenu;
 
 
 public class Main extends Application {
 
     public static final String MENU_SCREEN = "menu";
+    public static final String GAME_SCREEN = "game";
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
+
         ScreensController mainContainer = new ScreensController();
-        mainContainer.loadScreen(Main.MENU_SCREEN, new ScreenMenu(), new ScreenMenuController());
+        mainContainer.loadScreen(Main.MENU_SCREEN, new ScreenMenu());
+        mainContainer.loadScreen(Main.GAME_SCREEN, new ScreenGame());
+
         mainContainer.setScreen(Main.MENU_SCREEN);
-
-
+        
         Scene scene = new Scene(mainContainer, 860, 640);
         primaryStage.setTitle("Vempiros");
         primaryStage.setScene(scene);

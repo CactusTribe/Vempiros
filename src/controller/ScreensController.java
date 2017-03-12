@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import view.Screen;
 
 import java.util.HashMap;
 
@@ -25,11 +26,11 @@ public class ScreensController extends StackPane {
         screens.put(name, screen);
     }
 
-    public boolean loadScreen(String name, Parent screen, ControlledScreen controllerScreen) {
+    public boolean loadScreen(String name, Screen screen) {
         try {
 
-            Parent loadScreen = screen;
-            ControlledScreen screenController = controllerScreen;
+            Screen loadScreen = screen;
+            ScreenController screenController = screen.getController();
             screenController.setScreenParent(this);
             addScreen(name, loadScreen);
 
