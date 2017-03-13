@@ -26,6 +26,8 @@ public class Main extends Application {
 
         primaryStage.setTitle("Vempiros");
         primaryStage.setScene(scene);
+        primaryStage.setMinHeight(640);
+        primaryStage.setMinWidth(860);
         primaryStage.show();
     }
 

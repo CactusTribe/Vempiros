@@ -52,9 +52,9 @@ public class ScreenMenu extends Screen{
         name_form.getChildren().addAll(label_pseudo, field_pseudo);
         name_form.setAlignment(Pos.CENTER);
 
-        Button button_play = new Button("PLAY");
+        Button button_play = new Button("START GAME");
         button_play.setMinSize(350, 50);
-        button_play.setId("button-play");
+        button_play.setId("button-start");
 
         vbox.getChildren().addAll(title, name_form, button_play);
         vbox.setAlignment(Pos.CENTER);
