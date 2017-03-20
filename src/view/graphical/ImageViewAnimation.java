@@ -21,7 +21,7 @@ public class ImageViewAnimation extends ImageView {
 
         animation = new SpriteAnimation(
                 this,
-                Duration.millis((nbFrames / fps)*1000),
+                Duration.millis((nbFrames * 1000)/fps),
                 nbFrames, nbColumns,
                 offset_X, offset_Y,
                 width, heigth
