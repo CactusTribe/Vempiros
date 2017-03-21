@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
 public class ScreenMenu extends Screen{
 
     public ScreenMenu(){
-        this.controller = new ScreenController();
+        this.screenController = new ScreenController();
 
         VBox vbox = new VBox();
         vbox.setMaxSize(500, 400);
@@ -68,8 +68,9 @@ public class ScreenMenu extends Screen{
 
         button_play.setOnAction(
                 event -> {
-                    System.out.println(field_pseudo.getText());
-                    this.controller.screensController.setScreen("game");
+                    this.screenController.screensController.loadScreen("game",
+                            new ScreenGame(field_pseudo.getText()));
+                    this.screenController.screensController.setScreen("game");
                 }
         );
     }

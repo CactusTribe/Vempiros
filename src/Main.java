@@ -9,7 +9,6 @@ import view.ScreenMenu;
 public class Main extends Application {
 
     public static final String MENU_SCREEN = "menu";
-    public static final String GAME_SCREEN = "game";
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -17,8 +16,6 @@ public class Main extends Application {
 
         ScreensController mainContainer = new ScreensController();
         mainContainer.loadScreen(Main.MENU_SCREEN, new ScreenMenu());
-        mainContainer.loadScreen(Main.GAME_SCREEN, new ScreenGame());
-
         mainContainer.setScreen(Main.MENU_SCREEN);
 
         Scene scene = new Scene(mainContainer, 860, 640);

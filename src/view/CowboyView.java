@@ -21,13 +21,18 @@ public class CowboyView extends CharacterView{
     private static final ImageViewAnimation cowboy_walk_DW = new ImageViewAnimation(
             SPRITE_COWBOY, 8, 8, 128, 128*9, 128, 128, FPS_ANIM);
 
+    private static final ImageViewAnimation cowboy_IDLE = new ImageViewAnimation(
+            SPRITE_COWBOY, 1, 1, 0, 128*2, 128, 128, FPS_ANIM);
+
 
 
     public CowboyView(){
-
+        this.setAnimation(Animations.IDLE);
     }
 
     public void setAnimation(Animations anim){
+        this.getChildren().remove(current_image);
+
         if(current_image != null)
             current_image.stop();
 
@@ -53,11 +58,14 @@ public class CowboyView extends CharacterView{
             case ATTACK_RIGHT:
                 break;
             case IDLE:
+                current_image = cowboy_IDLE;
                 break;
         }
 
-        current_image.start();
-        this.getChildren().add(current_image);
+        current_image.setFitWidth(SPRITE_SIZE);
+        current_image.setFitHeight(SPRITE_SIZE);
+
+        this.getChildren().addAll(current_image);
     }
 
 
