@@ -97,6 +97,12 @@ public class GameController {
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_RIGHT);
                         walking = true;
                         break;
+
+                    default:
+                        gameView.playerView.setAnimation(CharacterView.Animations.IDLE);
+                        walking = false;
+                        break;
+
                 }
 
                 gameView.playerView.startAnimation();
