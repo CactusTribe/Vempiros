@@ -3,7 +3,9 @@ package view;
 import controller.GameController;
 import controller.ScreenController;
 import javafx.event.EventHandler;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import model.Character;
@@ -14,11 +16,12 @@ import model.Character;
 public class ScreenGame extends Screen{
 
     private BorderPane borderPane;
-    private MenuBar menubar;
-    private Pane arena;
+    private TextField cheat_console;
     private GameController gameController;
-    public CharacterView playerView;
 
+    public MenuBar menubar;
+    public Pane arena;
+    public CharacterView playerView;
 
 
     public ScreenGame(String usrname){
@@ -26,21 +29,25 @@ public class ScreenGame extends Screen{
         borderPane = new BorderPane();
         borderPane.setBackground(new Background(new BackgroundImage(new Image("file:resources/images/sand1.jpg"),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
-
-        playerView = new CowboyView();
-        menubar = new MenuBar();
-        arena = new Pane();
-        borderPane.setTop(menubar);
-        borderPane.setCenter(arena);
         this.getChildren().addAll(borderPane);
 
-        this.screenController = new ScreenController();
-        this.gameController = new GameController();
-        this.gameController.newGame(usrname, this);
+        menubar = new MenuBar();
+        arena = new Pane();
+        cheat_console = new TextField();
+        cheat_console.setFocusTraversable(false);
 
-        System.out.println("New player : " + usrname);
+        borderPane.setTop(menubar);
+        borderPane.setCenter(arena);
+        borderPane.setBottom(cheat_console);
 
+        playerView = new CowboyView();
+        playerView.setFocusTraversable(true);
         arena.getChildren().addAll(playerView);
+
+        screenController = new ScreenController();
+        gameController = new GameController();
+        gameController.newGame(usrname, this);
+
 
         menubar.getButton_menu().setOnAction(
                 event -> {
@@ -48,19 +55,33 @@ public class ScreenGame extends Screen{
                 }
         );
 
-
-        this.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        playerView.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
-                System.out.println("Key Pressed: " + ke.getCode());
+                //System.out.println("Key Pressed: " + ke.getCode());
                 gameController.notifyEvent(ke);
+
+                playerView.requestFocus();
             }
         });
 
-        this.setOnKeyReleased(new EventHandler<KeyEvent>() {
+        playerView.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
-                System.out.println("Key Released: " + ke.getCode());
+                //System.out.println("Key Released: " + ke.getCode());
                 gameController.notifyEvent(ke);
+
+                playerView.requestFocus();
             }
+        });
+
+        cheat_console.setOnKeyPressed(
+                (event) -> {
+                    if (event.getCode().equals(KeyCode.ENTER))
+                        {
+                            gameController.cheatCode(cheat_console.getText());
+                            cheat_console.clear();
+                            playerView.requestFocus();
+                        }
+
         });
 
     }
@@ -70,8 +91,10 @@ public class ScreenGame extends Screen{
         playerView.setLayoutX(player.getX());
         playerView.setLayoutY(player.getY());
 
+        playerView.requestFocus();
+    }
 
-        this.requestFocus();
-
+    public void displayError(String err){
+        System.out.println(err);
     }
 }

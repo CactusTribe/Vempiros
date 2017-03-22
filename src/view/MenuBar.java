@@ -75,4 +75,8 @@ public class MenuBar extends ToolBar{
     public Button getButton_menu(){
         return this.button_menu;
     }
+
+    public PanelLives getPanelLives(){
+        return this.panelLives;
+    }
 }

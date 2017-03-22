@@ -62,8 +62,8 @@ public class CowboyView extends CharacterView{
                 break;
         }
 
-        current_image.setFitWidth(SPRITE_SIZE);
-        current_image.setFitHeight(SPRITE_SIZE);
+        current_image.setFitWidth(SIZE_W);
+        current_image.setFitHeight(SIZE_H);
 
         this.getChildren().addAll(current_image);
     }

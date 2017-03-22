@@ -1,12 +1,16 @@
 package controller;
 
-import javafx.event.EventType;
 import javafx.scene.input.KeyEvent;
+import model.ActionType;
 import model.Character;
 import model.Direction;
 import model.Game;
 import view.CharacterView;
 import view.ScreenGame;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by cactustribe on 21/03/17.
@@ -15,8 +19,9 @@ public class GameController {
 
     private Game game;
     private ScreenGame gameView;
+
     private KeyEvent last_pressed_key;
-    private static int MOVE_SPEED = 10;
+    private ActionType current_action;
 
     public GameController(){
 
@@ -25,6 +30,10 @@ public class GameController {
     public void newGame(String usrname, ScreenGame view){
         this.game = new Game(usrname);
         this.gameView = view;
+        this.game.arena_width().bind(gameView.arena.widthProperty());
+        this.game.arena_height().bind(gameView.arena.heightProperty());
+
+        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
 
         gameView.update();
     }
@@ -33,18 +42,27 @@ public class GameController {
         Character player = game.getPlayer();
 
         if(ke.getEventType() == KeyEvent.KEY_PRESSED){
+
             if(last_pressed_key == null || ke.getCode() != last_pressed_key.getCode()){
                 switch (ke.getCode()){
-                    case UP:
+                    case Z:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.NORTH);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_UP);
                         break;
-                    case DOWN:
+                    case S:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.SOUTH);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_DOWN);
                         break;
-                    case LEFT:
+                    case Q:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.WEST);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_LEFT);
                         break;
-                    case RIGHT:
+                    case D:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.EAST);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_RIGHT);
                         break;
                 }
@@ -52,37 +70,62 @@ public class GameController {
                 gameView.playerView.startAnimation();
             }
 
-            switch (ke.getCode()){
-                case UP:
-                    player.setDirection(Direction.NORTH);
-                    player.setPosition(player.getX(), player.getY() - MOVE_SPEED);
-                    break;
-                case DOWN:
-                    player.setDirection(Direction.SOUTH);
-                    player.setPosition(player.getX(), player.getY()  + MOVE_SPEED);
-                    break;
-                case LEFT:
-                    player.setDirection(Direction.WEST);
-                    player.setPosition(player.getX() - MOVE_SPEED, player.getY());
-                    break;
-                case RIGHT:
-                    player.setDirection(Direction.EAST);
-                    player.setPosition(player.getX() + MOVE_SPEED, player.getY());
-                    break;
+            if(current_action != null){
+                if(game.isPossible(current_action)){
+                    try {
+                        game.apply(current_action);
+                    } catch (Exception e){
+                        gameView.displayError(e.toString());
+                    }
+                }
+                else{
+                    gameView.displayError("Mouvement impossible");
+                }
             }
+
 
             last_pressed_key = ke;
         }
         else if(ke.getEventType() == KeyEvent.KEY_RELEASED){
-            if(ke.getCode() == last_pressed_key.getCode()){
-                gameView.playerView.setAnimation(CharacterView.Animations.IDLE);
-                last_pressed_key = null;
-            }
+            gameView.playerView.setAnimation(CharacterView.Animations.IDLE);
+            last_pressed_key = null;
+            current_action = null;
         }
 
-
-
         gameView.update();
+    }
+
+
+    public void cheatCode(String str){
+        Character player = game.getPlayer();
+        List<String> tokens = new ArrayList<String>(Arrays.asList(str.split(" ")));
+
+        try{
+
+            String cmd = tokens.get(0);
+
+            if(cmd.equals("speed")){
+                player.setSpeed(Integer.parseInt(tokens.get(1)));
+            }
+            else if(cmd.equals("life")){
+                int arg = Integer.parseInt(tokens.get(1));
+
+                if(arg >= 0) {
+                    player.addLife(arg);
+                }
+                else {
+                    player.removeLife(Math.abs(arg));
+                }
+            }
+            else{
+                System.out.println("Error: Command doesn't exists.");
+            }
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public Game getGame(){

@@ -10,7 +10,8 @@ public abstract class CharacterView extends StackPane{
 
     public final static int FPS_ANIM = 15;
     protected ImageViewAnimation current_image;
-    protected static int SPRITE_SIZE = 100;
+    protected int SIZE_W = 128;
+    protected int SIZE_H = 128;
 
     public enum Animations {
         WALK_UP,
@@ -31,6 +32,12 @@ public abstract class CharacterView extends StackPane{
     public void stopAnimation(){
         current_image.stop();
     }
+
+    public void setSize(int w, int h){
+        this.SIZE_W = w;
+        this.SIZE_H = h;
+    }
+
 
     public abstract void setAnimation(Animations anim);
 
