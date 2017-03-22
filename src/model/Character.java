@@ -15,8 +15,8 @@ public abstract class Character {
 
     protected int total_life;
     protected IntegerProperty current_life = new SimpleIntegerProperty(0);
-    protected Direction direction;
-    protected int SPEED = 10;
+    protected Direction direction = Direction.EAST;
+    protected int SPEED = 5;
 
     public void setBounds(int w, int h){
         this.SIZE_W = w;

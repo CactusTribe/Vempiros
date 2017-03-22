@@ -57,7 +57,7 @@ public class ScreenGame extends Screen{
 
         playerView.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
-                //System.out.println("Key Pressed: " + ke.getCode());
+                System.out.println("Key Pressed: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
                 playerView.requestFocus();
@@ -66,7 +66,7 @@ public class ScreenGame extends Screen{
 
         playerView.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
-                //System.out.println("Key Released: " + ke.getCode());
+                System.out.println("Key Released: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
                 playerView.requestFocus();

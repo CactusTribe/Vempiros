@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -71,8 +72,16 @@ public class ScreenMenu extends Screen{
                     this.screenController.screensController.loadScreen("game",
                             new ScreenGame(field_pseudo.getText()));
                     this.screenController.screensController.setScreen("game");
-                }
-        );
+                });
+
+        field_pseudo.setOnKeyPressed(
+                (event) -> {
+                    if (event.getCode().equals(KeyCode.ENTER)) {
+                        this.screenController.screensController.loadScreen("game",
+                                new ScreenGame(field_pseudo.getText()));
+                        this.screenController.screensController.setScreen("game");
+                    }
+                });
     }
 
 }

@@ -1,6 +1,11 @@
 package controller;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Duration;
 import model.ActionType;
 import model.Character;
 import model.Direction;
@@ -22,6 +27,7 @@ public class GameController {
 
     private KeyEvent last_pressed_key;
     private ActionType current_action;
+    private boolean walking = false;
 
     public GameController(){
 
@@ -34,8 +40,30 @@ public class GameController {
         this.game.arena_height().bind(gameView.arena.heightProperty());
 
         gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
-
         gameView.update();
+
+
+        Timeline movePlayer = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(walking){
+                    if(game.isPossible(ActionType.MOVE)){
+                        try {
+                            game.apply(ActionType.MOVE);
+                        } catch (Exception e){
+                            gameView.displayError(e.toString());
+                        }
+                    }
+                    else{
+                        gameView.displayError("Mouvement impossible");
+                    }
+                    gameView.update();
+                }
+            }
+        }));
+
+        movePlayer.setCycleCount(Timeline.INDEFINITE);
+        movePlayer.play();
     }
 
     public void notifyEvent(KeyEvent ke){
@@ -43,33 +71,40 @@ public class GameController {
 
         if(ke.getEventType() == KeyEvent.KEY_PRESSED){
 
-            if(last_pressed_key == null || ke.getCode() != last_pressed_key.getCode()){
+            if(last_pressed_key == null || last_pressed_key.getCode() != ke.getCode()){
                 switch (ke.getCode()){
                     case Z:
                         current_action = ActionType.MOVE;
                         player.setDirection(Direction.NORTH);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_UP);
+                        walking = true;
                         break;
                     case S:
                         current_action = ActionType.MOVE;
                         player.setDirection(Direction.SOUTH);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_DOWN);
+                        walking = true;
                         break;
                     case Q:
                         current_action = ActionType.MOVE;
                         player.setDirection(Direction.WEST);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_LEFT);
+                        walking = true;
                         break;
                     case D:
                         current_action = ActionType.MOVE;
                         player.setDirection(Direction.EAST);
                         gameView.playerView.setAnimation(CharacterView.Animations.WALK_RIGHT);
+                        walking = true;
                         break;
                 }
 
                 gameView.playerView.startAnimation();
             }
 
+            last_pressed_key = ke;
+
+            /*
             if(current_action != null){
                 if(game.isPossible(current_action)){
                     try {
@@ -79,20 +114,25 @@ public class GameController {
                     }
                 }
                 else{
-                    gameView.displayError("Mouvement impossible");
+                    gameView.displayError("Action impossible");
                 }
             }
+            */
 
 
-            last_pressed_key = ke;
         }
         else if(ke.getEventType() == KeyEvent.KEY_RELEASED){
-            gameView.playerView.setAnimation(CharacterView.Animations.IDLE);
+
+            if(last_pressed_key == null || last_pressed_key.getCode() == ke.getCode()){
+                gameView.playerView.setAnimation(CharacterView.Animations.IDLE);
+                walking = false;
+            }
+
             last_pressed_key = null;
             current_action = null;
         }
 
-        gameView.update();
+       // gameView.update();
     }
 
 
