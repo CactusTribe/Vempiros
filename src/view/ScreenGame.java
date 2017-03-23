@@ -8,7 +8,12 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import model.Bullet;
 import model.Character;
+import model.Game;
+import sun.awt.image.ImageWatched;
+
+import java.util.LinkedList;
 
 /**
  * Created by cactustribe on 12/03/17.
@@ -42,7 +47,6 @@ public class ScreenGame extends Screen{
 
         playerView = new CowboyView();
         playerView.setFocusTraversable(true);
-        arena.getChildren().addAll(playerView);
 
         screenController = new ScreenController();
         gameController = new GameController();
@@ -86,12 +90,25 @@ public class ScreenGame extends Screen{
 
     }
 
-    public void update(){
-        Character player = gameController.getGame().getPlayer();
+    public void update(Game game){
+        arena.getChildren().clear();
+
+        Character player = game.getPlayer();
         playerView.setLayoutX(player.getX());
         playerView.setLayoutY(player.getY());
 
-        playerView.requestFocus();
+        LinkedList<Bullet> listeBullets = game.getBullets();
+
+        for(Bullet bullet : listeBullets){
+            BulletView bview = new BulletView(bullet.getDirection());
+            bview.setLayoutX(bullet.getX());
+            bview.setLayoutY(bullet.getY());
+            arena.getChildren().add(bview);
+        }
+
+
+        arena.getChildren().add(playerView);
+        //playerView.requestFocus();
     }
 
     public void displayError(String err){

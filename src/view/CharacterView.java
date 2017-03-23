@@ -1,6 +1,7 @@
 package view;
 
 import javafx.scene.layout.StackPane;
+import model.Direction;
 import view.graphical.ImageViewAnimation;
 
 /**
@@ -14,14 +15,9 @@ public abstract class CharacterView extends StackPane{
     protected int SIZE_H = 128;
 
     public enum Animations {
-        WALK_UP,
-        WALK_DOWN,
-        WALK_LEFT,
-        WALK_RIGHT,
-        ATTACK_UP,
-        ATTACK_DOWN,
-        ATTACK_LEFT,
-        ATTACK_RIGHT,
+        WALK,
+        ATTACK,
+        DEAD,
         IDLE
     }
 
@@ -39,6 +35,6 @@ public abstract class CharacterView extends StackPane{
     }
 
 
-    public abstract void setAnimation(Animations anim);
+    public abstract void setAnimation(Animations anim, Direction dir);
 
 }

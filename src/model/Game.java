@@ -2,6 +2,7 @@ package model;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import view.BulletView;
 
 import java.util.LinkedList;
 
@@ -11,8 +12,11 @@ import java.util.LinkedList;
 public class Game {
 
     private String usrname;
-    private Character player;
+    private Cowboy player;
     private LinkedList<Character> vampires;
+    private LinkedList<Bullet> bullets;
+
+
     private IntegerProperty ARENA_WIDTH = new SimpleIntegerProperty(0);
     private IntegerProperty ARENA_HEIGHT = new SimpleIntegerProperty(0);
 
@@ -21,6 +25,7 @@ public class Game {
         this.usrname = usrname;
         this.player = new Cowboy(3);
         this.player.setBounds(128,128);
+        this.bullets = new LinkedList<>();
     }
 
     public void movePlayer(){
@@ -43,6 +48,50 @@ public class Game {
 
     }
 
+    public void moveBullets(){
+        for(Bullet bullet : this.bullets){
+            switch (bullet.getDirection()){
+
+                case NORTH:
+                    bullet.setPosition(bullet.getX(), bullet.getY() - bullet.getSpeed());
+                    break;
+                case SOUTH:
+                    bullet.setPosition(bullet.getX(), bullet.getY()  + bullet.getSpeed());
+                    break;
+                case EAST:
+                    bullet.setPosition(bullet.getX() + bullet.getSpeed(), bullet.getY());
+                    break;
+                case WEST:
+                    bullet.setPosition(bullet.getX() - bullet.getSpeed(), bullet.getY());
+                    break;
+            }
+        }
+    }
+
+    public void shoot(){
+        Bullet bullet = new Bullet();
+        bullet.setDirection(player.getDirection());
+
+        switch (bullet.getDirection()){
+
+            case NORTH:
+                bullet.setPosition(player.getX() + (player.getWidth() / 2), player.getY());
+                break;
+            case SOUTH:
+                bullet.setPosition(player.getX() + (player.getWidth() / 2), player.getY() + player.getHeight());
+                break;
+            case EAST:
+                bullet.setPosition(player.getX() + player.getWidth(), player.getY() + (player.getHeight() / 2));
+                break;
+            case WEST:
+                bullet.setPosition(player.getX(), player.getY() + (player.getHeight() / 2));
+                break;
+        }
+
+        this.bullets.add(bullet);
+        player.removeBullet();
+    }
+
     public boolean isPossible(ActionType action){
         boolean isPossible = true;
 
@@ -63,7 +112,7 @@ public class Game {
 
                 break;
             case SHOOT:
-
+                    isPossible = (player.getNbBullets() > 0);
                 break;
         }
 
@@ -71,18 +120,27 @@ public class Game {
     }
 
     public void apply(ActionType action) throws Exception{
+
         switch (action){
             case MOVE:
-                movePlayer();
+                if(isPossible(action))
+                    movePlayer();
+                else throw new Exception("Mouvement impossible.");
                 break;
             case SHOOT:
-
+                if(isPossible(action))
+                    shoot();
+                else throw new Exception("Pas assez de munitions.");
                 break;
         }
     }
 
     public Character getPlayer(){
         return this.player;
+    }
+
+    public LinkedList<Bullet> getBullets(){
+        return this.bullets;
     }
 
     public IntegerProperty arena_width(){
