@@ -8,7 +8,7 @@ import view.graphical.ImageViewAnimation;
  */
 public class CowboyView extends CharacterView{
 
-    private static final Image SPRITE_COWBOY = new Image("file:resources/images/cowboy.png");
+    private static final Image SPRITE_COWBOY = new Image("images/cowboy.png");
 
     private static final ImageViewAnimation cowboy_walk_R = new ImageViewAnimation(
             SPRITE_COWBOY, 8, 8, 128, 0, 128, 128, FPS_ANIM);

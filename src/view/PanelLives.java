@@ -16,8 +16,8 @@ public class PanelLives extends HBox{
     private int nbLives;
     private IntegerProperty current_life = new SimpleIntegerProperty(0);
 
-    private static Image HEART = new Image("file:resources/images/heart.png");
-    private static Image HEART_OFF = new Image("file:resources/images/heart-off.png");
+    private static Image HEART = new Image("images/heart.png");
+    private static Image HEART_OFF = new Image("images/heart-off.png");
 
     public PanelLives(int nbLives){
         this.nbLives = nbLives;

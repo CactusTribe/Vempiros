@@ -29,11 +29,12 @@ public class ScreenMenu extends Screen{
         ds.setOffsetY(3.0f);
         ds.setColor(Color.color(0.2f, 0.2f, 0.2f));
 
-        ImageView background = new ImageView(new Image("file:resources/images/first_screen.jpg"));
+        ImageView background = new ImageView(new Image("images/first_screen.jpg"));
         background.setOpacity(0.8);
 
         Text title = new Text("Pistolero VS Vampiros");
-        title.setFont(Font.loadFont("file:resources/fonts/something_strange.ttf", 80));
+        //title.setFont(Font.loadFont("file:resources/fonts/something_strange.ttf", 80));
+        title.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/something_strange.ttf"), 80));
         title.setFill(Color.CRIMSON);
         title.setStroke(Color.BLACK);
         title.setStrokeWidth(2);
@@ -41,7 +42,7 @@ public class ScreenMenu extends Screen{
 
 
         Text label_pseudo = new Text("Your name : ");
-        label_pseudo.setFont(Font.loadFont("file:resources/fonts/something_strange.ttf", 30));
+        label_pseudo.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/something_strange.ttf"), 30));
         label_pseudo.setFill(Color.CRIMSON);
         label_pseudo.setStroke(Color.BLACK);
         label_pseudo.setStrokeWidth(1);

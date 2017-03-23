@@ -21,10 +21,10 @@ public class MenuBar extends ToolBar{
 
     private int TOOLBAR_H = 30;
 
-    private static Image IMG_PLAY = new Image("file:resources/images/play.png");
-    private static Image IMG_PAUSE = new Image("file:resources/images/pause.png");
-    private static Image IMG_HOME = new Image("file:resources/images/home.png");
-    private static Image IMG_OPTIONS = new Image("file:resources/images/options.png");
+    private static Image IMG_PLAY = new Image("images/play.png");
+    private static Image IMG_PAUSE = new Image("images/pause.png");
+    private static Image IMG_HOME = new Image("images/home.png");
+    private static Image IMG_OPTIONS = new Image("images/options.png");
 
     public MenuBar(){
 

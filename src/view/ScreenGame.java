@@ -27,7 +27,7 @@ public class ScreenGame extends Screen{
     public ScreenGame(String usrname){
 
         borderPane = new BorderPane();
-        borderPane.setBackground(new Background(new BackgroundImage(new Image("file:resources/images/sand1.jpg"),
+        borderPane.setBackground(new Background(new BackgroundImage(new Image("images/sand1.jpg"),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
         this.getChildren().addAll(borderPane);
 
