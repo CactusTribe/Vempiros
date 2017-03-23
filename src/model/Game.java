@@ -2,7 +2,6 @@ package model;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import view.BulletView;
 
 import java.util.LinkedList;
 
@@ -65,7 +64,32 @@ public class Game {
                     bullet.setPosition(bullet.getX() - bullet.getSpeed(), bullet.getY());
                     break;
             }
+
+            if(bulletCollision(bullet)){
+                bullets.remove(bullet);
+                break;
+            }
         }
+    }
+
+    public boolean bulletCollision(Bullet bullet){
+        boolean collision = false;
+
+        // Out of arena
+        if(bullet.getDirection() == Direction.NORTH){
+            collision = !(bullet.getY() - bullet.getSpeed() >= 0);
+        }
+        else if(bullet.getDirection() == Direction.SOUTH){
+            collision = !(bullet.getY() + bullet.getSpeed() + bullet.getHeight() <= ARENA_HEIGHT.getValue());
+        }
+        else if(bullet.getDirection() == Direction.EAST){
+            collision = !(bullet.getX() + bullet.getSpeed() + bullet.getWidth() <= ARENA_WIDTH.getValue());
+        }
+        else if(bullet.getDirection() == Direction.WEST){
+            collision = !(bullet.getX() - bullet.getSpeed() >= 0);
+        }
+
+        return collision;
     }
 
     public void shoot(){
@@ -94,6 +118,9 @@ public class Game {
 
     public boolean isPossible(ActionType action){
         boolean isPossible = true;
+
+        if(!player.isAlive())
+            return false;
 
         switch (action){
             case MOVE:

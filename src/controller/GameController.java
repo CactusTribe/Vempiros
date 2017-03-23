@@ -180,10 +180,15 @@ public class GameController {
                 ((Cowboy) player).addBullets(arg);
                 System.out.println(String.format("Cheat: %d bullets added.", arg));
             }
+            else if(cmd.equals("die")) {
+                player.removeLife(9999);
+                System.out.println(String.format("Cheat: Cowboy is dead."));
+            }
             else{
                 System.out.println("Error: Command doesn't exists.");
             }
 
+            gameView.update(game);
 
         } catch (Exception e){
             e.printStackTrace();

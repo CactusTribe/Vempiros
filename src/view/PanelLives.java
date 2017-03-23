@@ -54,8 +54,8 @@ public class PanelLives extends HBox{
             else
                 heart = new ImageView(HEART_OFF);
 
-            heart.setFitWidth(35);
-            heart.setFitHeight(40);
+            heart.setFitWidth(40);
+            heart.setFitHeight(45);
             this.getChildren().add(heart);
         }
     }

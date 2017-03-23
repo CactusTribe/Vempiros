@@ -10,6 +10,7 @@ import view.graphical.ImageViewAnimation;
 public class CowboyView extends CharacterView{
 
     private static final Image SPRITE_COWBOY = new Image("images/cowboy.png");
+    private static final Image RIP_COWBOY = new Image("images/rip.png");
 
     // IDLE ANIM
     private static final ImageViewAnimation IDLE_NORTH = new ImageViewAnimation(
@@ -37,7 +38,9 @@ public class CowboyView extends CharacterView{
     private static final ImageViewAnimation WALK_WEST = new ImageViewAnimation(
             SPRITE_COWBOY, 8, 8, 0, 128, 128, 128, FPS_ANIM);
 
-
+    // DEAD
+    private static final ImageViewAnimation DEAD = new ImageViewAnimation(
+            RIP_COWBOY, 1, 1, 0, 0, 128, 128, FPS_ANIM);
 
 
 
@@ -70,6 +73,7 @@ public class CowboyView extends CharacterView{
             case ATTACK:
                 break;
             case DEAD:
+                current_image = DEAD;
                 break;
             case IDLE:
                 if(dir == Direction.NORTH){

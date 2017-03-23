@@ -37,6 +37,7 @@ public class ScreenGame extends Screen{
         this.getChildren().addAll(borderPane);
 
         menubar = new MenuBar();
+
         arena = new Pane();
         cheat_console = new TextField();
         cheat_console.setFocusTraversable(false);
@@ -94,6 +95,9 @@ public class ScreenGame extends Screen{
         arena.getChildren().clear();
 
         Character player = game.getPlayer();
+        if(!player.isAlive()){
+            playerView.setAnimation(CharacterView.Animations.DEAD, null);
+        }
         playerView.setLayoutX(player.getX());
         playerView.setLayoutY(player.getY());
 
