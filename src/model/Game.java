@@ -2,6 +2,7 @@ package model;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.BoundingBox;
 
 import java.util.LinkedList;
 
@@ -13,6 +14,7 @@ public class Game {
     private String usrname;
     private Cowboy player;
     private LinkedList<Character> vampires;
+    private LinkedList<Object> objects;
     private LinkedList<Bullet> bullets;
 
 
@@ -23,27 +25,47 @@ public class Game {
     public Game(String usrname){
         this.usrname = usrname;
         this.player = new Cowboy(3);
-        this.player.setBounds(128,128);
+        this.player.setBounds(new BoundingBox(0,0,128,128));
+
         this.bullets = new LinkedList<>();
+        this.objects = new LinkedList<>();
+        this.generateWorld();
+    }
+
+    public void generateWorld(){
+        Rock rock = new Rock();
+        rock.setPosition(230,230);
+
+        objects.add(rock);
     }
 
     public void movePlayer(){
 
+        BoundingBox old_box = player.getBounds();
+        BoundingBox new_box = null;
+        int speed = player.getSpeed();
+
         switch (player.getDirection()){
 
             case NORTH:
-                player.setPosition(player.getX(), player.getY() - player.getSpeed());
+                new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() - speed, old_box.getWidth(),
+                        old_box.getHeight());
                 break;
             case SOUTH:
-                player.setPosition(player.getX(), player.getY()  + player.getSpeed());
+                new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() + speed, old_box.getWidth(),
+                        old_box.getHeight());
                 break;
             case EAST:
-                player.setPosition(player.getX() + player.getSpeed(), player.getY());
+                new_box = new BoundingBox(old_box.getMinX() + speed, old_box.getMinY(), old_box.getWidth(),
+                        old_box.getHeight());
                 break;
             case WEST:
-                player.setPosition(player.getX() - player.getSpeed(), player.getY());
+                new_box = new BoundingBox(old_box.getMinX() - speed, old_box.getMinY(), old_box.getWidth(),
+                        old_box.getHeight());
                 break;
         }
+
+        player.setBounds(new_box);
 
     }
 
@@ -96,24 +118,50 @@ public class Game {
         Bullet bullet = new Bullet();
         bullet.setDirection(player.getDirection());
 
+        BoundingBox player_box = player.getBounds();
+
         switch (bullet.getDirection()){
 
             case NORTH:
-                bullet.setPosition(player.getX() + (player.getWidth() / 2), player.getY());
+                bullet.setPosition((int)(player_box.getMinX() + (player_box.getWidth() / 2)),
+                        (int)(player_box.getMinY()));
                 break;
             case SOUTH:
-                bullet.setPosition(player.getX() + (player.getWidth() / 2), player.getY() + player.getHeight());
+                bullet.setPosition((int)(player_box.getMinX() + (player_box.getWidth() / 2)), (int)(player_box.getMinY() +
+                        player_box.getHeight()));
                 break;
             case EAST:
-                bullet.setPosition(player.getX() + player.getWidth(), player.getY() + (player.getHeight() / 2));
+                bullet.setPosition((int)(player_box.getMinX() + player_box.getWidth()), (int)(player_box.getMinY() + (player_box
+                        .getHeight() / 2)));
                 break;
             case WEST:
-                bullet.setPosition(player.getX(), player.getY() + (player.getHeight() / 2));
+                bullet.setPosition((int)(player_box.getMinX()), (int)(player_box.getMinY() + (player_box.getHeight() / 2)));
                 break;
         }
 
         this.bullets.add(bullet);
         player.removeBullet();
+    }
+
+    public boolean outOfArena(BoundingBox box){
+        BoundingBox arena = new BoundingBox(0, 0, ARENA_WIDTH.getValue(), ARENA_HEIGHT.getValue());
+        return !arena.contains(box);
+    }
+
+    public boolean intersectObject(BoundingBox box){
+        boolean intersect = false;
+
+
+        for(Object obj : objects){
+            if(!obj.isMoveable()){
+
+                BoundingBox objet_box = new BoundingBox(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+
+                intersect = box.intersects(objet_box);
+            }
+        }
+
+        return intersect;
     }
 
     public boolean isPossible(ActionType action){
@@ -124,18 +172,28 @@ public class Game {
 
         switch (action){
             case MOVE:
+                BoundingBox old_box = player.getBounds();
+                BoundingBox new_box = null;
+                int speed = player.getSpeed();
+
                 if(player.getDirection() == Direction.NORTH){
-                    isPossible = (player.getY() - player.getSpeed() >= 0);
+                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() - speed, old_box.getWidth(),
+                            old_box.getHeight());
                 }
                 else if(player.getDirection() == Direction.SOUTH){
-                    isPossible = (player.getY() + player.getSpeed() + player.getHeight() <= ARENA_HEIGHT.getValue());
+                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() + speed, old_box.getWidth(),
+                            old_box.getHeight());
                 }
                 else if(player.getDirection() == Direction.EAST){
-                    isPossible = (player.getX() + player.getSpeed() + player.getWidth() <= ARENA_WIDTH.getValue());
+                    new_box = new BoundingBox(old_box.getMinX() + speed, old_box.getMinY(), old_box.getWidth(),
+                            old_box.getHeight());
                 }
                 else if(player.getDirection() == Direction.WEST){
-                    isPossible = (player.getX() - player.getSpeed() >= 0);
+                    new_box = new BoundingBox(old_box.getMinX() - speed, old_box.getMinY(), old_box.getWidth(),
+                            old_box.getHeight());
                 }
+
+                isPossible = !outOfArena(new_box) && !intersectObject(new_box);
 
                 break;
             case SHOOT:
@@ -168,6 +226,10 @@ public class Game {
 
     public LinkedList<Bullet> getBullets(){
         return this.bullets;
+    }
+
+    public LinkedList<Object> getObjects(){
+        return this.objects;
     }
 
     public IntegerProperty arena_width(){

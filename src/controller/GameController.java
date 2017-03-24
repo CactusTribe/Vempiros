@@ -184,6 +184,17 @@ public class GameController {
                 player.removeLife(9999);
                 System.out.println(String.format("Cheat: Cowboy is dead."));
             }
+            else if(cmd.equals("debug")) {
+                if(gameView.debug){
+                    gameView.debug = false;
+                    System.out.println(String.format("Cheat: Debug disabled."));
+                }
+                else{
+                    gameView.debug = true;
+                    System.out.println(String.format("Cheat: Debug enabled."));
+                }
+
+            }
             else{
                 System.out.println("Error: Command doesn't exists.");
             }

@@ -8,9 +8,10 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import model.Bullet;
+import javafx.scene.paint.Color;
+import model.*;
 import model.Character;
-import model.Game;
+import model.Object;
 import sun.awt.image.ImageWatched;
 
 import java.util.LinkedList;
@@ -27,6 +28,7 @@ public class ScreenGame extends Screen{
     public MenuBar menubar;
     public Pane arena;
     public CharacterView playerView;
+    public boolean debug = true;
 
 
     public ScreenGame(String usrname){
@@ -94,15 +96,44 @@ public class ScreenGame extends Screen{
     public void update(Game game){
         arena.getChildren().clear();
 
+        // AFFICHAGE DES OBJETS (ROCK, BOX, etc)
+        LinkedList<Object> objects = game.getObjects();
+        for(Object obj : objects){
+            ObjectView objview;
+
+            if(obj instanceof Rock){
+                objview = new RockView();
+                objview.setSize(obj.getWidth(), obj.getWidth());
+                objview.setLayoutX(obj.getX());
+                objview.setLayoutY(obj.getY());
+
+                if(debug) {
+                    objview.setBorder(new Border(new BorderStroke(Color.PURPLE,
+                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+                }
+                arena.getChildren().add(objview);
+            }
+        }
+
+        // AFFICHAGE DU JOUEUR
         Character player = game.getPlayer();
         if(!player.isAlive()){
             playerView.setAnimation(CharacterView.Animations.DEAD, null);
         }
-        playerView.setLayoutX(player.getX());
-        playerView.setLayoutY(player.getY());
+        playerView.setLayoutX(player.getBounds().getMinX());
+        playerView.setLayoutY(player.getBounds().getMinY());
 
+        if(debug){
+            playerView.setBorder(new Border(new BorderStroke(Color.BLUE,
+                    BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        }
+        else{
+            playerView.setBorder(null);
+        }
+
+
+        // AFFICHAGE DES BALLES
         LinkedList<Bullet> listeBullets = game.getBullets();
-
         for(Bullet bullet : listeBullets){
             BulletView bview = new BulletView(bullet.getDirection());
             bview.setLayoutX(bullet.getX());

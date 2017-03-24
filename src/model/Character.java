@@ -2,35 +2,28 @@ package model;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.BoundingBox;
 
 /**
  * Created by cactustribe on 20/03/17.
  */
 public abstract class Character {
 
-    protected int OFFSET_X = 0;
-    protected int OFFSET_Y = 0;
-    protected int SIZE_W = 0;
-    protected int SIZE_H = 0;
+    protected BoundingBox bounds = new BoundingBox(0,0,0,0);
 
     protected int total_life;
     protected IntegerProperty current_life = new SimpleIntegerProperty(0);
     protected Direction direction = Direction.EAST;
     protected int SPEED = 5;
 
-    public void setBounds(int w, int h){
-        this.SIZE_W = w;
-        this.SIZE_H = h;
+    public void setBounds(BoundingBox bounds){
+        this.bounds = bounds;
     }
 
     public void setSpeed(int speed){
         this.SPEED = speed;
     }
 
-    public void setPosition(int x, int y){
-        this.OFFSET_X = x;
-        this.OFFSET_Y = y;
-    }
 
     public void setDirection(Direction dir){
         this.direction = dir;
@@ -54,20 +47,8 @@ public abstract class Character {
         return (current_life.getValue() > 0);
     }
 
-    public int getX() {
-        return this.OFFSET_X;
-    }
-
-    public int getY() {
-        return this.OFFSET_Y;
-    }
-
-    public int getWidth() {
-        return this.SIZE_W;
-    }
-
-    public int getHeight() {
-        return this.SIZE_H;
+    public BoundingBox getBounds(){
+        return this.bounds;
     }
 
     public int getSpeed() { return this.SPEED; }
