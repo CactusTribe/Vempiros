@@ -24,6 +24,10 @@ public class Game {
 
     public Game(String usrname){
         this.usrname = usrname;
+        this.init();
+    }
+
+    public void init(){
         this.player = new Cowboy(3);
         this.player.setBounds(new BoundingBox(0,0,50,100));
 
@@ -36,69 +40,31 @@ public class Game {
         Rock rock = new Rock();
         rock.setBounds(new BoundingBox(230,230,50,50));
 
-        Box box = new Box();
-        box.setBounds(new BoundingBox(370, 120, 70,70));
+        Box box1 = new Box();
+        Box box2 = new Box();
+        box1.setBounds(new BoundingBox(370, 120, 70,70));
+        box2.setBounds(new BoundingBox(300, 300, 70,70));
 
         objects.add(rock);
-        objects.add(box);
+        objects.add(box1);
+        objects.add(box2);
     }
 
     public void movePlayer(){
-
-        BoundingBox old_box = player.getBounds();
-        BoundingBox new_box = null;
         int speed = player.getSpeed();
-
-        switch (player.getDirection()){
-
-            case NORTH:
-                new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() - speed, old_box.getWidth(),
-                        old_box.getHeight());
-                break;
-            case SOUTH:
-                new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() + speed, old_box.getWidth(),
-                        old_box.getHeight());
-                break;
-            case EAST:
-                new_box = new BoundingBox(old_box.getMinX() + speed, old_box.getMinY(), old_box.getWidth(),
-                        old_box.getHeight());
-                break;
-            case WEST:
-                new_box = new BoundingBox(old_box.getMinX() - speed, old_box.getMinY(), old_box.getWidth(),
-                        old_box.getHeight());
-                break;
-        }
-
+        Direction dir = player.getDirection();
+        BoundingBox old_box = player.getBounds();
+        BoundingBox new_box = translateBounds(old_box, dir, speed);
         player.setBounds(new_box);
-
     }
 
     public void moveBullets(){
         for(Bullet bullet : this.bullets){
 
-            BoundingBox old_box = bullet.getBounds();
-            BoundingBox new_box = null;
             int speed = bullet.getSpeed();
-
-            switch (bullet.getDirection()){
-
-                case NORTH:
-                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() - speed, old_box.getWidth(),
-                            old_box.getHeight());
-                    break;
-                case SOUTH:
-                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() + speed, old_box.getWidth(),
-                            old_box.getHeight());
-                    break;
-                case EAST:
-                    new_box = new BoundingBox(old_box.getMinX() + speed, old_box.getMinY(), old_box.getWidth(),
-                            old_box.getHeight());
-                    break;
-                case WEST:
-                    new_box = new BoundingBox(old_box.getMinX() - speed, old_box.getMinY(), old_box.getWidth(),
-                            old_box.getHeight());
-                    break;
-            }
+            Direction dir = bullet.getDirection();
+            BoundingBox old_box = bullet.getBounds();
+            BoundingBox new_box = translateBounds(old_box, dir, speed);
 
             bullet.setBounds(new_box);
 
@@ -109,13 +75,34 @@ public class Game {
         }
     }
 
-    public boolean bulletCollision(Bullet bullet){
+    public boolean moveObject(Object obj, Direction dir, int value){
+        if(obj.isMoveable()){
+            BoundingBox old_box = obj.getBounds();
+            BoundingBox new_box = translateBounds(old_box, dir, value);
 
+            if(!outOfArena(new_box)){
+                for(Object cur_obj : objects){
+                    if(cur_obj != obj && new_box.intersects(cur_obj.getBounds())){
+                        return false;
+                    }
+                }
+
+                obj.setBounds(new_box);
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean bulletCollision(Bullet bullet){
         BoundingBox bullet_box = bullet.getBounds();
 
-        if(outOfArena(bullet_box)){
-            return true;
-        }
+        if(outOfArena(bullet_box)) { return true; }
 
         for(Object obj : objects){
             BoundingBox objet_box = obj.getBounds();
@@ -123,7 +110,6 @@ public class Game {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -165,16 +151,34 @@ public class Game {
     }
 
     public boolean intersectObject(BoundingBox box){
-        boolean intersect = false;
+        LinkedList<Object> intersected = new LinkedList<>();
 
         for(Object obj : objects){
-            if(!obj.isMoveable()){
-                BoundingBox objet_box = obj.getBounds();
-                intersect = box.intersects(objet_box);
+            BoundingBox objet_box = obj.getBounds();
+
+            if(box.intersects(objet_box)){
+                intersected.add(obj);
             }
         }
-        return intersect;
+
+        if(intersected.size() > 0){
+            for(Object obj : intersected){
+                int speed = player.getSpeed();
+                Direction dir = player.getDirection();
+
+                if(!moveObject(obj, dir, speed)){
+                    return true;
+                }
+            }
+        }
+        else{
+            return false;
+        }
+
+        return false;
     }
+
+
 
     public boolean isPossible(ActionType action){
         boolean isPossible = true;
@@ -184,26 +188,11 @@ public class Game {
 
         switch (action){
             case MOVE:
-                BoundingBox old_box = player.getBounds();
-                BoundingBox new_box = null;
-                int speed = player.getSpeed();
 
-                if(player.getDirection() == Direction.NORTH){
-                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() - speed, old_box.getWidth(),
-                            old_box.getHeight());
-                }
-                else if(player.getDirection() == Direction.SOUTH){
-                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() + speed, old_box.getWidth(),
-                            old_box.getHeight());
-                }
-                else if(player.getDirection() == Direction.EAST){
-                    new_box = new BoundingBox(old_box.getMinX() + speed, old_box.getMinY(), old_box.getWidth(),
-                            old_box.getHeight());
-                }
-                else if(player.getDirection() == Direction.WEST){
-                    new_box = new BoundingBox(old_box.getMinX() - speed, old_box.getMinY(), old_box.getWidth(),
-                            old_box.getHeight());
-                }
+                int speed = player.getSpeed();
+                Direction dir = player.getDirection();
+                BoundingBox old_box = player.getBounds();
+                BoundingBox new_box = translateBounds(old_box, dir, speed);
 
                 isPossible = !outOfArena(new_box) && !intersectObject(new_box);
 
@@ -212,7 +201,6 @@ public class Game {
                     isPossible = (player.getNbBullets() > 0);
                 break;
         }
-
         return isPossible;
     }
 
@@ -230,6 +218,29 @@ public class Game {
                 else throw new Exception("Pas assez de munitions.");
                 break;
         }
+    }
+
+    public BoundingBox translateBounds(BoundingBox box, Direction dir, int value){
+        BoundingBox new_box = null;
+        switch (dir){
+            case NORTH:
+                new_box = new BoundingBox(box.getMinX(), box.getMinY() - value, box.getWidth(),
+                        box.getHeight());
+                break;
+            case SOUTH:
+                new_box = new BoundingBox(box.getMinX(), box.getMinY() + value, box.getWidth(),
+                        box.getHeight());
+                break;
+            case EAST:
+                new_box = new BoundingBox(box.getMinX() + value, box.getMinY(), box.getWidth(),
+                        box.getHeight());
+                break;
+            case WEST:
+                new_box = new BoundingBox(box.getMinX() - value, box.getMinY(), box.getWidth(),
+                        box.getHeight());
+                break;
+        }
+        return new_box;
     }
 
     public Character getPlayer(){

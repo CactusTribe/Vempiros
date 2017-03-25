@@ -193,7 +193,10 @@ public class GameController {
                     gameView.debug = true;
                     System.out.println(String.format("Cheat: Debug enabled."));
                 }
-
+            }
+            else if(cmd.equals("reload")) {
+                game.init();
+                System.out.println(String.format("Cheat: Game reloaded."));
             }
             else{
                 System.out.println("Error: Command doesn't exists.");

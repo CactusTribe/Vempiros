@@ -119,8 +119,15 @@ public class ScreenGame extends Screen{
                 obj_box.setLayoutY(obj.getBounds().getMinY());
                 obj_box.setPrefWidth(obj.getBounds().getWidth());
                 obj_box.setPrefHeight(obj.getBounds().getHeight());
-                obj_box.setBorder(new Border(new BorderStroke(Color.BLUE,
-                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+
+                if(obj.isMoveable()){
+                    obj_box.setBorder(new Border(new BorderStroke(Color.GREENYELLOW,
+                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+                }
+                else{
+                    obj_box.setBorder(new Border(new BorderStroke(Color.BLUE,
+                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+                }
 
                 objview.setBorder(new Border(new BorderStroke(Color.PURPLE,
                         BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
