@@ -3,6 +3,7 @@ package view;
 import controller.GameController;
 import controller.ScreenController;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -20,6 +21,7 @@ import java.util.LinkedList;
  */
 public class ScreenGame extends Screen{
 
+    private String usrname;
     private BorderPane borderPane;
     private TextField cheat_console;
     private GameController gameController;
@@ -31,6 +33,7 @@ public class ScreenGame extends Screen{
 
 
     public ScreenGame(String usrname){
+        this.usrname = usrname;
 
         borderPane = new BorderPane();
         borderPane.setBackground(new Background(new BackgroundImage(new Image("images/sand1.jpg"),
@@ -52,12 +55,17 @@ public class ScreenGame extends Screen{
 
         screenController = new ScreenController();
         gameController = new GameController();
-        gameController.newGame(usrname, this);
-
 
         menubar.getButton_menu().setOnAction(
                 event -> {
                     this.screenController.screensController.setScreen("menu");
+                }
+        );
+
+        menubar.getButton_play().setOnAction(
+                event -> {
+                    gameController.newGame(this.usrname, this);
+                    playerView.requestFocus();
                 }
         );
 
@@ -108,31 +116,18 @@ public class ScreenGame extends Screen{
                 objview = new BoxView();
             }
 
-
-            objview.setLayoutX(obj.getBounds().getMinX()-(objview.width()/2)+(obj.getBounds().getWidth() / 2));
-            objview.setLayoutY(obj.getBounds().getMinY()-(objview.height()/2)+(obj.getBounds().getHeight() / 2));
+            BoundingBox obj_box = obj.getBounds();
+            objview.setLayoutX(obj_box.getMinX()-(objview.width()/2)+(obj_box.getWidth() / 2));
+            objview.setLayoutY(obj_box.getMinY()-(objview.height()/2)+(obj_box.getHeight() / 2));
             arena.getChildren().add(objview);
 
             if(debug) {
-                Pane obj_box = new Pane();
-                obj_box.setLayoutX(obj.getBounds().getMinX());
-                obj_box.setLayoutY(obj.getBounds().getMinY());
-                obj_box.setPrefWidth(obj.getBounds().getWidth());
-                obj_box.setPrefHeight(obj.getBounds().getHeight());
-
                 if(obj.isMoveable()){
-                    obj_box.setBorder(new Border(new BorderStroke(Color.GREENYELLOW,
-                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+                    showCollisionBox(obj.getBounds(), Color.GREENYELLOW);
                 }
                 else{
-                    obj_box.setBorder(new Border(new BorderStroke(Color.BLUE,
-                            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+                    showCollisionBox(obj.getBounds(), Color.RED);
                 }
-
-                objview.setBorder(new Border(new BorderStroke(Color.PURPLE,
-                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-
-                arena.getChildren().add(obj_box);
             }
 
         }
@@ -142,25 +137,12 @@ public class ScreenGame extends Screen{
         if(!player.isAlive()){
             playerView.setAnimation(CharacterView.Animations.DEAD, null);
         }
-        playerView.setLayoutX(player.getBounds().getMinX()-(playerView.getWidth()/2)+(player.getBounds().getWidth() / 2));
-        playerView.setLayoutY(player.getBounds().getMinY()-(playerView.getHeight()/2)+(player.getBounds().getHeight() / 2));
+        BoundingBox player_box = player.getBounds();
+        playerView.setLayoutX(player_box.getMinX()-(playerView.getWidth()/2)+(player_box.getWidth()/ 2));
+        playerView.setLayoutY(player_box.getMinY()-(playerView.getHeight()/2)+(player_box.getHeight()/ 2)-10);
 
         if(debug){
-            Pane player_box = new Pane();
-            player_box.setLayoutX(player.getBounds().getMinX());
-            player_box.setLayoutY(player.getBounds().getMinY());
-            player_box.setPrefWidth(player.getBounds().getWidth());
-            player_box.setPrefHeight(player.getBounds().getHeight());
-            player_box.setBorder(new Border(new BorderStroke(Color.BLUE,
-                    BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-
-            arena.getChildren().add(player_box);
-
-            playerView.setBorder(new Border(new BorderStroke(Color.PURPLE,
-                    BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        }
-        else{
-            playerView.setBorder(null);
+            showCollisionBox(player.getBounds(), Color.BLUE);
         }
 
 
@@ -173,26 +155,28 @@ public class ScreenGame extends Screen{
             arena.getChildren().add(bview);
 
             if(debug) {
-                Pane bullet_box = new Pane();
-                bullet_box.setLayoutX(bullet.getBounds().getMinX());
-                bullet_box.setLayoutY(bullet.getBounds().getMinY());
-                bullet_box.setPrefWidth(bullet.getBounds().getWidth());
-                bullet_box.setPrefHeight(bullet.getBounds().getHeight());
-                bullet_box.setBorder(new Border(new BorderStroke(Color.BLUE,
-                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-
-                arena.getChildren().add(bullet_box);
-
-
-                bview.setBorder(new Border(new BorderStroke(Color.PURPLE,
-                        BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-
+                showCollisionBox(bullet.getBounds(), Color.BLUE);
             }
         }
 
-
         arena.getChildren().add(playerView);
         //playerView.requestFocus();
+    }
+
+    public void showCollisionBox(BoundingBox box, Color color){
+        Pane pane = new Pane();
+        pane.setLayoutX(box.getMinX());
+        pane.setLayoutY(box.getMinY());
+        pane.setPrefWidth(box.getWidth());
+        pane.setPrefHeight(box.getHeight());
+        pane.setBorder(new Border(new BorderStroke(color,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+
+        arena.getChildren().add(pane);
+    }
+
+    public GameController getGameController(){
+        return this.gameController;
     }
 
     public void displayError(String err){

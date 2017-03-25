@@ -11,6 +11,7 @@ public class Cowboy extends Character {
         this.total_life = lives;
         this.current_life.set(lives);
         this.nb_bullets = 50;
+        this.setSpeed(6);
     }
 
     public int getNbBullets() {

@@ -78,9 +78,11 @@ public class ScreenMenu extends Screen{
         field_pseudo.setOnKeyPressed(
                 (event) -> {
                     if (event.getCode().equals(KeyCode.ENTER)) {
-                        this.screenController.screensController.loadScreen("game",
-                                new ScreenGame(field_pseudo.getText()));
+                        ScreenGame screenGame = new ScreenGame(field_pseudo.getText());
+
+                        this.screenController.screensController.loadScreen("game", screenGame);
                         this.screenController.screensController.setScreen("game");
+
                     }
                 });
     }

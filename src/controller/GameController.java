@@ -28,11 +28,21 @@ public class GameController {
     private ActionType current_action;
     private boolean walking = false;
 
+    private Timeline movePlayer;
+    private Timeline bulletPropagation;
+
     public GameController(){
 
     }
 
     public void newGame(String usrname, ScreenGame view){
+        if(movePlayer != null){
+            movePlayer.stop();
+        }
+        if(bulletPropagation != null){
+            bulletPropagation.stop();
+        }
+
         this.game = new Game(usrname);
         this.gameView = view;
         this.game.arena_width().bind(gameView.arena.widthProperty());
@@ -41,8 +51,7 @@ public class GameController {
         gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
         gameView.update(game);
 
-
-        Timeline movePlayer = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+        movePlayer = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if(walking){
@@ -55,21 +64,21 @@ public class GameController {
                 }
             }
         }));
-
         movePlayer.setCycleCount(Timeline.INDEFINITE);
-        movePlayer.play();
 
-        Timeline bulletPropagation = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+        bulletPropagation = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 game.moveBullets();
                 gameView.update(game);
             }
         }));
-
         bulletPropagation.setCycleCount(Timeline.INDEFINITE);
+
+        movePlayer.play();
         bulletPropagation.play();
     }
+
 
     public void notifyEvent(KeyEvent ke){
         Character player = game.getPlayer();

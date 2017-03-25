@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Created by cactustribe on 21/03/17.
@@ -18,8 +19,8 @@ public class Game {
     private LinkedList<Bullet> bullets;
 
 
-    private IntegerProperty ARENA_WIDTH = new SimpleIntegerProperty(0);
-    private IntegerProperty ARENA_HEIGHT = new SimpleIntegerProperty(0);
+    private IntegerProperty ARENA_WIDTH = new SimpleIntegerProperty(860);
+    private IntegerProperty ARENA_HEIGHT = new SimpleIntegerProperty(550);
 
 
     public Game(String usrname){
@@ -29,25 +30,65 @@ public class Game {
 
     public void init(){
         this.player = new Cowboy(3);
-        this.player.setBounds(new BoundingBox(0,0,50,100));
-
         this.bullets = new LinkedList<>();
         this.objects = new LinkedList<>();
         this.generateWorld();
     }
 
     public void generateWorld(){
-        Rock rock = new Rock();
-        rock.setBounds(new BoundingBox(230,230,50,50));
+        int NB_BOX = 3;
+        int NB_ROCK = 5;
+        int SIZE_BOX = 70;
+        int SIZE_ROCK = 50;
 
-        Box box1 = new Box();
-        Box box2 = new Box();
-        box1.setBounds(new BoundingBox(370, 120, 70,70));
-        box2.setBounds(new BoundingBox(300, 300, 70,70));
+        Random rand = new Random();
 
-        objects.add(rock);
-        objects.add(box1);
-        objects.add(box2);
+        // ROCK
+        for(int i=0; i <= NB_ROCK; i++){
+            int MAX_X = ARENA_WIDTH.getValue() - SIZE_ROCK;
+            int MAX_Y = ARENA_HEIGHT.getValue() - SIZE_ROCK;
+            BoundingBox box = null;
+
+            do{
+                int x = rand.nextInt(MAX_X);
+                int y = rand.nextInt(MAX_Y);
+                box = new BoundingBox(x, y, SIZE_ROCK, SIZE_ROCK);
+            }while(intersectObject(box));
+
+            Rock rock = new Rock();
+            rock.setBounds(box);
+            objects.add(rock);
+        }
+
+        // BOX
+        for(int i=0; i <= NB_BOX; i++){
+            int MAX_X = ARENA_WIDTH.getValue() - SIZE_BOX;
+            int MAX_Y = ARENA_HEIGHT.getValue() - SIZE_BOX;
+            BoundingBox box = null;
+
+            do{
+                int x = rand.nextInt(MAX_X);
+                int y = rand.nextInt(MAX_Y);
+                box = new BoundingBox(x, y, SIZE_BOX, SIZE_BOX);
+            }while(intersectObject(box));
+
+            Box b = new Box();
+            b.setBounds(box);
+            objects.add(b);
+        }
+
+
+        // PLAYER
+        int MAX_X = ARENA_WIDTH.getValue() - 50;
+        int MAX_Y = ARENA_HEIGHT.getValue() - 100;
+        BoundingBox box_player = null;
+        do{
+            int x = rand.nextInt(MAX_X);
+            int y = rand.nextInt(MAX_Y);
+            box_player = new BoundingBox(x, y, 50, 100);
+        }while(intersectObject(box_player));
+
+        this.player.setBounds(box_player);
     }
 
     public void movePlayer(){
@@ -86,17 +127,12 @@ public class Game {
                         return false;
                     }
                 }
-
                 obj.setBounds(new_box);
                 return true;
             }
-            else{
-                return false;
-            }
+            else { return false; }
         }
-        else{
-            return false;
-        }
+        else { return false; }
     }
 
     public boolean bulletCollision(Bullet bullet){
@@ -151,6 +187,17 @@ public class Game {
     }
 
     public boolean intersectObject(BoundingBox box){
+        for(Object obj : objects){
+            BoundingBox objet_box = obj.getBounds();
+
+            if(box.intersects(objet_box)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean objectCollision(BoundingBox box){
         LinkedList<Object> intersected = new LinkedList<>();
 
         for(Object obj : objects){
@@ -171,13 +218,9 @@ public class Game {
                 }
             }
         }
-        else{
-            return false;
-        }
-
+        else{ return false; }
         return false;
     }
-
 
 
     public boolean isPossible(ActionType action){
@@ -194,7 +237,7 @@ public class Game {
                 BoundingBox old_box = player.getBounds();
                 BoundingBox new_box = translateBounds(old_box, dir, speed);
 
-                isPossible = !outOfArena(new_box) && !intersectObject(new_box);
+                isPossible = !outOfArena(new_box) && !objectCollision(new_box);
 
                 break;
             case SHOOT:
