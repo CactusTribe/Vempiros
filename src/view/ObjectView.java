@@ -13,15 +13,25 @@ public abstract class ObjectView extends StackPane {
     protected ImageView sprite;
 
     public void setSize(int w, int h){
-        this.SIZE_W = w;
-        this.SIZE_H = h;
+        SIZE_W = w;
+        SIZE_H = h;
 
         if(sprite != null){
-            sprite.setFitWidth(this.SIZE_W);
-            sprite.setFitHeight(this.SIZE_H);
-
             this.getChildren().clear();
+
+            sprite.setFitWidth(SIZE_W);
+            sprite.setFitHeight(SIZE_H);
+
             this.getChildren().add(sprite);
         }
     }
+
+    public int width(){
+        return this.SIZE_W;
+    }
+
+    public int height(){
+        return this.SIZE_W;
+    }
+
 }

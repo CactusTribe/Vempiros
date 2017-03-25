@@ -5,9 +5,7 @@ package model;
  */
 public class Rock extends Object{
 
-
     public Rock(){
         this.setMoveable(false);
-        this.setBounds(80, 80);
     }
 }

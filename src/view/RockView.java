@@ -12,5 +12,6 @@ public class RockView extends ObjectView{
 
     public RockView(){
         sprite = new ImageView(SPRITE_ROCK);
+        setSize(80,80);
     }
 }

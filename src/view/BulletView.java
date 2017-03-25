@@ -26,20 +26,28 @@ public class BulletView extends StackPane{
         switch (this.direction){
 
             case NORTH:
-                bullet.setRotate(270);
+                this.setRotate(270);
                 break;
             case SOUTH:
-                bullet.setRotate(90);
+                this.setRotate(90);
                 break;
             case EAST:
-                bullet.setRotate(0);
+                this.setRotate(0);
                 break;
             case WEST:
-                bullet.setRotate(180);
+                this.setRotate(180);
                 break;
         }
 
         this.getChildren().addAll(bullet);
+    }
+
+    public int width(){
+        return this.SIZE_W;
+    }
+
+    public int height(){
+        return this.SIZE_H;
     }
 
 }

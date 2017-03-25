@@ -25,7 +25,7 @@ public class Game {
     public Game(String usrname){
         this.usrname = usrname;
         this.player = new Cowboy(3);
-        this.player.setBounds(new BoundingBox(0,0,128,128));
+        this.player.setBounds(new BoundingBox(0,0,50,100));
 
         this.bullets = new LinkedList<>();
         this.objects = new LinkedList<>();
@@ -34,9 +34,13 @@ public class Game {
 
     public void generateWorld(){
         Rock rock = new Rock();
-        rock.setPosition(230,230);
+        rock.setBounds(new BoundingBox(230,230,50,50));
+
+        Box box = new Box();
+        box.setBounds(new BoundingBox(370, 120, 70,70));
 
         objects.add(rock);
+        objects.add(box);
     }
 
     public void movePlayer(){
@@ -71,21 +75,32 @@ public class Game {
 
     public void moveBullets(){
         for(Bullet bullet : this.bullets){
+
+            BoundingBox old_box = bullet.getBounds();
+            BoundingBox new_box = null;
+            int speed = bullet.getSpeed();
+
             switch (bullet.getDirection()){
 
                 case NORTH:
-                    bullet.setPosition(bullet.getX(), bullet.getY() - bullet.getSpeed());
+                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() - speed, old_box.getWidth(),
+                            old_box.getHeight());
                     break;
                 case SOUTH:
-                    bullet.setPosition(bullet.getX(), bullet.getY()  + bullet.getSpeed());
+                    new_box = new BoundingBox(old_box.getMinX(), old_box.getMinY() + speed, old_box.getWidth(),
+                            old_box.getHeight());
                     break;
                 case EAST:
-                    bullet.setPosition(bullet.getX() + bullet.getSpeed(), bullet.getY());
+                    new_box = new BoundingBox(old_box.getMinX() + speed, old_box.getMinY(), old_box.getWidth(),
+                            old_box.getHeight());
                     break;
                 case WEST:
-                    bullet.setPosition(bullet.getX() - bullet.getSpeed(), bullet.getY());
+                    new_box = new BoundingBox(old_box.getMinX() - speed, old_box.getMinY(), old_box.getWidth(),
+                            old_box.getHeight());
                     break;
             }
+
+            bullet.setBounds(new_box);
 
             if(bulletCollision(bullet)){
                 bullets.remove(bullet);
@@ -95,23 +110,21 @@ public class Game {
     }
 
     public boolean bulletCollision(Bullet bullet){
-        boolean collision = false;
 
-        // Out of arena
-        if(bullet.getDirection() == Direction.NORTH){
-            collision = !(bullet.getY() - bullet.getSpeed() >= 0);
-        }
-        else if(bullet.getDirection() == Direction.SOUTH){
-            collision = !(bullet.getY() + bullet.getSpeed() + bullet.getHeight() <= ARENA_HEIGHT.getValue());
-        }
-        else if(bullet.getDirection() == Direction.EAST){
-            collision = !(bullet.getX() + bullet.getSpeed() + bullet.getWidth() <= ARENA_WIDTH.getValue());
-        }
-        else if(bullet.getDirection() == Direction.WEST){
-            collision = !(bullet.getX() - bullet.getSpeed() >= 0);
+        BoundingBox bullet_box = bullet.getBounds();
+
+        if(outOfArena(bullet_box)){
+            return true;
         }
 
-        return collision;
+        for(Object obj : objects){
+            BoundingBox objet_box = obj.getBounds();
+            if(bullet_box.intersects(objet_box)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void shoot(){
@@ -119,26 +132,29 @@ public class Game {
         bullet.setDirection(player.getDirection());
 
         BoundingBox player_box = player.getBounds();
+        BoundingBox bullet_box = null;
 
         switch (bullet.getDirection()){
 
             case NORTH:
-                bullet.setPosition((int)(player_box.getMinX() + (player_box.getWidth() / 2)),
-                        (int)(player_box.getMinY()));
+                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
+                        player_box.getMinY(), 10, 30);
                 break;
             case SOUTH:
-                bullet.setPosition((int)(player_box.getMinX() + (player_box.getWidth() / 2)), (int)(player_box.getMinY() +
-                        player_box.getHeight()));
+                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
+                        player_box.getMinY() + player_box.getHeight(), 10, 30);
                 break;
             case EAST:
-                bullet.setPosition((int)(player_box.getMinX() + player_box.getWidth()), (int)(player_box.getMinY() + (player_box
-                        .getHeight() / 2)));
+                bullet_box = new BoundingBox(player_box.getMinX() + player_box.getWidth(),
+                        player_box.getMinY() + (player_box.getHeight() / 2), 30, 10);
                 break;
             case WEST:
-                bullet.setPosition((int)(player_box.getMinX()), (int)(player_box.getMinY() + (player_box.getHeight() / 2)));
+                bullet_box = new BoundingBox(player_box.getMinX(), player_box.getMinY() + (player_box.getHeight() /
+                        2), 30, 10);
                 break;
         }
 
+        bullet.setBounds(bullet_box);
         this.bullets.add(bullet);
         player.removeBullet();
     }
@@ -151,16 +167,12 @@ public class Game {
     public boolean intersectObject(BoundingBox box){
         boolean intersect = false;
 
-
         for(Object obj : objects){
             if(!obj.isMoveable()){
-
-                BoundingBox objet_box = new BoundingBox(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-
+                BoundingBox objet_box = obj.getBounds();
                 intersect = box.intersects(objet_box);
             }
         }
-
         return intersect;
     }
 
