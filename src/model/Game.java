@@ -17,6 +17,7 @@ public class Game {
     private LinkedList<Character> vampires;
     private LinkedList<Object> objects;
     private LinkedList<Bullet> bullets;
+    private double bounding_ratio = 1.0;
 
 
     private IntegerProperty ARENA_WIDTH = new SimpleIntegerProperty(860);
@@ -25,7 +26,6 @@ public class Game {
 
     public Game(String usrname){
         this.usrname = usrname;
-        this.init();
     }
 
     public void init(){
@@ -154,25 +154,29 @@ public class Game {
         bullet.setDirection(player.getDirection());
 
         BoundingBox player_box = player.getBounds();
+        BoundingBox old_box = bullet.getBounds();
         BoundingBox bullet_box = null;
 
         switch (bullet.getDirection()){
 
             case NORTH:
-                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
-                        player_box.getMinY(), 10, 30);
+                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2), player_box.getMinY(),
+                        old_box.getHeight() * bounding_ratio, old_box.getWidth() * bounding_ratio);
                 break;
             case SOUTH:
                 bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
-                        player_box.getMinY() + player_box.getHeight(), 10, 30);
+                        player_box.getMinY() + player_box.getHeight(),
+                        old_box.getHeight() * bounding_ratio, old_box.getWidth() * bounding_ratio);
                 break;
             case EAST:
                 bullet_box = new BoundingBox(player_box.getMinX() + player_box.getWidth(),
-                        player_box.getMinY() + (player_box.getHeight() / 2), 30, 10);
+                        player_box.getMinY() + (player_box.getHeight() / 2),
+                        old_box.getWidth() * bounding_ratio, old_box.getHeight() * bounding_ratio);
                 break;
             case WEST:
                 bullet_box = new BoundingBox(player_box.getMinX(), player_box.getMinY() + (player_box.getHeight() /
-                        2), 30, 10);
+                        2), old_box.getWidth() * bounding_ratio,
+                        old_box.getHeight() * bounding_ratio);
                 break;
         }
 
@@ -284,6 +288,106 @@ public class Game {
                 break;
         }
         return new_box;
+    }
+
+    public void resizeBoundingBox(double ratio){
+        double new_X, new_Y, new_W, new_H;
+
+        if(player != null){
+            BoundingBox old_box = player.getBounds();
+
+            new_X = old_box.getMinX();
+            new_Y = old_box.getMinY();
+            new_W = old_box.getWidth() * ratio;
+            new_H = old_box.getHeight() * ratio;
+
+            BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
+            player.setBounds(new_box);
+        }
+
+        if(objects != null){
+            for(Object obj : objects){
+                BoundingBox old_box = obj.getBounds();
+
+                new_X = old_box.getMinX();
+                new_Y = old_box.getMinY();
+                new_W = old_box.getWidth() * ratio;
+                new_H = old_box.getHeight() * ratio;
+
+                BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
+                obj.setBounds(new_box);
+            }
+        }
+
+        if(bullets != null){
+            for(Bullet bullet : this.bullets){
+                BoundingBox old_box = bullet.getBounds();
+
+                new_X = old_box.getMinX();
+                new_Y = old_box.getMinY();
+                new_W = old_box.getWidth() * ratio;
+                new_H = old_box.getHeight() * ratio;
+
+                BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
+                bullet.setBounds(new_box);
+            }
+        }
+    }
+
+    public void translateAllAxisX(double value){
+        double new_X;
+
+        if(player != null){
+            BoundingBox old_box = player.getBounds();
+
+            new_X = old_box.getMinX() + value;
+
+            BoundingBox new_box = new BoundingBox(new_X, old_box.getMinY(), old_box.getWidth(), old_box.getHeight());
+            player.setBounds(new_box);
+        }
+
+        if(objects != null){
+            for(Object obj : objects){
+                BoundingBox old_box = obj.getBounds();
+
+                new_X = old_box.getMinX() + value;
+
+                BoundingBox new_box = new BoundingBox(new_X, old_box.getMinY(), old_box.getWidth(), old_box.getHeight());
+                obj.setBounds(new_box);
+            }
+        }
+    }
+
+    public void translateAllAxisY(double value){
+        double new_Y;
+
+        if(player != null){
+            BoundingBox old_box = player.getBounds();
+
+            new_Y = old_box.getMinY() + value;
+
+            BoundingBox new_box = new BoundingBox(old_box.getMinX(), new_Y, old_box.getWidth(), old_box.getHeight());
+            player.setBounds(new_box);
+        }
+
+        if(objects != null){
+            for(Object obj : objects){
+                BoundingBox old_box = obj.getBounds();
+
+                new_Y = old_box.getMinY() + value;
+
+                BoundingBox new_box = new BoundingBox(old_box.getMinX(), new_Y, old_box.getWidth(), old_box.getHeight());
+                obj.setBounds(new_box);
+            }
+        }
+    }
+
+    public void setBounding_ratio(double ratio){
+        this.bounding_ratio = ratio;
+    }
+
+    public double getBounding_ratio(){
+        return this.bounding_ratio;
     }
 
     public Character getPlayer(){

@@ -11,6 +11,7 @@ import model.Direction;
 public class BulletView extends StackPane{
 
     private static final Image SPRITE_BULLET = new Image("images/bullet.png");
+    private ImageView sprite;
 
     private int SIZE_W = 30;
     private int SIZE_H = 10;
@@ -19,9 +20,9 @@ public class BulletView extends StackPane{
     public BulletView(Direction dir){
         this.direction = dir;
 
-        ImageView bullet = new ImageView(SPRITE_BULLET);
-        bullet.setFitWidth(SIZE_W);
-        bullet.setFitHeight(SIZE_H);
+        sprite = new ImageView(SPRITE_BULLET);
+        sprite.setFitWidth(SIZE_W);
+        sprite.setFitHeight(SIZE_H);
 
         switch (this.direction){
 
@@ -39,7 +40,21 @@ public class BulletView extends StackPane{
                 break;
         }
 
-        this.getChildren().addAll(bullet);
+        this.getChildren().addAll(sprite);
+    }
+
+    public void setSize(int w, int h){
+        this.SIZE_W = w;
+        this.SIZE_H = h;
+
+        if(sprite != null){
+            this.getChildren().clear();
+
+            sprite.setFitWidth(SIZE_W);
+            sprite.setFitHeight(SIZE_H);
+
+            this.getChildren().add(sprite);
+        }
     }
 
     public int width(){

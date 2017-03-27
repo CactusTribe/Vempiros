@@ -9,7 +9,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 import model.*;
 import model.Character;
+import model.Object;
+import view.BoxView;
 import view.CharacterView;
+import view.RockView;
 import view.ScreenGame;
 
 import java.util.ArrayList;
@@ -48,8 +51,6 @@ public class GameController {
         this.game.arena_width().bind(gameView.arena.widthProperty());
         this.game.arena_height().bind(gameView.arena.heightProperty());
 
-        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
-        gameView.update(game);
 
         movePlayer = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
             @Override
@@ -75,8 +76,35 @@ public class GameController {
         }));
         bulletPropagation.setCycleCount(Timeline.INDEFINITE);
 
+    }
+
+    public void startGame(){
+        game.init();
+        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
+
+        gameView.init(game);
+        gameView.update(game);
+
         movePlayer.play();
         bulletPropagation.play();
+    }
+
+    public void resizeGame(double ratio){
+        movePlayer.pause();
+        bulletPropagation.pause();
+
+        game.resizeBoundingBox(ratio);
+
+        movePlayer.play();
+        bulletPropagation.play();
+    }
+
+    public void translateGameX(double value){
+        game.translateAllAxisX(value);
+    }
+
+    public void translateGameY(double value){
+        game.translateAllAxisY(value);
     }
 
 

@@ -9,7 +9,7 @@ public class Bullet {
 
     private BoundingBox bounds = new BoundingBox(0,0,30,10);
     private Direction direction;
-    private int SPEED = 10;
+    private int SPEED = 1;
 
     public Bullet(){
     }

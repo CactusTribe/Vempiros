@@ -32,6 +32,23 @@ public abstract class CharacterView extends StackPane{
     public void setSize(int w, int h){
         this.SIZE_W = w;
         this.SIZE_H = h;
+
+        if(current_image != null){
+            this.getChildren().clear();
+
+            current_image.setFitWidth(SIZE_W);
+            current_image.setFitHeight(SIZE_H);
+
+            this.getChildren().add(current_image);
+        }
+    }
+
+    public int width(){
+        return this.SIZE_W;
+    }
+
+    public int height(){
+        return this.SIZE_W;
     }
 
 
