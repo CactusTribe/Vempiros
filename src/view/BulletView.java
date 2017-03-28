@@ -25,7 +25,6 @@ public class BulletView extends StackPane{
         sprite.setFitHeight(SIZE_H);
 
         switch (this.direction){
-
             case NORTH:
                 this.setRotate(270);
                 break;

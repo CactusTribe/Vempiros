@@ -1,5 +1,6 @@
 package view;
 
+import controller.GameController;
 import controller.ScreenController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -70,18 +71,26 @@ public class ScreenMenu extends Screen{
 
         button_play.setOnAction(
                 event -> {
-                    this.screenController.screensController.loadScreen("game",
-                            new ScreenGame(field_pseudo.getText()));
+
+                    ScreenGame screenGame = new ScreenGame();
+                    GameController controller = new GameController(field_pseudo.getText(), screenGame);
+
+                    this.screenController.screensController.loadScreen("game", screenGame);
                     this.screenController.screensController.setScreen("game");
+                    screenGame.bindController(controller);
                 });
 
         field_pseudo.setOnKeyPressed(
                 (event) -> {
                     if (event.getCode().equals(KeyCode.ENTER)) {
-                        ScreenGame screenGame = new ScreenGame(field_pseudo.getText());
+
+
+                        ScreenGame screenGame = new ScreenGame();
+                        GameController controller = new GameController(field_pseudo.getText(), screenGame);
 
                         this.screenController.screensController.loadScreen("game", screenGame);
                         this.screenController.screensController.setScreen("game");
+                        screenGame.bindController(controller);
 
                     }
                 });

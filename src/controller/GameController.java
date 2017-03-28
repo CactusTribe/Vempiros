@@ -24,87 +24,73 @@ import java.util.List;
  */
 public class GameController {
 
+    private String usrname = "";
     private Game game;
     private ScreenGame gameView;
+    private Timeline gameLoop;
 
     private KeyEvent last_pressed_key;
     private ActionType current_action;
     private boolean walking = false;
+    private boolean paused = true;
 
-    private Timeline movePlayer;
-    private Timeline bulletPropagation;
 
-    public GameController(){
-
+    public GameController(String usrname, ScreenGame view){
+        this.usrname = usrname;
+        this.gameView = view;
     }
 
-    public void newGame(String usrname, ScreenGame view){
-        if(movePlayer != null){
-            movePlayer.stop();
-        }
-        if(bulletPropagation != null){
-            bulletPropagation.stop();
-        }
+    public void newGame(){
+        this.game = new Game();
 
-        this.game = new Game(usrname);
-        this.gameView = view;
+        game.init();
+        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
+        gameView.init(game);
+        gameView.update(game);
+
         this.game.arena_width().bind(gameView.arena.widthProperty());
         this.game.arena_height().bind(gameView.arena.heightProperty());
 
+    }
 
-        movePlayer = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+    public void startGame(){
+        if(gameLoop != null){
+            gameLoop.stop();
+        }
+        gameLoop = new Timeline();
+        gameLoop.setCycleCount( Timeline.INDEFINITE );
+
+        KeyFrame kf = new KeyFrame( Duration.seconds(0.017), new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent ae)
+            {
+                System.out.println("game loop");
                 if(walking){
                     try {
                         game.apply(ActionType.MOVE);
                     } catch (Exception e){
                         gameView.displayError(e.toString());
                     }
-                    gameView.update(game);
                 }
-            }
-        }));
-        movePlayer.setCycleCount(Timeline.INDEFINITE);
 
-        bulletPropagation = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
                 game.moveBullets();
                 gameView.update(game);
             }
-        }));
-        bulletPropagation.setCycleCount(Timeline.INDEFINITE);
+        });
 
+        gameLoop.getKeyFrames().add( kf );
+        gameLoop.play();
+        this.paused = false;
     }
 
-    public void startGame(){
-        game.init();
-        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
-
-        gameView.init(game);
-        gameView.update(game);
-
-        movePlayer.play();
-        bulletPropagation.play();
+    public void pauseGame(){
+        if(gameLoop != null){
+            gameLoop.stop();
+            this.paused = true;
+        }
     }
 
     public void resizeGame(double ratio){
-        movePlayer.pause();
-        bulletPropagation.pause();
-
         game.resizeBoundingBox(ratio);
-
-        movePlayer.play();
-        bulletPropagation.play();
-    }
-
-    public void translateGameX(double value){
-        game.translateAllAxisX(value);
-    }
-
-    public void translateGameY(double value){
-        game.translateAllAxisY(value);
     }
 
 

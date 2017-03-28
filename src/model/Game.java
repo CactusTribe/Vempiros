@@ -1,7 +1,7 @@
 package model;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.BoundingBox;
 
 import java.util.LinkedList;
@@ -12,7 +12,6 @@ import java.util.Random;
  */
 public class Game {
 
-    private String usrname;
     private Cowboy player;
     private LinkedList<Character> vampires;
     private LinkedList<Object> objects;
@@ -20,12 +19,12 @@ public class Game {
     private double bounding_ratio = 1.0;
 
 
-    private IntegerProperty ARENA_WIDTH = new SimpleIntegerProperty(860);
-    private IntegerProperty ARENA_HEIGHT = new SimpleIntegerProperty(550);
+    private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(860);
+    private DoubleProperty ARENA_HEIGHT = new SimpleDoubleProperty(550);
 
 
-    public Game(String usrname){
-        this.usrname = usrname;
+    public Game(){
+
     }
 
     public void init(){
@@ -45,8 +44,8 @@ public class Game {
 
         // ROCK
         for(int i=0; i <= NB_ROCK; i++){
-            int MAX_X = ARENA_WIDTH.getValue() - SIZE_ROCK;
-            int MAX_Y = ARENA_HEIGHT.getValue() - SIZE_ROCK;
+            int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_ROCK);
+            int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_ROCK);
             BoundingBox box = null;
 
             do{
@@ -62,8 +61,8 @@ public class Game {
 
         // BOX
         for(int i=0; i <= NB_BOX; i++){
-            int MAX_X = ARENA_WIDTH.getValue() - SIZE_BOX;
-            int MAX_Y = ARENA_HEIGHT.getValue() - SIZE_BOX;
+            int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_BOX);
+            int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_BOX);
             BoundingBox box = null;
 
             do{
@@ -79,8 +78,8 @@ public class Game {
 
 
         // PLAYER
-        int MAX_X = ARENA_WIDTH.getValue() - 50;
-        int MAX_Y = ARENA_HEIGHT.getValue() - 100;
+        int MAX_X = (int)(ARENA_WIDTH.getValue() - 50);
+        int MAX_Y = (int)(ARENA_HEIGHT.getValue() - 100);
         BoundingBox box_player = null;
         do{
             int x = rand.nextInt(MAX_X);
@@ -291,13 +290,14 @@ public class Game {
     }
 
     public void resizeBoundingBox(double ratio){
+        this.bounding_ratio = ratio;
         double new_X, new_Y, new_W, new_H;
 
         if(player != null){
             BoundingBox old_box = player.getBounds();
 
-            new_X = old_box.getMinX();
-            new_Y = old_box.getMinY();
+            new_X = old_box.getMinX() * ratio;
+            new_Y = old_box.getMinY() * ratio;
             new_W = old_box.getWidth() * ratio;
             new_H = old_box.getHeight() * ratio;
 
@@ -306,11 +306,11 @@ public class Game {
         }
 
         if(objects != null){
-            for(Object obj : objects){
+            for(Object obj : this.objects){
                 BoundingBox old_box = obj.getBounds();
 
-                new_X = old_box.getMinX();
-                new_Y = old_box.getMinY();
+                new_X = old_box.getMinX() * ratio;
+                new_Y = old_box.getMinY() * ratio;
                 new_W = old_box.getWidth() * ratio;
                 new_H = old_box.getHeight() * ratio;
 
@@ -323,61 +323,13 @@ public class Game {
             for(Bullet bullet : this.bullets){
                 BoundingBox old_box = bullet.getBounds();
 
-                new_X = old_box.getMinX();
-                new_Y = old_box.getMinY();
+                new_X = old_box.getMinX() * ratio;
+                new_Y = old_box.getMinY() * ratio;
                 new_W = old_box.getWidth() * ratio;
                 new_H = old_box.getHeight() * ratio;
 
                 BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
                 bullet.setBounds(new_box);
-            }
-        }
-    }
-
-    public void translateAllAxisX(double value){
-        double new_X;
-
-        if(player != null){
-            BoundingBox old_box = player.getBounds();
-
-            new_X = old_box.getMinX() + value;
-
-            BoundingBox new_box = new BoundingBox(new_X, old_box.getMinY(), old_box.getWidth(), old_box.getHeight());
-            player.setBounds(new_box);
-        }
-
-        if(objects != null){
-            for(Object obj : objects){
-                BoundingBox old_box = obj.getBounds();
-
-                new_X = old_box.getMinX() + value;
-
-                BoundingBox new_box = new BoundingBox(new_X, old_box.getMinY(), old_box.getWidth(), old_box.getHeight());
-                obj.setBounds(new_box);
-            }
-        }
-    }
-
-    public void translateAllAxisY(double value){
-        double new_Y;
-
-        if(player != null){
-            BoundingBox old_box = player.getBounds();
-
-            new_Y = old_box.getMinY() + value;
-
-            BoundingBox new_box = new BoundingBox(old_box.getMinX(), new_Y, old_box.getWidth(), old_box.getHeight());
-            player.setBounds(new_box);
-        }
-
-        if(objects != null){
-            for(Object obj : objects){
-                BoundingBox old_box = obj.getBounds();
-
-                new_Y = old_box.getMinY() + value;
-
-                BoundingBox new_box = new BoundingBox(old_box.getMinX(), new_Y, old_box.getWidth(), old_box.getHeight());
-                obj.setBounds(new_box);
             }
         }
     }
@@ -402,11 +354,11 @@ public class Game {
         return this.objects;
     }
 
-    public IntegerProperty arena_width(){
+    public DoubleProperty arena_width(){
         return this.ARENA_WIDTH;
     }
 
-    public IntegerProperty arena_height(){
+    public DoubleProperty arena_height(){
         return this.ARENA_HEIGHT;
     }
 }

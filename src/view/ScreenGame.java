@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -26,7 +27,6 @@ import java.util.TimerTask;
  */
 public class ScreenGame extends Screen{
 
-    private String usrname;
     private BorderPane borderPane;
     private TextField cheat_console;
     private GameController gameController;
@@ -38,13 +38,13 @@ public class ScreenGame extends Screen{
     public LinkedList<BulletView> bullets;
 
     public boolean debug = true;
+    private boolean paused = true;
     private double sprite_ratio = 1.0;
     private double lastArenaW = 0;
     private double lastArenaH = 0;
 
 
-    public ScreenGame(String usrname){
-        this.usrname = usrname;
+    public ScreenGame(){
 
         borderPane = new BorderPane();
         borderPane.setBackground(new Background(new BackgroundImage(new Image("images/sand1.jpg"),
@@ -54,6 +54,8 @@ public class ScreenGame extends Screen{
         menubar = new MenuBar();
 
         arena = new Pane();
+        arena.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
         cheat_console = new TextField();
         cheat_console.setFocusTraversable(false);
 
@@ -61,23 +63,34 @@ public class ScreenGame extends Screen{
         borderPane.setCenter(arena);
         borderPane.setBottom(cheat_console);
 
+        System.out.println(String.format("%f - %f", this.widthProperty().getValue(), this.heightProperty
+                ().getValue()));
+
         playerView = new CowboyView();
         playerView.setFocusTraversable(true);
 
         screenController = new ScreenController();
-        gameController = new GameController();
-        gameController.newGame(this.usrname, this);
-
 
         menubar.getButton_menu().setOnAction(
                 event -> {
+                    gameController.pauseGame();
                     this.screenController.screensController.setScreen("menu");
                 }
         );
 
-        menubar.getButton_play().setOnAction(
+        menubar.getButton_play().setOnMouseClicked(
                 event -> {
-                    gameController.startGame();
+                    if(paused){
+                        paused = false;
+                        menubar.setPaused(false);
+                        gameController.startGame();
+                    }
+                    else{
+                        paused = true;
+                        menubar.setPaused(true);
+                        gameController.pauseGame();
+                    }
+
                     playerView.requestFocus();
                 }
         );
@@ -87,7 +100,7 @@ public class ScreenGame extends Screen{
                 System.out.println("Key Pressed: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
-                playerView.requestFocus();
+                arena.requestFocus();
             }
         });
 
@@ -96,7 +109,7 @@ public class ScreenGame extends Screen{
                 System.out.println("Key Released: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
-                playerView.requestFocus();
+                arena.requestFocus();
             }
         });
 
@@ -106,7 +119,7 @@ public class ScreenGame extends Screen{
                         {
                             gameController.cheatCode(cheat_console.getText());
                             cheat_console.clear();
-                            playerView.requestFocus();
+                            arena.requestFocus();
                         }
 
         });
@@ -131,19 +144,14 @@ public class ScreenGame extends Screen{
                     @Override
                     public void run() {
                         double ratio = 1.0;
-                        double translation = 0;
 
                         if(lastArenaW > 0 && lastArenaH > 0){
                             if(arena.getWidth() > arena.getHeight()){
                                 ratio = arena.getHeight() / lastArenaH;
-                                translation = ((arena.getWidth() - lastArenaW) / 2);
-                                //gameController.translateGameX(translation);
 
                             }
                             else if (arena.getWidth() < arena.getHeight()){
                                 ratio = arena.getWidth() / lastArenaW;
-                                translation = ((arena.getHeight() - lastArenaH) / 2);
-                                //gameController.translateGameY(translation);
                             }
 
                             gameController.resizeGame(ratio);
@@ -163,6 +171,14 @@ public class ScreenGame extends Screen{
 
         arena.widthProperty().addListener(resizeListener);
         arena.heightProperty().addListener(resizeListener);
+
+        arena.maxWidthProperty().bind(arena.heightProperty().multiply(1.5));
+    }
+
+    public void bindController(GameController controller){
+        this.gameController = controller;
+        this.gameController.newGame();
+
     }
 
     public void init(Game game){
@@ -193,7 +209,7 @@ public class ScreenGame extends Screen{
             Object obj = objects_liste.get(i);
             ObjectView objview = objects.get(i);
 
-            System.out.println(String.format("%f : %d", sprite_ratio, objview.width()));
+            //System.out.println(String.format("%f : %d", sprite_ratio, objview.width()));
             objview.setSize((int)(objview.width() * sprite_ratio), (int)(objview.height() * sprite_ratio));
 
             BoundingBox obj_box = obj.getBounds();
@@ -232,13 +248,22 @@ public class ScreenGame extends Screen{
 
         // AFFICHAGE DES BALLES
         LinkedList<Bullet> listeBullets = game.getBullets();
+        double bullet_ratio = game.getBounding_ratio();
+
         for(Bullet bullet : listeBullets){
+
             BulletView bview = new BulletView(bullet.getDirection());
-
-            System.out.println(String.format("%f : %d", sprite_ratio, bview.width()));
-            bview.setSize((int)(bview.width() * sprite_ratio), (int)(bview.height() * sprite_ratio));
-
             BoundingBox bullet_box = bullet.getBounds();
+
+            //System.out.println(String.format("%f : %d", bullet_ratio, bview.width()));
+            //bview.setSize((int)(bview.width() * bullet_ratio), (int)(bview.height() * bullet_ratio));
+            if(bullet.getDirection() == Direction.NORTH || bullet.getDirection() == Direction.SOUTH){
+                bview.setSize((int)(bullet_box.getHeight()), (int)(bullet_box.getWidth()));
+            }
+            else {
+                bview.setSize((int) (bullet_box.getWidth()), (int) (bullet_box.getHeight()));
+            }
+
             bview.setLayoutX(bullet_box.getMinX()-(bview.width()/2)+(bullet_box.getWidth() / 2));
             bview.setLayoutY(bullet_box.getMinY()-(bview.height()/2)+(bullet_box.getHeight() / 2));
             arena.getChildren().add(bview);
@@ -250,7 +275,7 @@ public class ScreenGame extends Screen{
 
         arena.getChildren().add(playerView);
         sprite_ratio = 1.0;
-        //playerView.requestFocus();
+
     }
 
     public void showCollisionBox(BoundingBox box, Color color){

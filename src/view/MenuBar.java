@@ -15,7 +15,7 @@ import javafx.scene.text.TextAlignment;
 /**
  * Created by cactustribe on 21/03/17.
  */
-public class MenuBar extends ToolBar{
+public class MenuBar extends ToolBar {
 
     private Button button_menu;
     private Button button_play;
@@ -39,7 +39,7 @@ public class MenuBar extends ToolBar{
     private static Image IMG_DEAD_VAMP = new Image("images/dead_vampire.png");
     private static Image IMG_AMMO = new Image("images/ammo.png");
 
-    public MenuBar(){
+    public MenuBar() {
 
         ImageView icon_play = new ImageView(IMG_PLAY);
         icon_play.setFitHeight(TOOLBAR_H);
@@ -122,7 +122,7 @@ public class MenuBar extends ToolBar{
         label_nb_dead.setStroke(Color.BLACK);
         label_nb_dead.setStrokeWidth(2);
 
-        nb_ammo = new ProgressIndicator(0.6);
+        nb_ammo = new ProgressIndicator(500);
 
         HBox stats = new HBox();
         stats.setSpacing(10);
@@ -137,15 +137,32 @@ public class MenuBar extends ToolBar{
 
     }
 
-    public Button getButton_menu(){
+    public Button getButton_menu() {
         return this.button_menu;
     }
 
-    public Button getButton_play(){
+    public Button getButton_play() {
         return this.button_play;
     }
 
-    public PanelLives getPanelLives(){
+    public PanelLives getPanelLives() {
         return this.panelLives;
+    }
+
+    public void setPaused(boolean bool) {
+        ImageView icon = null;
+
+        if (bool) {
+            icon = new ImageView(IMG_PLAY);
+            icon.setFitHeight(TOOLBAR_H);
+            icon.setFitWidth(TOOLBAR_H);
+
+        }
+        else{
+            icon = new ImageView(IMG_PAUSE);
+            icon.setFitHeight(TOOLBAR_H);
+            icon.setFitWidth(TOOLBAR_H);
+        }
+        button_play.setGraphic(icon);
     }
 }
