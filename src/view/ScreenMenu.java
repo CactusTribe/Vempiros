@@ -68,16 +68,15 @@ public class ScreenMenu extends Screen{
 
         this.getChildren().addAll(background, vbox);
 
-
         button_play.setOnAction(
                 event -> {
 
-                    ScreenGame screenGame = new ScreenGame();
+                    ScreenGame screenGame = (ScreenGame)this.screenController.screensController.getScreen("game");
                     GameController controller = new GameController(field_pseudo.getText(), screenGame);
 
-                    this.screenController.screensController.loadScreen("game", screenGame);
                     this.screenController.screensController.setScreen("game");
                     screenGame.bindController(controller);
+
                 });
 
         field_pseudo.setOnKeyPressed(
@@ -85,10 +84,9 @@ public class ScreenMenu extends Screen{
                     if (event.getCode().equals(KeyCode.ENTER)) {
 
 
-                        ScreenGame screenGame = new ScreenGame();
+                        ScreenGame screenGame = (ScreenGame)this.screenController.screensController.getScreen("game");
                         GameController controller = new GameController(field_pseudo.getText(), screenGame);
 
-                        this.screenController.screensController.loadScreen("game", screenGame);
                         this.screenController.screensController.setScreen("game");
                         screenGame.bindController(controller);
 

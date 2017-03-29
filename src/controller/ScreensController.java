@@ -106,5 +106,9 @@ public class ScreensController extends StackPane {
         }
     }
 
+    public Node getScreen(String name){
+        return this.screens.get(name);
+    }
+
 
 }

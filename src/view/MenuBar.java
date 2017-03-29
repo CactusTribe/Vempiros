@@ -122,7 +122,7 @@ public class MenuBar extends ToolBar {
         label_nb_dead.setStroke(Color.BLACK);
         label_nb_dead.setStrokeWidth(2);
 
-        nb_ammo = new ProgressIndicator(500);
+        nb_ammo = new ProgressBar(0.7);
 
         HBox stats = new HBox();
         stats.setSpacing(10);

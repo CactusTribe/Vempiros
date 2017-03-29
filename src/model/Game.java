@@ -19,7 +19,7 @@ public class Game {
     private double bounding_ratio = 1.0;
 
 
-    private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(860);
+    private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(850);
     private DoubleProperty ARENA_HEIGHT = new SimpleDoubleProperty(550);
 
 

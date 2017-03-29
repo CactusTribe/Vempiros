@@ -6,7 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -19,8 +18,6 @@ import model.Character;
 import model.Object;
 
 import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by cactustribe on 12/03/17.
@@ -49,7 +46,7 @@ public class ScreenGame extends Screen{
         borderPane = new BorderPane();
         borderPane.setBackground(new Background(new BackgroundImage(new Image("images/sand1.jpg"),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
-        this.getChildren().addAll(borderPane);
+
 
         menubar = new MenuBar();
 
@@ -62,9 +59,7 @@ public class ScreenGame extends Screen{
         borderPane.setTop(menubar);
         borderPane.setCenter(arena);
         borderPane.setBottom(cheat_console);
-
-        System.out.println(String.format("%f - %f", this.widthProperty().getValue(), this.heightProperty
-                ().getValue()));
+        this.getChildren().addAll(borderPane);
 
         playerView = new CowboyView();
         playerView.setFocusTraversable(true);
@@ -124,7 +119,7 @@ public class ScreenGame extends Screen{
 
         });
 
-
+/*
         final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
             Timer timer = null;
             TimerTask task = null;
@@ -168,17 +163,37 @@ public class ScreenGame extends Screen{
                 timer.schedule(task, delayTime);
             }
         };
+        */
 
-        arena.widthProperty().addListener(resizeListener);
-        arena.heightProperty().addListener(resizeListener);
 
-        arena.maxWidthProperty().bind(arena.heightProperty().multiply(1.5));
+        final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
+
+                if(lastArenaW > 0 && lastArenaH > 0){
+                    double ratio = arena.getWidth() / lastArenaW;
+                    //gameController.resizeGame(ratio);
+                }
+
+                System.out.println("resize to " + arena.getWidth() + " " + arena.getHeight());
+                lastArenaW = arena.getWidth();
+                lastArenaH = arena.getHeight();
+            }
+        };
+
+
+        //borderPane.widthProperty().addListener(resizeListener);
+
     }
 
     public void bindController(GameController controller){
         this.gameController = controller;
-        this.gameController.newGame();
+        System.out.println("New game " + this.getWidth() + " " + this.getHeight());
+        //this.gameController.newGame();
 
+
+
+        arena.maxWidthProperty().bind(arena.heightProperty().multiply(1.5));
     }
 
     public void init(Game game){
@@ -202,6 +217,8 @@ public class ScreenGame extends Screen{
 
     public void update(Game game){
         arena.getChildren().clear();
+
+        double bounding_ratio = game.getBounding_ratio();
 
         // AFFICHAGE DES OBJETS (ROCK, BOX, etc)
         LinkedList<Object> objects_liste = game.getObjects();
@@ -248,7 +265,7 @@ public class ScreenGame extends Screen{
 
         // AFFICHAGE DES BALLES
         LinkedList<Bullet> listeBullets = game.getBullets();
-        double bullet_ratio = game.getBounding_ratio();
+
 
         for(Bullet bullet : listeBullets){
 

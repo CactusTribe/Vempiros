@@ -1,3 +1,4 @@
+import controller.GameController;
 import controller.ScreensController;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -10,13 +11,15 @@ import view.ScreenMenu;
 public class Main extends Application {
 
     public static final String MENU_SCREEN = "menu";
+    public static final String GAME_SCREEN = "game";
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-
         ScreensController mainContainer = new ScreensController();
+
         mainContainer.loadScreen(Main.MENU_SCREEN, new ScreenMenu());
+        mainContainer.loadScreen(Main.GAME_SCREEN, new ScreenGame());
         mainContainer.setScreen(Main.MENU_SCREEN);
 
         Scene scene = new Scene(mainContainer, 860, 640);
@@ -24,10 +27,8 @@ public class Main extends Application {
 
         primaryStage.setTitle("Vempiros");
         primaryStage.setScene(scene);
-        primaryStage.setMinHeight(640);
         primaryStage.setMinWidth(860);
-        //primaryStage.minWidthProperty().bind(scene.heightProperty().multiply(1.5));
-        //primaryStage.minHeightProperty().bind(scene.widthProperty().divide(1.5));
+        primaryStage.setMinHeight(640);
         primaryStage.show();
     }
 
