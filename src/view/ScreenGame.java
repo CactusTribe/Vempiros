@@ -7,6 +7,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Insets;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -29,10 +31,12 @@ public class ScreenGame extends Screen{
     private GameController gameController;
 
     public MenuBar menubar;
+    public Pane wrapperPane;
     public Pane arena;
+
     public CharacterView playerView;
-    public LinkedList<ObjectView> objects;
-    public LinkedList<BulletView> bullets;
+    private LinkedList<ObjectView> objects;
+    private LinkedList<BulletView> bullets;
 
     public boolean debug = true;
     private boolean paused = true;
@@ -42,6 +46,9 @@ public class ScreenGame extends Screen{
 
 
     public ScreenGame(){
+        screenController = new ScreenController();
+        this.setWidth(860);
+        this.setHeight(640);
 
         borderPane = new BorderPane();
         borderPane.setBackground(new Background(new BackgroundImage(new Image("images/sand1.jpg"),
@@ -49,22 +56,23 @@ public class ScreenGame extends Screen{
 
 
         menubar = new MenuBar();
-
+        wrapperPane = new Pane();
         arena = new Pane();
-        arena.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        arena.setBorder(new Border(new BorderStroke(Color.SIENNA, BorderStrokeStyle.SOLID,
+                CornerRadii.EMPTY, new BorderWidths(5.0))));
+
+        wrapperPane.getChildren().add(arena);
 
         cheat_console = new TextField();
         cheat_console.setFocusTraversable(false);
 
         borderPane.setTop(menubar);
-        borderPane.setCenter(arena);
+        borderPane.setCenter(wrapperPane);
         borderPane.setBottom(cheat_console);
         this.getChildren().addAll(borderPane);
 
         playerView = new CowboyView();
         playerView.setFocusTraversable(true);
-
-        screenController = new ScreenController();
 
         menubar.getButton_menu().setOnAction(
                 event -> {
@@ -86,85 +94,40 @@ public class ScreenGame extends Screen{
                         gameController.pauseGame();
                     }
 
-                    playerView.requestFocus();
+                    wrapperPane.requestFocus();
                 }
         );
 
-        arena.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        //menubar.setFocusTraversable(true);
+
+        wrapperPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 System.out.println("Key Pressed: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
-                arena.requestFocus();
+                wrapperPane.requestFocus();
             }
         });
 
-        arena.setOnKeyReleased(new EventHandler<KeyEvent>() {
+        wrapperPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 System.out.println("Key Released: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
-                arena.requestFocus();
+                wrapperPane.requestFocus();
             }
         });
 
         cheat_console.setOnKeyPressed(
                 (event) -> {
                     if (event.getCode().equals(KeyCode.ENTER))
-                        {
-                            gameController.cheatCode(cheat_console.getText());
-                            cheat_console.clear();
-                            arena.requestFocus();
-                        }
-
-        });
-
-/*
-        final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
-            Timer timer = null;
-            TimerTask task = null;
-            final long delayTime = 100;
-
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
-                if (task != null) {
-                    task.cancel();
-                }
-                if( timer != null){
-                    timer.cancel();
-                }
-
-                timer = new Timer();
-                task = new TimerTask(){
-                    @Override
-                    public void run() {
-                        double ratio = 1.0;
-
-                        if(lastArenaW > 0 && lastArenaH > 0){
-                            if(arena.getWidth() > arena.getHeight()){
-                                ratio = arena.getHeight() / lastArenaH;
-
-                            }
-                            else if (arena.getWidth() < arena.getHeight()){
-                                ratio = arena.getWidth() / lastArenaW;
-                            }
-
-                            gameController.resizeGame(ratio);
-                            sprite_ratio = ratio;
-                        }
-
-                        System.out.println("resize to " + arena.getWidth() + " " + arena.getHeight());
-                        lastArenaW = arena.getWidth();
-                        lastArenaH = arena.getHeight();
-
-                        timer.cancel();
+                    {
+                        gameController.cheatCode(cheat_console.getText());
+                        cheat_console.clear();
+                        wrapperPane.requestFocus();
                     }
-                };
-                timer.schedule(task, delayTime);
-            }
-        };
-        */
 
+                });
 
         final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
             @Override
@@ -172,28 +135,35 @@ public class ScreenGame extends Screen{
 
                 if(lastArenaW > 0 && lastArenaH > 0){
                     double ratio = arena.getWidth() / lastArenaW;
-                    //gameController.resizeGame(ratio);
+                    gameController.resizeGame(ratio);
                 }
 
-                System.out.println("resize to " + arena.getWidth() + " " + arena.getHeight());
+                System.out.println(String.format("Arena (%d - %d) -> (%d - %d)", (int)lastArenaW, (int)lastArenaH,
+                        (int)arena.getWidth(), (int)arena.getHeight()));
                 lastArenaW = arena.getWidth();
                 lastArenaH = arena.getHeight();
             }
         };
 
+        arena.prefWidthProperty().bind(wrapperPane.widthProperty());
+        arena.prefHeightProperty().bind(wrapperPane.heightProperty());
 
-        //borderPane.widthProperty().addListener(resizeListener);
+        arena.layoutXProperty().bind(wrapperPane.widthProperty().subtract(arena.widthProperty()).divide(2));
+        arena.layoutYProperty().bind(wrapperPane.heightProperty().subtract(arena.heightProperty()).divide(2));
 
+        arena.maxWidthProperty().bind(arena.prefHeightProperty().multiply(1.5));
+        arena.maxHeightProperty().bind(arena.prefWidthProperty().divide(1.5));
+
+        arena.widthProperty().addListener(resizeListener);
+        arena.heightProperty().addListener(resizeListener);
     }
+
 
     public void bindController(GameController controller){
         this.gameController = controller;
-        System.out.println("New game " + this.getWidth() + " " + this.getHeight());
-        //this.gameController.newGame();
-
-
-
-        arena.maxWidthProperty().bind(arena.heightProperty().multiply(1.5));
+        System.out.println(String.format("New game (%d - %d)", arena.prefWidthProperty().getValue().intValue(),
+                arena.prefHeightProperty().getValue().intValue()));
+        this.gameController.newGame();
     }
 
     public void init(Game game){

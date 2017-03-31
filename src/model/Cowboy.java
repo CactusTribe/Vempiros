@@ -5,12 +5,13 @@ package model;
  */
 public class Cowboy extends Character {
 
+    private int total_bullets = 150;
     private int nb_bullets;
 
     public Cowboy(int lives){
         this.total_life = lives;
         this.current_life.set(lives);
-        this.nb_bullets = 500;
+        this.nb_bullets = total_bullets;
         this.setSpeed(6);
     }
 

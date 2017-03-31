@@ -9,10 +9,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 import model.*;
 import model.Character;
-import model.Object;
-import view.BoxView;
 import view.CharacterView;
-import view.RockView;
 import view.ScreenGame;
 
 import java.util.ArrayList;
@@ -38,18 +35,18 @@ public class GameController {
     public GameController(String usrname, ScreenGame view){
         this.usrname = usrname;
         this.gameView = view;
+        this.game = new Game();
     }
 
     public void newGame(){
-        this.game = new Game();
 
         game.init();
         gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
         gameView.init(game);
         gameView.update(game);
 
-        this.game.arena_width().bind(gameView.arena.widthProperty());
-        this.game.arena_height().bind(gameView.arena.heightProperty());
+        this.game.arena_width().bind(gameView.arena.prefWidthProperty());
+        this.game.arena_height().bind(gameView.arena.prefHeightProperty());
 
     }
 
@@ -63,7 +60,7 @@ public class GameController {
         KeyFrame kf = new KeyFrame( Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             public void handle(ActionEvent ae)
             {
-                System.out.println("game loop");
+                //System.out.println("game loop");
                 if(walking){
                     try {
                         game.apply(ActionType.MOVE);
@@ -91,6 +88,7 @@ public class GameController {
 
     public void resizeGame(double ratio){
         game.resizeBoundingBox(ratio);
+        gameView.update(game);
     }
 
 

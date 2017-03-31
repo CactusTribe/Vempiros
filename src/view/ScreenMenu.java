@@ -71,10 +71,11 @@ public class ScreenMenu extends Screen{
         button_play.setOnAction(
                 event -> {
 
-                    ScreenGame screenGame = (ScreenGame)this.screenController.screensController.getScreen("game");
-                    GameController controller = new GameController(field_pseudo.getText(), screenGame);
-
+                    ScreenGame screenGame = new ScreenGame();
+                    this.screenController.screensController.loadScreen("game", screenGame);
                     this.screenController.screensController.setScreen("game");
+
+                    GameController controller = new GameController(field_pseudo.getText(), screenGame);
                     screenGame.bindController(controller);
 
                 });
@@ -83,13 +84,12 @@ public class ScreenMenu extends Screen{
                 (event) -> {
                     if (event.getCode().equals(KeyCode.ENTER)) {
 
-
-                        ScreenGame screenGame = (ScreenGame)this.screenController.screensController.getScreen("game");
-                        GameController controller = new GameController(field_pseudo.getText(), screenGame);
-
+                        ScreenGame screenGame = new ScreenGame();
+                        this.screenController.screensController.loadScreen("game", screenGame);
                         this.screenController.screensController.setScreen("game");
-                        screenGame.bindController(controller);
 
+                        GameController controller = new GameController(field_pseudo.getText(), screenGame);
+                        screenGame.bindController(controller);
                     }
                 });
     }
