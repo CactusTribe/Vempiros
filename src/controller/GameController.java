@@ -35,18 +35,21 @@ public class GameController {
     public GameController(String usrname, ScreenGame view){
         this.usrname = usrname;
         this.gameView = view;
-        this.game = new Game();
     }
 
     public void newGame(){
+        this.game = new Game();
 
         game.init();
         gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
         gameView.init(game);
         gameView.update(game);
 
-        this.game.arena_width().bind(gameView.arena.prefWidthProperty());
-        this.game.arena_height().bind(gameView.arena.prefHeightProperty());
+        this.game.arena_width().bind(gameView.arena.widthProperty());
+        this.game.arena_height().bind(gameView.arena.heightProperty());
+
+        System.out.println(String.format("New game (%d x %d)", (int)gameView.arena.getWidth(), (int)gameView.arena
+                .getHeight()));
 
     }
 
@@ -215,8 +218,8 @@ public class GameController {
                     System.out.println(String.format("Cheat: Debug enabled."));
                 }
             }
-            else if(cmd.equals("reload")) {
-                game.init();
+            else if(cmd.equals("reload") || cmd.equals("rl")) {
+                newGame();
                 System.out.println(String.format("Cheat: Game reloaded."));
             }
             else{

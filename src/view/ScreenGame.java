@@ -138,8 +138,7 @@ public class ScreenGame extends Screen{
                     gameController.resizeGame(ratio);
                 }
 
-                System.out.println(String.format("Arena (%d - %d) -> (%d - %d)", (int)lastArenaW, (int)lastArenaH,
-                        (int)arena.getWidth(), (int)arena.getHeight()));
+                System.out.println(String.format("Arena (%d x %d)", (int)arena.getWidth(), (int)arena.getHeight()));
                 lastArenaW = arena.getWidth();
                 lastArenaH = arena.getHeight();
             }
@@ -161,8 +160,6 @@ public class ScreenGame extends Screen{
 
     public void bindController(GameController controller){
         this.gameController = controller;
-        System.out.println(String.format("New game (%d - %d)", arena.prefWidthProperty().getValue().intValue(),
-                arena.prefHeightProperty().getValue().intValue()));
         this.gameController.newGame();
     }
 
