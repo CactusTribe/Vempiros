@@ -35,15 +35,15 @@ public class Game {
     }
 
     public void generateWorld(){
-        int NB_BOX = 3;
-        int NB_ROCK = 5;
+        int NB_BOX = 10;
+        int NB_ROCK = 10;
         int SIZE_BOX = 70;
         int SIZE_ROCK = 50;
 
         Random rand = new Random();
 
         // ROCK
-        for(int i=0; i <= NB_ROCK; i++){
+        for(int i=0; i < NB_ROCK; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_ROCK);
             int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_ROCK);
             BoundingBox box = null;
@@ -60,7 +60,7 @@ public class Game {
         }
 
         // BOX
-        for(int i=0; i <= NB_BOX; i++){
+        for(int i=0; i < NB_BOX; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_BOX);
             int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_BOX);
             BoundingBox box = null;
@@ -361,4 +361,5 @@ public class Game {
     public DoubleProperty arena_height(){
         return this.ARENA_HEIGHT;
     }
+
 }

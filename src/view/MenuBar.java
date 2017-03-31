@@ -26,7 +26,7 @@ public class MenuBar extends ToolBar {
     private Slider slider_vamp_speed;
     private Text label_nb_alive;
     private Text label_nb_dead;
-    private ProgressIndicator nb_ammo;
+    private ProgressBar ammo_bar;
     private PanelLives panelLives;
 
     private int TOOLBAR_H = 40;
@@ -122,7 +122,7 @@ public class MenuBar extends ToolBar {
         label_nb_dead.setStroke(Color.BLACK);
         label_nb_dead.setStrokeWidth(2);
 
-        nb_ammo = new ProgressBar(0.7);
+        ammo_bar = new ProgressBar(0.7);
 
         HBox stats = new HBox();
         stats.setSpacing(10);
@@ -131,7 +131,7 @@ public class MenuBar extends ToolBar {
 
 
         this.getItems().addAll(button_menu, button_options, button_play, new Separator(),
-                panelLives, new Separator(), stats, icon_ammo, nb_ammo, new Separator(),
+                panelLives, new Separator(), stats, icon_ammo, ammo_bar, new Separator(),
                 cowboy_speed,
                 vamp_speed);
 
@@ -147,6 +147,10 @@ public class MenuBar extends ToolBar {
 
     public PanelLives getPanelLives() {
         return this.panelLives;
+    }
+
+    public ProgressBar getAmmoBar() {
+        return this.ammo_bar;
     }
 
     public void setPaused(boolean bool) {

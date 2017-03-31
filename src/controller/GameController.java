@@ -35,21 +35,22 @@ public class GameController {
     public GameController(String usrname, ScreenGame view){
         this.usrname = usrname;
         this.gameView = view;
+        this.game = new Game();
     }
 
     public void newGame(){
-        this.game = new Game();
-
         game.init();
-        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
         gameView.init(game);
         gameView.update(game);
 
-        this.game.arena_width().bind(gameView.arena.widthProperty());
-        this.game.arena_height().bind(gameView.arena.heightProperty());
+        game.arena_width().bind(gameView.arena.widthProperty());
+        game.arena_height().bind(gameView.arena.heightProperty());
+        gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
+        gameView.menubar.getAmmoBar().progressProperty().bind( ((Cowboy)game.getPlayer()).progress_bullets());
 
-        System.out.println(String.format("New game (%d x %d)", (int)gameView.arena.getWidth(), (int)gameView.arena
-                .getHeight()));
+
+        System.out.println(String.format("New game (%d x %d) (%d x %d)", (int)gameView.arena.getWidth(), (int)gameView
+                .arena.getHeight(), game.arena_width().intValue(), game.arena_height().intValue()));
 
     }
 
@@ -98,7 +99,7 @@ public class GameController {
     public void notifyEvent(KeyEvent ke){
         Character player = game.getPlayer();
 
-        if(ke.getEventType() == KeyEvent.KEY_PRESSED){
+        if(!paused && ke.getEventType() == KeyEvent.KEY_PRESSED){
 
             if(last_pressed_key == null || last_pressed_key.getCode() != ke.getCode()){
 
@@ -127,6 +128,9 @@ public class GameController {
                         } catch (Exception e){
                             gameView.displayError(e.toString());
                         }
+                        break;
+                    case R:
+                        newGame();
                         break;
                     default:
                         current_action = null;
@@ -167,8 +171,6 @@ public class GameController {
 
             last_pressed_key = null;
             current_action = null;
-            //gameView.playerView.stopAnimation();
-
         }
     }
 
