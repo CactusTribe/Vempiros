@@ -257,7 +257,6 @@ public class ScreenGame extends Screen{
         // AFFICHAGE DES BALLES
         LinkedList<Bullet> listeBullets = game.getBullets();
 
-
         for(Bullet bullet : listeBullets){
 
             BulletView bview = new BulletView(bullet.getDirection());

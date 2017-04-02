@@ -2,11 +2,13 @@ package controller;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
+import javafx.util.converter.NumberStringConverter;
 import model.*;
 import model.Character;
 import view.CharacterView;
@@ -48,8 +50,12 @@ public class GameController {
 
         game.arena_width().bind(gameView.arena.widthProperty());
         game.arena_height().bind(gameView.arena.heightProperty());
+
         gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
         gameView.menubar.getAmmoBar().progressProperty().bind( ((Cowboy)game.getPlayer()).progress_bullets());
+
+        gameView.menubar.getAliveVamp().textProperty().bind(Bindings.convert(game.alive_vamp()));
+        gameView.menubar.getDeadVamp().textProperty().bind(Bindings.convert(game.dead_vamp()));
 
 
     }

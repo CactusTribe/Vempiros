@@ -137,22 +137,6 @@ public class MenuBar extends ToolBar {
 
     }
 
-    public Button getButton_menu() {
-        return this.button_menu;
-    }
-
-    public Button getButton_play() {
-        return this.button_play;
-    }
-
-    public PanelLives getPanelLives() {
-        return this.panelLives;
-    }
-
-    public ProgressBar getAmmoBar() {
-        return this.ammo_bar;
-    }
-
     public void setPaused(boolean bool) {
         ImageView icon = null;
 
@@ -169,4 +153,30 @@ public class MenuBar extends ToolBar {
         }
         button_play.setGraphic(icon);
     }
+
+    public Button getButton_menu() {
+        return this.button_menu;
+    }
+
+    public Button getButton_play() {
+        return this.button_play;
+    }
+
+    public PanelLives getPanelLives() {
+        return this.panelLives;
+    }
+
+    public ProgressBar getAmmoBar() {
+        return this.ammo_bar;
+    }
+
+    public Text getAliveVamp(){
+        return this.label_nb_alive;
+    }
+
+    public Text getDeadVamp(){
+        return this.label_nb_dead;
+    }
+
+
 }

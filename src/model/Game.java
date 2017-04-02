@@ -1,7 +1,9 @@
 package model;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
 
 import java.util.LinkedList;
@@ -17,9 +19,14 @@ public class Game {
     private LinkedList<Object> objects;
     private LinkedList<Bullet> bullets;
 
-
     private Bullet bulletSchema;
 
+    private int NB_VAMP;
+    private int NB_ROCK;
+    private int NB_BOX;
+
+    private IntegerProperty ALIVE_VAMP;
+    private IntegerProperty DEAD_VAMP;
 
     private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(820);
     private DoubleProperty ARENA_HEIGHT = new SimpleDoubleProperty(550);
@@ -34,14 +41,19 @@ public class Game {
         this.bullets = new LinkedList<>();
         this.objects = new LinkedList<>();
         this.vampires = new LinkedList<>();
-        this.generateWorld();
         this.bulletSchema = new Bullet();
+
+        this.NB_VAMP = 4;
+        this.NB_ROCK = 6;
+        this.NB_BOX = 4;
+
+        ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
+        DEAD_VAMP = new SimpleIntegerProperty(0);
+
+        this.generateWorld();
     }
 
     public void generateWorld(){
-        int NB_BOX = 4;
-        int NB_ROCK = 6;
-        int NB_VAMP = 1;
 
         int SIZE_BOX = 70;
         int SIZE_ROCK = 50;
@@ -147,6 +159,12 @@ public class Game {
             Random rand = new Random();
             boolean intersect_object = false;
 
+            LinkedList<Direction> possible_dir = new LinkedList<>();
+            possible_dir.add(Direction.NORTH);
+            possible_dir.add(Direction.SOUTH);
+            possible_dir.add(Direction.EAST);
+            possible_dir.add(Direction.WEST);
+
             double speed = vampire.getSpeed();
             Direction dir = vampire.getDirection();
             BoundingBox old_box = vampire.getBounds();
@@ -157,29 +175,40 @@ public class Game {
                 for(Object cur_obj : objects){
                     if(new_box.intersects(cur_obj.getBounds())){
                         intersect_object = true;
+                        possible_dir.remove(dir);
                         break;
                     }
                 }
+
+                if(new_box.intersects(player.getBounds())){
+                    intersect_object = true;
+                    possible_dir.remove(dir);
+                    player.removeLife(1);
+                }
             }else{
                 intersect_object = true;
+                possible_dir.remove(dir);
             }
 
             while(intersect_object){
 
                 intersect_object = false;
-                int random_dir = rand.nextInt(4);
-                dir = Direction.values()[random_dir];
+                int random_dir = rand.nextInt(possible_dir.size());
+                dir = possible_dir.get(random_dir);
                 new_box = translateBounds(old_box, dir, speed);
 
                 if(!outOfArena(new_box)){
                     for(Object cur_obj : objects){
                         if(new_box.intersects(cur_obj.getBounds())){
                             intersect_object = true;
+                            possible_dir.remove(dir);
                             break;
                         }
                     }
+
                 }else{
                     intersect_object = true;
+                    possible_dir.remove(dir);
                 }
             }
 
@@ -218,6 +247,17 @@ public class Game {
                 return true;
             }
         }
+
+        for(Vampire vamp : vampires){
+            BoundingBox objet_box = vamp.getBounds();
+            if(bullet_box.intersects(objet_box)){
+                vampires.remove(vamp);
+                ALIVE_VAMP.set(ALIVE_VAMP.getValue() - 1);
+                DEAD_VAMP.set(DEAD_VAMP.getValue() + 1);
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -452,6 +492,14 @@ public class Game {
 
     public DoubleProperty arena_height(){
         return this.ARENA_HEIGHT;
+    }
+
+    public IntegerProperty alive_vamp(){
+        return this.ALIVE_VAMP;
+    }
+
+    public IntegerProperty dead_vamp(){
+        return this.DEAD_VAMP;
     }
 
 }

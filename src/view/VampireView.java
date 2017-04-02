@@ -13,16 +13,16 @@ public class VampireView extends CharacterView{
     private static final Image RIP_VAMP = new Image("images/rip.png");
 
     // WALKING ANIM
-    private static final ImageViewAnimation WALK_NORTH = new ImageViewAnimation(
+    private  final ImageViewAnimation WALK_NORTH = new ImageViewAnimation(
             SPRITE_VAMP, 4, 4, 0, 48*3, 48, 48, FPS_ANIM);
 
-    private static final ImageViewAnimation WALK_SOUTH = new ImageViewAnimation(
+    private  final ImageViewAnimation WALK_SOUTH = new ImageViewAnimation(
             SPRITE_VAMP, 4, 4, 0, 0, 48, 48, FPS_ANIM);
 
-    private static final ImageViewAnimation WALK_EAST = new ImageViewAnimation(
+    private  final ImageViewAnimation WALK_EAST = new ImageViewAnimation(
             SPRITE_VAMP, 4, 4, 0, 48*2, 48, 48, FPS_ANIM);
 
-    private static final ImageViewAnimation WALK_WEST = new ImageViewAnimation(
+    private  final ImageViewAnimation WALK_WEST = new ImageViewAnimation(
             SPRITE_VAMP, 4, 4, 0, 48, 48, 48, FPS_ANIM);
 
     // DEAD
@@ -71,7 +71,6 @@ public class VampireView extends CharacterView{
 
             this.getChildren().addAll(current_image);
 
-            System.out.println("Vampire start anim");
             this.startAnimation();
         }
         this.direction = dir;
