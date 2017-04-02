@@ -28,8 +28,11 @@ public class GameController {
 
     private KeyEvent last_pressed_key;
     private ActionType current_action;
+
     private boolean walking = false;
     private boolean paused = true;
+    private long startTimeReloadBullets = 0;
+    private long TIME_BEFORE_ADD_BULLET = 5000; // seconds
 
 
     public GameController(String usrname, ScreenGame view){
@@ -52,16 +55,19 @@ public class GameController {
     }
 
     public void startGame(){
+
         if(gameLoop != null){
             gameLoop.stop();
         }
         gameLoop = new Timeline();
         gameLoop.setCycleCount( Timeline.INDEFINITE );
 
+        Cowboy player = (Cowboy) game.getPlayer();
+
         KeyFrame kf = new KeyFrame( Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             public void handle(ActionEvent ae)
             {
-                //System.out.println("game loop");
+                // DEPLACEMENTS
                 if(walking){
                     try {
                         game.apply(ActionType.MOVE);
@@ -71,6 +77,21 @@ public class GameController {
                 }
 
                 game.moveBullets();
+                //---------------------------------------------
+
+
+                // GAME EVENTS
+                if(player.current_bullets().getValue() == 0){
+                    if(startTimeReloadBullets == 0){
+                        startTimeReloadBullets = System.currentTimeMillis();
+                    }
+                    else if(System.currentTimeMillis() - startTimeReloadBullets >= TIME_BEFORE_ADD_BULLET){
+                        player.addBullets(9999);
+                        startTimeReloadBullets = 0;
+                    }
+                }
+                //---------------------------------------------
+
                 gameView.update(game);
             }
         });

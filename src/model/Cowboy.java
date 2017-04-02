@@ -20,19 +20,18 @@ public class Cowboy extends Character {
         this.total_life = lives;
         this.current_life.set(lives);
 
-        this.total_bullets = new SimpleDoubleProperty(50);
+        this.total_bullets = new SimpleDoubleProperty(20);
         this.current_bullets = new SimpleDoubleProperty(total_bullets.getValue());
         this.progress_bullets = Bindings.divide(current_bullets, total_bullets);
 
         this.setSpeed(10);
     }
 
-    public double getNbBullets() {
-        return this.current_bullets.getValue();
-    }
-
     public void addBullets(int n) {
-        this.current_bullets.set(current_bullets.getValue() + n);
+        if(n <= total_bullets.getValue())
+            this.current_bullets.set(current_bullets.getValue() + n);
+        else
+            this.current_bullets.set(total_bullets.getValue());
     }
 
     public void removeBullet(){
@@ -44,8 +43,8 @@ public class Cowboy extends Character {
         return total_bullets;
     }
 
-    public DoubleProperty nb_bullets() {
-        return total_bullets;
+    public DoubleProperty current_bullets() {
+        return current_bullets;
     }
 
     public NumberBinding progress_bullets() {

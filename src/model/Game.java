@@ -247,7 +247,7 @@ public class Game {
 
                 break;
             case SHOOT:
-                    isPossible = (player.getNbBullets() > 0);
+                    isPossible = (player.current_bullets().getValue() > 0);
                 break;
         }
         return isPossible;
