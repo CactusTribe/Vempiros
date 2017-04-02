@@ -6,9 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
-import javafx.geometry.Insets;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -98,12 +95,17 @@ public class ScreenGame extends Screen{
                 }
         );
 
-        //menubar.setFocusTraversable(true);
 
         wrapperPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
-                System.out.println("Key Pressed: " + ke.getCode());
-                gameController.notifyEvent(ke);
+                //System.out.println("Key Pressed: " + ke.getCode());
+
+                if(ke.getCode() == KeyCode.R){
+                   gameController.newGame();
+                }
+                else{
+                    gameController.notifyEvent(ke);
+                }
 
                 wrapperPane.requestFocus();
             }
@@ -111,7 +113,7 @@ public class ScreenGame extends Screen{
 
         wrapperPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
-                System.out.println("Key Released: " + ke.getCode());
+                //System.out.println("Key Released: " + ke.getCode());
                 gameController.notifyEvent(ke);
 
                 wrapperPane.requestFocus();
@@ -135,10 +137,10 @@ public class ScreenGame extends Screen{
 
                 if(lastArenaW > 0 && lastArenaH > 0){
                     double ratio = arena.getWidth() / lastArenaW;
+                    sprite_ratio = ratio;
                     gameController.resizeGame(ratio);
                 }
 
-                System.out.println(String.format("Arena (%d x %d)", (int)arena.getWidth(), (int)arena.getHeight()));
                 lastArenaW = arena.getWidth();
                 lastArenaH = arena.getHeight();
             }
@@ -185,16 +187,13 @@ public class ScreenGame extends Screen{
     public void update(Game game){
         arena.getChildren().clear();
 
-        double bounding_ratio = game.getBounding_ratio();
-
         // AFFICHAGE DES OBJETS (ROCK, BOX, etc)
         LinkedList<Object> objects_liste = game.getObjects();
         for(int i=0; i < objects.size(); i++){
             Object obj = objects_liste.get(i);
             ObjectView objview = objects.get(i);
 
-            //System.out.println(String.format("%f : %d", sprite_ratio, objview.width()));
-            objview.setSize((int)(objview.width() * sprite_ratio), (int)(objview.height() * sprite_ratio));
+            objview.setSize(objview.width() * sprite_ratio, objview.height() * sprite_ratio);
 
             BoundingBox obj_box = obj.getBounds();
             objview.setLayoutX(obj_box.getMinX()-(objview.width()/2)+(obj_box.getWidth() / 2));
@@ -218,8 +217,7 @@ public class ScreenGame extends Screen{
             playerView.setAnimation(CharacterView.Animations.DEAD, null);
         }
 
-        //System.out.println(String.format("%f : %d", sprite_ratio, playerView.width()));
-        playerView.setSize((int)(playerView.width() * sprite_ratio), (int)(playerView.height() * sprite_ratio));
+        playerView.setSize(playerView.width() * sprite_ratio, playerView.height() * sprite_ratio);
         BoundingBox player_box = player.getBounds();
         playerView.setLayoutX(player_box.getMinX()-(playerView.width()/2)+(player_box.getWidth()/ 2));
         playerView.setLayoutY(player_box.getMinY()-(playerView.height()/2)+(player_box.getHeight()/ 2)-10);
@@ -239,13 +237,13 @@ public class ScreenGame extends Screen{
             BulletView bview = new BulletView(bullet.getDirection());
             BoundingBox bullet_box = bullet.getBounds();
 
-            //System.out.println(String.format("%f : %d", bullet_ratio, bview.width()));
+            //System.out.println(String.format("%f : %f", bullet_ratio, bview.width()));
             //bview.setSize((int)(bview.width() * bullet_ratio), (int)(bview.height() * bullet_ratio));
             if(bullet.getDirection() == Direction.NORTH || bullet.getDirection() == Direction.SOUTH){
-                bview.setSize((int)(bullet_box.getHeight()), (int)(bullet_box.getWidth()));
+                bview.setSize(bullet_box.getHeight(), bullet_box.getWidth());
             }
             else {
-                bview.setSize((int) (bullet_box.getWidth()), (int) (bullet_box.getHeight()));
+                bview.setSize(bullet_box.getWidth(), bullet_box.getHeight());
             }
 
             bview.setLayoutX(bullet_box.getMinX()-(bview.width()/2)+(bullet_box.getWidth() / 2));

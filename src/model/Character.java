@@ -14,13 +14,13 @@ public abstract class Character {
     protected int total_life;
     protected IntegerProperty current_life = new SimpleIntegerProperty(0);
     protected Direction direction = Direction.EAST;
-    protected int SPEED = 5;
+    protected double SPEED = 5;
 
     public void setBounds(BoundingBox bounds){
         this.bounds = bounds;
     }
 
-    public void setSpeed(int speed){
+    public void setSpeed(double speed){
         this.SPEED = speed;
     }
 
@@ -51,7 +51,7 @@ public abstract class Character {
         return this.bounds;
     }
 
-    public int getSpeed() { return this.SPEED; }
+    public double getSpeed() { return this.SPEED; }
 
     public Direction getDirection(){
         return this.direction;

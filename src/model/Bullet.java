@@ -9,7 +9,7 @@ public class Bullet {
 
     private BoundingBox bounds = new BoundingBox(0,0,30,10);
     private Direction direction;
-    private int SPEED = 5;
+    private double SPEED = 15;
 
     public Bullet(){
     }
@@ -30,7 +30,9 @@ public class Bullet {
         return this.direction;
     }
 
-    public int getSpeed(){
+    public double getSpeed(){
         return this.SPEED;
     }
+
+    public void setSpeed(double speed) { this.SPEED = speed; }
 }

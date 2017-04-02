@@ -49,9 +49,6 @@ public class GameController {
         gameView.menubar.getAmmoBar().progressProperty().bind( ((Cowboy)game.getPlayer()).progress_bullets());
 
 
-        System.out.println(String.format("New game (%d x %d) (%d x %d)", (int)gameView.arena.getWidth(), (int)gameView
-                .arena.getHeight(), game.arena_width().intValue(), game.arena_height().intValue()));
-
     }
 
     public void startGame(){
@@ -128,9 +125,6 @@ public class GameController {
                         } catch (Exception e){
                             gameView.displayError(e.toString());
                         }
-                        break;
-                    case R:
-                        newGame();
                         break;
                     default:
                         current_action = null;

@@ -16,7 +16,9 @@ public class Game {
     private LinkedList<Character> vampires;
     private LinkedList<Object> objects;
     private LinkedList<Bullet> bullets;
-    private double bounding_ratio = 1.0;
+
+
+    private Bullet bulletSchema;
 
 
     private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(820);
@@ -32,11 +34,12 @@ public class Game {
         this.bullets = new LinkedList<>();
         this.objects = new LinkedList<>();
         this.generateWorld();
+        this.bulletSchema = new Bullet();
     }
 
     public void generateWorld(){
-        int NB_BOX = 10;
-        int NB_ROCK = 10;
+        int NB_BOX = 4;
+        int NB_ROCK = 6;
         int SIZE_BOX = 70;
         int SIZE_ROCK = 50;
 
@@ -91,7 +94,7 @@ public class Game {
     }
 
     public void movePlayer(){
-        int speed = player.getSpeed();
+        double speed = player.getSpeed();
         Direction dir = player.getDirection();
         BoundingBox old_box = player.getBounds();
         BoundingBox new_box = translateBounds(old_box, dir, speed);
@@ -101,7 +104,7 @@ public class Game {
     public void moveBullets(){
         for(Bullet bullet : this.bullets){
 
-            int speed = bullet.getSpeed();
+            double speed = bullet.getSpeed();
             Direction dir = bullet.getDirection();
             BoundingBox old_box = bullet.getBounds();
             BoundingBox new_box = translateBounds(old_box, dir, speed);
@@ -115,7 +118,7 @@ public class Game {
         }
     }
 
-    public boolean moveObject(Object obj, Direction dir, int value){
+    public boolean moveObject(Object obj, Direction dir, double value){
         if(obj.isMoveable()){
             BoundingBox old_box = obj.getBounds();
             BoundingBox new_box = translateBounds(old_box, dir, value);
@@ -153,33 +156,33 @@ public class Game {
         bullet.setDirection(player.getDirection());
 
         BoundingBox player_box = player.getBounds();
-        BoundingBox old_box = bullet.getBounds();
+        BoundingBox old_box = bulletSchema.getBounds();
         BoundingBox bullet_box = null;
 
         switch (bullet.getDirection()){
 
             case NORTH:
                 bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2), player_box.getMinY(),
-                        old_box.getHeight() * bounding_ratio, old_box.getWidth() * bounding_ratio);
+                        old_box.getHeight(), old_box.getWidth());
                 break;
             case SOUTH:
                 bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
                         player_box.getMinY() + player_box.getHeight(),
-                        old_box.getHeight() * bounding_ratio, old_box.getWidth() * bounding_ratio);
+                        old_box.getHeight(), old_box.getWidth());
                 break;
             case EAST:
                 bullet_box = new BoundingBox(player_box.getMinX() + player_box.getWidth(),
                         player_box.getMinY() + (player_box.getHeight() / 2),
-                        old_box.getWidth() * bounding_ratio, old_box.getHeight() * bounding_ratio);
+                        old_box.getWidth(), old_box.getHeight());
                 break;
             case WEST:
                 bullet_box = new BoundingBox(player_box.getMinX(), player_box.getMinY() + (player_box.getHeight() /
-                        2), old_box.getWidth() * bounding_ratio,
-                        old_box.getHeight() * bounding_ratio);
+                        2), old_box.getWidth(), old_box.getHeight());
                 break;
         }
 
         bullet.setBounds(bullet_box);
+        bullet.setSpeed(bulletSchema.getSpeed());
         this.bullets.add(bullet);
         player.removeBullet();
     }
@@ -213,7 +216,7 @@ public class Game {
 
         if(intersected.size() > 0){
             for(Object obj : intersected){
-                int speed = player.getSpeed();
+                double speed = player.getSpeed();
                 Direction dir = player.getDirection();
 
                 if(!moveObject(obj, dir, speed)){
@@ -235,7 +238,7 @@ public class Game {
         switch (action){
             case MOVE:
 
-                int speed = player.getSpeed();
+                double speed = player.getSpeed();
                 Direction dir = player.getDirection();
                 BoundingBox old_box = player.getBounds();
                 BoundingBox new_box = translateBounds(old_box, dir, speed);
@@ -266,7 +269,7 @@ public class Game {
         }
     }
 
-    public BoundingBox translateBounds(BoundingBox box, Direction dir, int value){
+    public BoundingBox translateBounds(BoundingBox box, Direction dir, double value){
         BoundingBox new_box = null;
         switch (dir){
             case NORTH:
@@ -290,7 +293,7 @@ public class Game {
     }
 
     public void resizeBoundingBox(double ratio){
-        this.bounding_ratio = ratio;
+
         double new_X, new_Y, new_W, new_H;
 
         if(player != null){
@@ -303,6 +306,7 @@ public class Game {
 
             BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
             player.setBounds(new_box);
+            player.setSpeed(player.getSpeed() * ratio);
         }
 
         if(objects != null){
@@ -330,16 +334,15 @@ public class Game {
 
                 BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
                 bullet.setBounds(new_box);
+                bullet.setSpeed(bullet.getSpeed() * ratio);
             }
         }
-    }
 
-    public void setBounding_ratio(double ratio){
-        this.bounding_ratio = ratio;
-    }
 
-    public double getBounding_ratio(){
-        return this.bounding_ratio;
+        // MODIFICATION DU SCHEMA DE LA BALLE
+        this.bulletSchema.setBounds(new BoundingBox(0,0,
+                bulletSchema.getBounds().getWidth() * ratio, bulletSchema.getBounds().getHeight() * ratio));
+        this.bulletSchema.setSpeed(bulletSchema.getSpeed() * ratio);
     }
 
     public Character getPlayer(){

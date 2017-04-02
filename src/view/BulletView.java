@@ -13,8 +13,8 @@ public class BulletView extends StackPane{
     private static final Image SPRITE_BULLET = new Image("images/bullet.png");
     private ImageView sprite;
 
-    private int SIZE_W = 30;
-    private int SIZE_H = 10;
+    private double SIZE_W = 30;
+    private double SIZE_H = 10;
     private Direction direction;
 
     public BulletView(Direction dir){
@@ -42,7 +42,7 @@ public class BulletView extends StackPane{
         this.getChildren().addAll(sprite);
     }
 
-    public void setSize(int w, int h){
+    public void setSize(double w, double h){
         this.SIZE_W = w;
         this.SIZE_H = h;
 
@@ -56,11 +56,11 @@ public class BulletView extends StackPane{
         }
     }
 
-    public int width(){
+    public double width(){
         return this.SIZE_W;
     }
 
-    public int height(){
+    public double height(){
         return this.SIZE_H;
     }
 

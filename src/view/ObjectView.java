@@ -8,11 +8,11 @@ import javafx.scene.layout.StackPane;
  */
 public abstract class ObjectView extends StackPane {
 
-    protected int SIZE_W = 128;
-    protected int SIZE_H = 128;
+    protected double SIZE_W = 128;
+    protected double SIZE_H = 128;
     protected ImageView sprite;
 
-    public void setSize(int w, int h){
+    public void setSize(double w, double h){
         SIZE_W = w;
         SIZE_H = h;
 
@@ -26,11 +26,11 @@ public abstract class ObjectView extends StackPane {
         }
     }
 
-    public int width(){
+    public double width(){
         return this.SIZE_W;
     }
 
-    public int height(){
+    public double height(){
         return this.SIZE_W;
     }
 
