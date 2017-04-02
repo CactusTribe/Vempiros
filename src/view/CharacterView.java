@@ -13,6 +13,7 @@ public abstract class CharacterView extends StackPane{
     protected ImageViewAnimation current_image;
     protected double SIZE_W = 128;
     protected double SIZE_H = 128;
+    protected Direction direction;
 
     public enum Animations {
         WALK,
@@ -34,12 +35,12 @@ public abstract class CharacterView extends StackPane{
         this.SIZE_H = h;
 
         if(current_image != null){
-            this.getChildren().clear();
+            //this.getChildren().clear();
 
             current_image.setFitWidth(SIZE_W);
             current_image.setFitHeight(SIZE_H);
 
-            this.getChildren().add(current_image);
+            //this.getChildren().add(current_image);
         }
     }
 

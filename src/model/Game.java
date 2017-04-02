@@ -13,7 +13,7 @@ import java.util.Random;
 public class Game {
 
     private Cowboy player;
-    private LinkedList<Character> vampires;
+    private LinkedList<Vampire> vampires;
     private LinkedList<Object> objects;
     private LinkedList<Bullet> bullets;
 
@@ -33,6 +33,7 @@ public class Game {
         this.player = new Cowboy(3);
         this.bullets = new LinkedList<>();
         this.objects = new LinkedList<>();
+        this.vampires = new LinkedList<>();
         this.generateWorld();
         this.bulletSchema = new Bullet();
     }
@@ -40,8 +41,13 @@ public class Game {
     public void generateWorld(){
         int NB_BOX = 4;
         int NB_ROCK = 6;
+        int NB_VAMP = 1;
+
         int SIZE_BOX = 70;
         int SIZE_ROCK = 50;
+
+        int SIZE_VAMP_W = 50;
+        int SIZE_VAMP_H = 80;
 
         Random rand = new Random();
 
@@ -77,6 +83,23 @@ public class Game {
             Box b = new Box();
             b.setBounds(box);
             objects.add(b);
+        }
+
+        // VAMP
+        for(int i=0; i < NB_VAMP; i++){
+            int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_VAMP_W);
+            int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_VAMP_H);
+            BoundingBox box = null;
+
+            do{
+                int x = rand.nextInt(MAX_X);
+                int y = rand.nextInt(MAX_Y);
+                box = new BoundingBox(x, y, SIZE_VAMP_W, SIZE_VAMP_H);
+            }while(intersectObject(box));
+
+            Vampire v = new Vampire();
+            v.setBounds(box);
+            vampires.add(v);
         }
 
 
@@ -115,6 +138,53 @@ public class Game {
                 bullets.remove(bullet);
                 break;
             }
+        }
+    }
+
+    public void moveVampires(){
+        for(Vampire vampire : this.vampires){
+
+            Random rand = new Random();
+            boolean intersect_object = false;
+
+            double speed = vampire.getSpeed();
+            Direction dir = vampire.getDirection();
+            BoundingBox old_box = vampire.getBounds();
+            BoundingBox new_box = translateBounds(old_box, dir, speed);
+
+
+            if(!outOfArena(new_box)){
+                for(Object cur_obj : objects){
+                    if(new_box.intersects(cur_obj.getBounds())){
+                        intersect_object = true;
+                        break;
+                    }
+                }
+            }else{
+                intersect_object = true;
+            }
+
+            while(intersect_object){
+
+                intersect_object = false;
+                int random_dir = rand.nextInt(4);
+                dir = Direction.values()[random_dir];
+                new_box = translateBounds(old_box, dir, speed);
+
+                if(!outOfArena(new_box)){
+                    for(Object cur_obj : objects){
+                        if(new_box.intersects(cur_obj.getBounds())){
+                            intersect_object = true;
+                            break;
+                        }
+                    }
+                }else{
+                    intersect_object = true;
+                }
+            }
+
+            vampire.setBounds(new_box);
+            vampire.setDirection(dir);
         }
     }
 
@@ -323,6 +393,21 @@ public class Game {
             }
         }
 
+        if(vampires != null){
+            for(Vampire vamp : this.vampires){
+                BoundingBox old_box = vamp.getBounds();
+
+                new_X = old_box.getMinX() * ratio;
+                new_Y = old_box.getMinY() * ratio;
+                new_W = old_box.getWidth() * ratio;
+                new_H = old_box.getHeight() * ratio;
+
+                BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
+                vamp.setBounds(new_box);
+                vamp.setSpeed(vamp.getSpeed() * ratio);
+            }
+        }
+
         if(bullets != null){
             for(Bullet bullet : this.bullets){
                 BoundingBox old_box = bullet.getBounds();
@@ -355,6 +440,10 @@ public class Game {
 
     public LinkedList<Object> getObjects(){
         return this.objects;
+    }
+
+    public LinkedList<Vampire> getVampires(){
+        return this.vampires;
     }
 
     public DoubleProperty arena_width(){

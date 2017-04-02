@@ -77,6 +77,7 @@ public class GameController {
                 }
 
                 game.moveBullets();
+                game.moveVampires();
                 //---------------------------------------------
 
 
@@ -117,76 +118,76 @@ public class GameController {
     public void notifyEvent(KeyEvent ke){
         Character player = game.getPlayer();
 
-        if(!paused && ke.getEventType() == KeyEvent.KEY_PRESSED){
+        if(player.isAlive()){
 
-            if(last_pressed_key == null || last_pressed_key.getCode() != ke.getCode()){
+            if(!paused && ke.getEventType() == KeyEvent.KEY_PRESSED){
+                if(last_pressed_key == null || last_pressed_key.getCode() != ke.getCode()){
 
-                // Choix de l'action en fonction de la touche
-                switch (ke.getCode()){
-                    case Z:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.NORTH);
-                        break;
-                    case S:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.SOUTH);
-                        break;
-                    case Q:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.WEST);
-                        break;
-                    case D:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.EAST);
-                        break;
-                    case SPACE:
-                        current_action = ActionType.SHOOT;
-                        try {
-                            game.apply(current_action);
-                        } catch (Exception e){
-                            gameView.displayError(e.toString());
-                        }
-                        break;
-                    default:
-                        current_action = null;
-                        break;
-                }
-
-                // Gestion de l'annimation de l'action en cours
-                if(current_action != null){
-                    switch (current_action){
-                        case MOVE:
-                            gameView.playerView.setAnimation(CharacterView.Animations.WALK, player.getDirection());
-                            gameView.playerView.startAnimation();
-                            walking = true;
+                    // Choix de l'action en fonction de la touche
+                    switch (ke.getCode()){
+                        case Z:
+                            current_action = ActionType.MOVE;
+                            player.setDirection(Direction.NORTH);
                             break;
-                        case SHOOT:
+                        case S:
+                            current_action = ActionType.MOVE;
+                            player.setDirection(Direction.SOUTH);
+                            break;
+                        case Q:
+                            current_action = ActionType.MOVE;
+                            player.setDirection(Direction.WEST);
+                            break;
+                        case D:
+                            current_action = ActionType.MOVE;
+                            player.setDirection(Direction.EAST);
+                            break;
+                        case SPACE:
+                            current_action = ActionType.SHOOT;
+                            try {
+                                game.apply(current_action);
+                            } catch (Exception e){
+                                gameView.displayError(e.toString());
+                            }
+                            break;
+                        default:
+                            current_action = null;
                             break;
                     }
-                    last_pressed_key = ke;
-                }
-                else{
-                    walking = false;
-                    last_pressed_key = null;
+
+                    // Gestion de l'annimation de l'action en cours
+                    if(current_action != null){
+                        switch (current_action){
+                            case MOVE:
+                                gameView.playerView.setAnimation(CharacterView.Animations.WALK, player.getDirection());
+                                gameView.playerView.startAnimation();
+                                walking = true;
+                                break;
+                            case SHOOT:
+                                break;
+                        }
+                        last_pressed_key = ke;
+                    }
+                    else{
+                        walking = false;
+                        last_pressed_key = null;
+                    }
+
                 }
 
             }
-
-        }
-        else if(ke.getEventType() == KeyEvent.KEY_RELEASED){
-
-
-            if(ke.getCode() != KeyCode.SPACE){
-                if(last_pressed_key == null || last_pressed_key.getCode() == ke.getCode() || last_pressed_key.getCode
-                        () == KeyCode.SPACE) {
-                    gameView.playerView.setAnimation(CharacterView.Animations.IDLE, player.getDirection());
-                    walking = false;
+            else if(ke.getEventType() == KeyEvent.KEY_RELEASED){
+                if(ke.getCode() != KeyCode.SPACE){
+                    if(last_pressed_key == null || last_pressed_key.getCode() == ke.getCode() || last_pressed_key.getCode
+                            () == KeyCode.SPACE) {
+                        gameView.playerView.setAnimation(CharacterView.Animations.IDLE, player.getDirection());
+                        walking = false;
+                    }
                 }
+                last_pressed_key = null;
+                current_action = null;
             }
-
-            last_pressed_key = null;
-            current_action = null;
         }
+
     }
 
 

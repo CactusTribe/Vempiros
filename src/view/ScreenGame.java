@@ -32,8 +32,8 @@ public class ScreenGame extends Screen{
     public Pane arena;
 
     public CharacterView playerView;
+    private LinkedList<VampireView> vampires;
     private LinkedList<ObjectView> objects;
-    private LinkedList<BulletView> bullets;
 
     public boolean debug = true;
     private boolean paused = true;
@@ -90,7 +90,6 @@ public class ScreenGame extends Screen{
                         menubar.setPaused(true);
                         gameController.pauseGame();
                     }
-
                     wrapperPane.requestFocus();
                 }
         );
@@ -169,7 +168,7 @@ public class ScreenGame extends Screen{
         playerView = new CowboyView();
         playerView.setFocusTraversable(true);
         objects = new LinkedList<>();
-        bullets = new LinkedList<>();
+        vampires = new LinkedList<>();
 
         LinkedList<Object> objects_liste = game.getObjects();
         for(Object obj : objects_liste) {
@@ -181,6 +180,11 @@ public class ScreenGame extends Screen{
                 objview = new BoxView();
             }
             objects.add(objview);
+        }
+
+        LinkedList<Vampire> vampires_liste = game.getVampires();
+        for(Vampire vamp : vampires_liste) {
+            vampires.add(new VampireView());
         }
     }
 
@@ -211,16 +215,38 @@ public class ScreenGame extends Screen{
         }
         // ----------------------------------------------------------------------------
 
+        // AFFICHAGE DES VAMPIRES
+        LinkedList<Vampire> vampires_liste = game.getVampires();
+        for(int i=0; i < vampires.size(); i++){
+            Vampire vamp = vampires_liste.get(i);
+            VampireView vampview = vampires.get(i);
+
+            vampview.setAnimation(CharacterView.Animations.WALK, vamp.getDirection());
+            vampview.setSize(vampview.width() * sprite_ratio, vampview.height() * sprite_ratio);
+
+            BoundingBox obj_box = vamp.getBounds();
+            vampview.setLayoutX(obj_box.getMinX()-(vampview.width()/2)+(obj_box.getWidth() / 2));
+            vampview.setLayoutY(obj_box.getMinY()-(vampview.height()/2)+(obj_box.getHeight() / 2));
+            arena.getChildren().add(vampview);
+
+            if(debug) {
+                showCollisionBox(vamp.getBounds(), Color.PURPLE);
+            }
+        }
+        // ----------------------------------------------------------------------------
+
         // AFFICHAGE DU JOUEUR
         Character player = game.getPlayer();
-        if(!player.isAlive()){
-            playerView.setAnimation(CharacterView.Animations.DEAD, null);
-        }
 
         playerView.setSize(playerView.width() * sprite_ratio, playerView.height() * sprite_ratio);
         BoundingBox player_box = player.getBounds();
         playerView.setLayoutX(player_box.getMinX()-(playerView.width()/2)+(player_box.getWidth()/ 2));
         playerView.setLayoutY(player_box.getMinY()-(playerView.height()/2)+(player_box.getHeight()/ 2)-10);
+        arena.getChildren().add(playerView);
+
+        if(!player.isAlive()){
+            playerView.setAnimation(CharacterView.Animations.DEAD, null);
+        }
 
         if(debug){
             showCollisionBox(player.getBounds(), Color.BLUE);
@@ -255,7 +281,6 @@ public class ScreenGame extends Screen{
             }
         }
 
-        arena.getChildren().add(playerView);
         sprite_ratio = 1.0;
 
     }
