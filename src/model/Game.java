@@ -67,7 +67,7 @@ public class Game {
         for(int i=0; i < NB_ROCK; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_ROCK);
             int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_ROCK);
-            BoundingBox box = null;
+            BoundingBox box;
 
             do{
                 int x = rand.nextInt(MAX_X);
@@ -84,7 +84,7 @@ public class Game {
         for(int i=0; i < NB_BOX; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_BOX);
             int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_BOX);
-            BoundingBox box = null;
+            BoundingBox box;
 
             do{
                 int x = rand.nextInt(MAX_X);
@@ -101,7 +101,7 @@ public class Game {
         for(int i=0; i < NB_VAMP; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - SIZE_VAMP_W);
             int MAX_Y = (int)(ARENA_HEIGHT.getValue() - SIZE_VAMP_H);
-            BoundingBox box = null;
+            BoundingBox box;
 
             do{
                 int x = rand.nextInt(MAX_X);
@@ -118,12 +118,13 @@ public class Game {
         // PLAYER
         int MAX_X = (int)(ARENA_WIDTH.getValue() - 50);
         int MAX_Y = (int)(ARENA_HEIGHT.getValue() - 100);
-        BoundingBox box_player = null;
+        BoundingBox box_player;
+
         do{
             int x = rand.nextInt(MAX_X);
             int y = rand.nextInt(MAX_Y);
             box_player = new BoundingBox(x, y, 50, 100);
-        }while(intersectObject(box_player));
+        }while(intersectObject(box_player) || intersectVampires(box_player));
 
         this.player.setBounds(box_player);
     }
@@ -171,23 +172,14 @@ public class Game {
             BoundingBox new_box = translateBounds(old_box, dir, speed);
 
 
-            if(!outOfArena(new_box)){
-                for(Object cur_obj : objects){
-                    if(new_box.intersects(cur_obj.getBounds())){
-                        intersect_object = true;
-                        possible_dir.remove(dir);
-                        break;
-                    }
-                }
-
-                if(new_box.intersects(player.getBounds())){
-                    intersect_object = true;
-                    possible_dir.remove(dir);
-                    player.removeLife(1);
-                }
-            }else{
+            if(outOfArena(new_box) || intersectObject(new_box)){
                 intersect_object = true;
                 possible_dir.remove(dir);
+
+            }else if(new_box.intersects(player.getBounds())){
+                intersect_object = true;
+                possible_dir.remove(dir);
+                player.removeLife(1);
             }
 
             while(intersect_object){
@@ -197,16 +189,7 @@ public class Game {
                 dir = possible_dir.get(random_dir);
                 new_box = translateBounds(old_box, dir, speed);
 
-                if(!outOfArena(new_box)){
-                    for(Object cur_obj : objects){
-                        if(new_box.intersects(cur_obj.getBounds())){
-                            intersect_object = true;
-                            possible_dir.remove(dir);
-                            break;
-                        }
-                    }
-
-                }else{
+                if(outOfArena(new_box) || intersectObject(new_box)){
                     intersect_object = true;
                     possible_dir.remove(dir);
                 }
@@ -249,8 +232,8 @@ public class Game {
         }
 
         for(Vampire vamp : vampires){
-            BoundingBox objet_box = vamp.getBounds();
-            if(bullet_box.intersects(objet_box)){
+            BoundingBox vamp_box = vamp.getBounds();
+            if(bullet_box.intersects(vamp_box)){
                 vampires.remove(vamp);
                 ALIVE_VAMP.set(ALIVE_VAMP.getValue() - 1);
                 DEAD_VAMP.set(DEAD_VAMP.getValue() + 1);
@@ -302,13 +285,18 @@ public class Game {
         return !arena.contains(box);
     }
 
+    public boolean intersectVampires(BoundingBox box){
+        for(Vampire vamp : vampires){
+            BoundingBox vamp_box = vamp.getBounds();
+            if(box.intersects(vamp_box)){ return true; }
+        }
+        return false;
+    }
+
     public boolean intersectObject(BoundingBox box){
         for(Object obj : objects){
             BoundingBox objet_box = obj.getBounds();
-
-            if(box.intersects(objet_box)){
-                return true;
-            }
+            if(box.intersects(objet_box)){ return true; }
         }
         return false;
     }
