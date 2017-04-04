@@ -5,6 +5,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
+import model.entities.*;
+import sun.awt.image.ImageWatched;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -14,10 +16,9 @@ import java.util.Random;
  */
 public class Game {
 
-    private Cowboy player;
-    private LinkedList<Vampire> vampires;
-    private LinkedList<Object> objects;
-    private LinkedList<Bullet> bullets;
+    private Player player;
+    private LinkedList<Entity> entities;
+    private LinkedList<Entity> removed_entities;
 
     private Bullet bulletSchema;
 
@@ -37,11 +38,11 @@ public class Game {
     }
 
     public void init(){
-        this.player = new Cowboy(3);
-        this.bullets = new LinkedList<>();
-        this.objects = new LinkedList<>();
-        this.vampires = new LinkedList<>();
-        this.bulletSchema = new Bullet();
+        this.player = new Player(3, 10);
+        this.removed_entities = new LinkedList<>();
+        this.entities = new LinkedList<>();
+        this.bulletSchema = new Bullet(Direction.EAST);
+        this.bulletSchema.setBounds(new BoundingBox(0,0,30,10));
 
         this.NB_VAMP = 4;
         this.NB_ROCK = 6;
@@ -77,7 +78,8 @@ public class Game {
 
             Rock rock = new Rock();
             rock.setBounds(box);
-            objects.add(rock);
+            rock.setGame(this);
+            entities.add(rock);
         }
 
         // BOX
@@ -94,7 +96,8 @@ public class Game {
 
             Box b = new Box();
             b.setBounds(box);
-            objects.add(b);
+            b.setGame(this);
+            entities.add(b);
         }
 
         // VAMP
@@ -111,7 +114,8 @@ public class Game {
 
             Vampire v = new Vampire();
             v.setBounds(box);
-            vampires.add(v);
+            v.setGame(this);
+            entities.add(v);
         }
 
 
@@ -127,242 +131,162 @@ public class Game {
         }while(intersectObject(box_player) || intersectVampires(box_player));
 
         this.player.setBounds(box_player);
+        this.player.setGame(this);
     }
 
-    public void movePlayer(){
-        double speed = player.getSpeed();
-        Direction dir = player.getDirection();
-        BoundingBox old_box = player.getBounds();
-        BoundingBox new_box = translateBounds(old_box, dir, speed);
-        player.setBounds(new_box);
-    }
+    public void moveEntities(){
+        for(Entity entity : entities){
 
-    public void moveBullets(){
-        for(Bullet bullet : this.bullets){
+            if(entity instanceof Bullet){
+                Bullet bullet = (Bullet)entity;
+                BoundingBox new_box = translateBounds(bullet.getBounds(), bullet.getDirection(), bullet.getSpeed());
 
-            double speed = bullet.getSpeed();
-            Direction dir = bullet.getDirection();
-            BoundingBox old_box = bullet.getBounds();
-            BoundingBox new_box = translateBounds(old_box, dir, speed);
+                if(outOfArena(new_box)){
+                    this.removed_entities.add(entity);
+                }
+                else{
+                    bullet.move(bullet.getSpeed());
+                    objectCollision(entity);
+                }
 
-            bullet.setBounds(new_box);
-
-            if(bulletCollision(bullet)){
-                bullets.remove(bullet);
-                break;
             }
+        }
+
+        for(Entity entity : removed_entities){
+            entities.remove(entity);
         }
     }
 
+    /*
     public void moveVampires(){
-        for(Vampire vampire : this.vampires){
+        for(Entity entity : this.entities){
 
-            Random rand = new Random();
-            boolean intersect_object = false;
+            if(entity instanceof Vampire){
+                Vampire vampire = (Vampire)entity;
 
-            LinkedList<Direction> possible_dir = new LinkedList<>();
-            possible_dir.add(Direction.NORTH);
-            possible_dir.add(Direction.SOUTH);
-            possible_dir.add(Direction.EAST);
-            possible_dir.add(Direction.WEST);
+                Random rand = new Random();
+                boolean intersect_object = false;
 
-            double speed = vampire.getSpeed();
-            Direction dir = vampire.getDirection();
-            BoundingBox old_box = vampire.getBounds();
-            BoundingBox new_box = translateBounds(old_box, dir, speed);
+                LinkedList<Direction> possible_dir = new LinkedList<>();
+                possible_dir.add(Direction.NORTH);
+                possible_dir.add(Direction.SOUTH);
+                possible_dir.add(Direction.EAST);
+                possible_dir.add(Direction.WEST);
 
-
-            if(outOfArena(new_box) || intersectObject(new_box)){
-                intersect_object = true;
-                possible_dir.remove(dir);
-
-            }else if(new_box.intersects(player.getBounds())){
-                intersect_object = true;
-                possible_dir.remove(dir);
-                player.removeLife(1);
-            }
-
-            while(intersect_object){
-
-                intersect_object = false;
-                int random_dir = rand.nextInt(possible_dir.size());
-                dir = possible_dir.get(random_dir);
-                new_box = translateBounds(old_box, dir, speed);
+                double speed = vampire.getSpeed();
+                Direction dir = vampire.getDirection();
+                BoundingBox old_box = vampire.getBounds();
+                BoundingBox new_box = translateBounds(old_box, dir, speed);
 
                 if(outOfArena(new_box) || intersectObject(new_box)){
                     intersect_object = true;
                     possible_dir.remove(dir);
+
+                }else if(new_box.intersects(player.getBounds())){
+                    intersect_object = true;
+                    possible_dir.remove(dir);
+                    player.removeLife(1);
                 }
-            }
 
-            vampire.setBounds(new_box);
-            vampire.setDirection(dir);
-        }
-    }
+                while(intersect_object){
 
-    public boolean moveObject(Object obj, Direction dir, double value){
-        if(obj.isMoveable()){
-            BoundingBox old_box = obj.getBounds();
-            BoundingBox new_box = translateBounds(old_box, dir, value);
+                    intersect_object = false;
+                    int random_dir = rand.nextInt(possible_dir.size());
+                    dir = possible_dir.get(random_dir);
+                    new_box = translateBounds(old_box, dir, speed);
 
-            if(!outOfArena(new_box)){
-                for(Object cur_obj : objects){
-                    if(cur_obj != obj && new_box.intersects(cur_obj.getBounds())){
-                        return false;
+                    if(outOfArena(new_box) || intersectObject(new_box)){
+                        intersect_object = true;
+                        possible_dir.remove(dir);
                     }
                 }
-                obj.setBounds(new_box);
-                return true;
-            }
-            else { return false; }
-        }
-        else { return false; }
-    }
 
-    public boolean bulletCollision(Bullet bullet){
-        BoundingBox bullet_box = bullet.getBounds();
-
-        if(outOfArena(bullet_box)) { return true; }
-
-        for(Object obj : objects){
-            BoundingBox objet_box = obj.getBounds();
-            if(bullet_box.intersects(objet_box)){
-                return true;
+                vampire.setBounds(new_box);
+                vampire.setDirection(dir);
             }
         }
-
-        for(Vampire vamp : vampires){
-            BoundingBox vamp_box = vamp.getBounds();
-            if(bullet_box.intersects(vamp_box)){
-                vampires.remove(vamp);
-                ALIVE_VAMP.set(ALIVE_VAMP.getValue() - 1);
-                DEAD_VAMP.set(DEAD_VAMP.getValue() + 1);
-                return true;
-            }
-        }
-
-        return false;
     }
+*/
 
-    public void shoot(){
-        Bullet bullet = new Bullet();
-        bullet.setDirection(player.getDirection());
-
-        BoundingBox player_box = player.getBounds();
-        BoundingBox old_box = bulletSchema.getBounds();
-        BoundingBox bullet_box = null;
-
-        switch (bullet.getDirection()){
-
-            case NORTH:
-                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2), player_box.getMinY(),
-                        old_box.getHeight(), old_box.getWidth());
-                break;
-            case SOUTH:
-                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
-                        player_box.getMinY() + player_box.getHeight(),
-                        old_box.getHeight(), old_box.getWidth());
-                break;
-            case EAST:
-                bullet_box = new BoundingBox(player_box.getMinX() + player_box.getWidth(),
-                        player_box.getMinY() + (player_box.getHeight() / 2),
-                        old_box.getWidth(), old_box.getHeight());
-                break;
-            case WEST:
-                bullet_box = new BoundingBox(player_box.getMinX(), player_box.getMinY() + (player_box.getHeight() /
-                        2), old_box.getWidth(), old_box.getHeight());
-                break;
-        }
-
-        bullet.setBounds(bullet_box);
-        bullet.setSpeed(bulletSchema.getSpeed());
-        this.bullets.add(bullet);
-        player.removeBullet();
-    }
-
-    public boolean outOfArena(BoundingBox box){
-        BoundingBox arena = new BoundingBox(0, 0, ARENA_WIDTH.getValue(), ARENA_HEIGHT.getValue());
-        return !arena.contains(box);
-    }
 
     public boolean intersectVampires(BoundingBox box){
-        for(Vampire vamp : vampires){
-            BoundingBox vamp_box = vamp.getBounds();
+        for(Entity entity : entities){
+            BoundingBox vamp_box = entity.getBounds();
             if(box.intersects(vamp_box)){ return true; }
         }
         return false;
     }
 
     public boolean intersectObject(BoundingBox box){
-        for(Object obj : objects){
-            BoundingBox objet_box = obj.getBounds();
+        for(Entity entity : entities){
+            BoundingBox objet_box = entity.getBounds();
             if(box.intersects(objet_box)){ return true; }
         }
         return false;
     }
 
-    public boolean objectCollision(BoundingBox box){
-        LinkedList<Object> intersected = new LinkedList<>();
 
-        for(Object obj : objects){
-            BoundingBox objet_box = obj.getBounds();
+    public void objectCollision(Entity current){
+        for(Entity entity : entities){
+            if(entity != current){
 
-            if(box.intersects(objet_box)){
-                intersected.add(obj);
-            }
-        }
-
-        if(intersected.size() > 0){
-            for(Object obj : intersected){
-                double speed = player.getSpeed();
-                Direction dir = player.getDirection();
-
-                if(!moveObject(obj, dir, speed)){
-                    return true;
+                if(current.collidesWith(entity)){
+                    if(entity instanceof MoveableEntity && current instanceof MoveableEntity){
+                        if(((MoveableEntity) entity).canMovedBy(current)){
+                            ((MoveableEntity)entity).setDirection(((MoveableEntity)current).getDirection());
+                            ((MoveableEntity)entity).move(((MoveableEntity)current).getSpeed());
+                        }
+                    }
+                    entity.collidedBy(current);
                 }
             }
         }
-        else{ return false; }
-        return false;
     }
 
+    public LinkedList<Entity> collidedEntities(BoundingBox box){
+        LinkedList<Entity> collided = new LinkedList<>();
 
-    public boolean isPossible(ActionType action){
-        boolean isPossible = true;
-
-        if(!player.isAlive())
-            return false;
-
-        switch (action){
-            case MOVE:
-
-                double speed = player.getSpeed();
-                Direction dir = player.getDirection();
-                BoundingBox old_box = player.getBounds();
-                BoundingBox new_box = translateBounds(old_box, dir, speed);
-
-                isPossible = !outOfArena(new_box) && !objectCollision(new_box);
-
-                break;
-            case SHOOT:
-                    isPossible = (player.current_bullets().getValue() > 0);
-                break;
+        for(Entity entity : entities){
+            if(box.intersects(entity.getBounds())){
+                collided.add(entity);
+            }
         }
-        return isPossible;
+        return collided;
     }
+
+
+    public boolean outOfArena(BoundingBox box){
+        BoundingBox arena = new BoundingBox(0, 0, ARENA_WIDTH.getValue(), ARENA_HEIGHT.getValue());
+        return !arena.contains(box);
+    }
+
 
     public void apply(ActionType action) throws Exception{
 
+        if(!player.isAlive())
+            throw new Exception("Vous êtes mort.");
+
         switch (action){
+
             case MOVE:
-                if(isPossible(action))
-                    movePlayer();
-                else throw new Exception("Mouvement impossible.");
+
+                if(player.canMovedTo(player.getSpeed(), player.getDirection())){
+                    player.move(player.getSpeed());
+                    objectCollision(player);
+                }
+                else{
+                    throw new Exception("Mouvement impossible.");
+                }
+
                 break;
+
             case SHOOT:
-                if(isPossible(action))
-                    shoot();
-                else throw new Exception("Pas assez de munitions.");
+                if(player.current_bullets().getValue() > 0) {
+                    player.shoot();
+                }
+                else {
+                    throw new Exception("Pas assez de munitions.");
+                }
                 break;
         }
     }
@@ -391,7 +315,6 @@ public class Game {
     }
 
     public void resizeBoundingBox(double ratio){
-
         double new_X, new_Y, new_W, new_H;
 
         if(player != null){
@@ -407,9 +330,9 @@ public class Game {
             player.setSpeed(player.getSpeed() * ratio);
         }
 
-        if(objects != null){
-            for(Object obj : this.objects){
-                BoundingBox old_box = obj.getBounds();
+        if(entities != null){
+            for(Entity entity : this.entities){
+                BoundingBox old_box = entity.getBounds();
 
                 new_X = old_box.getMinX() * ratio;
                 new_Y = old_box.getMinY() * ratio;
@@ -417,40 +340,13 @@ public class Game {
                 new_H = old_box.getHeight() * ratio;
 
                 BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
-                obj.setBounds(new_box);
+                entity.setBounds(new_box);
+
+                if(entity instanceof MoveableEntity){
+                    ((MoveableEntity)entity).setSpeed(((MoveableEntity)entity).getSpeed() * ratio);
+                }
             }
         }
-
-        if(vampires != null){
-            for(Vampire vamp : this.vampires){
-                BoundingBox old_box = vamp.getBounds();
-
-                new_X = old_box.getMinX() * ratio;
-                new_Y = old_box.getMinY() * ratio;
-                new_W = old_box.getWidth() * ratio;
-                new_H = old_box.getHeight() * ratio;
-
-                BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
-                vamp.setBounds(new_box);
-                vamp.setSpeed(vamp.getSpeed() * ratio);
-            }
-        }
-
-        if(bullets != null){
-            for(Bullet bullet : this.bullets){
-                BoundingBox old_box = bullet.getBounds();
-
-                new_X = old_box.getMinX() * ratio;
-                new_Y = old_box.getMinY() * ratio;
-                new_W = old_box.getWidth() * ratio;
-                new_H = old_box.getHeight() * ratio;
-
-                BoundingBox new_box = new BoundingBox(new_X, new_Y, new_W, new_H);
-                bullet.setBounds(new_box);
-                bullet.setSpeed(bullet.getSpeed() * ratio);
-            }
-        }
-
 
         // MODIFICATION DU SCHEMA DE LA BALLE
         this.bulletSchema.setBounds(new BoundingBox(0,0,
@@ -458,20 +354,16 @@ public class Game {
         this.bulletSchema.setSpeed(bulletSchema.getSpeed() * ratio);
     }
 
-    public Character getPlayer(){
+    public Player getPlayer(){
         return this.player;
     }
 
-    public LinkedList<Bullet> getBullets(){
-        return this.bullets;
+    public LinkedList<Entity> getRemovedEntities(){
+        return this.removed_entities;
     }
 
-    public LinkedList<Object> getObjects(){
-        return this.objects;
-    }
-
-    public LinkedList<Vampire> getVampires(){
-        return this.vampires;
+    public LinkedList<Entity> getEntities(){
+        return this.entities;
     }
 
     public DoubleProperty arena_width(){
@@ -488,6 +380,10 @@ public class Game {
 
     public IntegerProperty dead_vamp(){
         return this.DEAD_VAMP;
+    }
+
+    public Bullet getBulletSchema(){
+        return this.bulletSchema;
     }
 
 }

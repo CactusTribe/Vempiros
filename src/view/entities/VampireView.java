@@ -1,4 +1,4 @@
-package view;
+package view.entities;
 
 import javafx.scene.image.Image;
 import model.Direction;
@@ -7,7 +7,7 @@ import view.graphical.ImageViewAnimation;
 /**
  * Created by cactustribe on 02/04/17.
  */
-public class VampireView extends CharacterView{
+public class VampireView extends AnimatedView{
 
     private static final Image SPRITE_VAMP = new Image("images/vampire_M.png");
     private static final Image RIP_VAMP = new Image("images/rip.png");
@@ -41,36 +41,32 @@ public class VampireView extends CharacterView{
 
             this.getChildren().clear();
 
-            if(current_image != null)
-                current_image.stop();
+            if(sprite != null)
+                ((ImageViewAnimation)sprite).stop();
 
             switch (anim){
                 case WALK:
                     if(dir == Direction.NORTH){
-                        current_image = WALK_NORTH;
+                        sprite = WALK_NORTH;
                     }
                     else if(dir == Direction.SOUTH){
-                        current_image = WALK_SOUTH;
+                        sprite = WALK_SOUTH;
                     }
                     else if(dir == Direction.EAST){
-                        current_image = WALK_EAST;
+                        sprite = WALK_EAST;
                     }
                     else if(dir == Direction.WEST){
-                        current_image = WALK_WEST;
+                        sprite = WALK_WEST;
                     }
                     break;
                 case ATTACK:
                     break;
                 case DEAD:
-                    current_image = DEAD;
+                    sprite = DEAD;
                     break;
             }
 
-            current_image.setFitWidth(SIZE_W);
-            current_image.setFitHeight(SIZE_H);
-
-            this.getChildren().addAll(current_image);
-
+            this.getChildren().addAll(sprite);
             this.startAnimation();
         }
         this.direction = dir;

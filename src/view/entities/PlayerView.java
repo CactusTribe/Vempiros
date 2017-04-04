@@ -1,4 +1,4 @@
-package view;
+package view.entities;
 
 import javafx.scene.image.Image;
 import model.Direction;
@@ -7,7 +7,7 @@ import view.graphical.ImageViewAnimation;
 /**
  * Created by cactustribe on 20/03/17.
  */
-public class CowboyView extends CharacterView{
+public class PlayerView extends AnimatedView{
 
     private static final Image SPRITE_COWBOY = new Image("images/cowboy.png");
     private static final Image RIP_COWBOY = new Image("images/rip.png");
@@ -44,57 +44,55 @@ public class CowboyView extends CharacterView{
 
 
 
-    public CowboyView(){
+    public PlayerView(){
         this.setAnimation(Animations.IDLE, Direction.EAST);
+        this.setSize(128,128);
     }
 
 
     public void setAnimation(Animations anim, Direction dir){
         this.getChildren().clear();
 
-        if(current_image != null)
-            current_image.stop();
+        if(sprite != null)
+            ((ImageViewAnimation)sprite).stop();
 
         switch (anim){
             case WALK:
                 if(dir == Direction.NORTH){
-                    current_image = WALK_NORTH;
+                    sprite = WALK_NORTH;
                 }
                 else if(dir == Direction.SOUTH){
-                    current_image = WALK_SOUTH;
+                    sprite = WALK_SOUTH;
                 }
                 else if(dir == Direction.EAST){
-                    current_image = WALK_EAST;
+                    sprite = WALK_EAST;
                 }
                 else if(dir == Direction.WEST){
-                    current_image = WALK_WEST;
+                    sprite = WALK_WEST;
                 }
                 break;
             case ATTACK:
                 break;
             case DEAD:
-                current_image = DEAD;
+                sprite = DEAD;
                 break;
             case IDLE:
                 if(dir == Direction.NORTH){
-                    current_image = IDLE_NORTH;
+                    sprite = IDLE_NORTH;
                 }
                 else if(dir == Direction.SOUTH){
-                    current_image = IDLE_SOUTH;
+                    sprite = IDLE_SOUTH;
                 }
                 else if(dir == Direction.EAST){
-                    current_image = IDLE_EAST;
+                    sprite = IDLE_EAST;
                 }
                 else if(dir == Direction.WEST){
-                    current_image = IDLE_WEST;
+                    sprite = IDLE_WEST;
                 }
                 break;
         }
 
-        current_image.setFitWidth(SIZE_W);
-        current_image.setFitHeight(SIZE_H);
-
-        this.getChildren().addAll(current_image);
+        this.getChildren().addAll(sprite);
     }
 
 

@@ -13,8 +13,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import model.*;
-import model.Character;
-import model.Object;
+import model.entities.*;
+import view.entities.*;
 
 import java.util.LinkedList;
 
@@ -30,10 +30,6 @@ public class ScreenGame extends Screen{
     public MenuBar menubar;
     public Pane wrapperPane;
     public Pane arena;
-
-    public CharacterView playerView;
-    private LinkedList<VampireView> vampires;
-    private LinkedList<ObjectView> objects;
 
     public boolean debug = true;
     private boolean paused = true;
@@ -67,9 +63,6 @@ public class ScreenGame extends Screen{
         borderPane.setCenter(wrapperPane);
         borderPane.setBottom(cheat_console);
         this.getChildren().addAll(borderPane);
-
-        playerView = new CowboyView();
-        playerView.setFocusTraversable(true);
 
         menubar.getButton_menu().setOnAction(
                 event -> {
@@ -164,121 +157,66 @@ public class ScreenGame extends Screen{
         this.gameController.newGame();
     }
 
-    public void init(Game game){
-        playerView = new CowboyView();
-        playerView.setFocusTraversable(true);
-        objects = new LinkedList<>();
-        vampires = new LinkedList<>();
-
-        LinkedList<Object> objects_liste = game.getObjects();
-        for(Object obj : objects_liste) {
-
-            ObjectView objview = null;
-            if (obj instanceof Rock) {
-                objview = new RockView();
-            } else if (obj instanceof Box) {
-                objview = new BoxView();
-            }
-            objects.add(objview);
-        }
-
-        LinkedList<Vampire> vampires_liste = game.getVampires();
-        for(Vampire vamp : vampires_liste) {
-            vampires.add(new VampireView());
-        }
-    }
-
     public void update(Game game){
         arena.getChildren().clear();
 
-        // AFFICHAGE DES OBJETS (ROCK, BOX, etc)
-        LinkedList<Object> objects_liste = game.getObjects();
-        for(int i=0; i < objects.size(); i++){
-            Object obj = objects_liste.get(i);
-            ObjectView objview = objects.get(i);
+        // AFFICHAGE DES ENTITY (ROCK, BOX, etc)
+        LinkedList<Entity> entities = game.getEntities();
+        for(Entity entity : entities){
 
-            objview.setSize(objview.width() * sprite_ratio, objview.height() * sprite_ratio);
+            EntityView entityView = entity.getEntityView();
+            BoundingBox obj_box = entity.getBounds();
 
-            BoundingBox obj_box = obj.getBounds();
-            objview.setLayoutX(obj_box.getMinX()-(objview.width()/2)+(obj_box.getWidth() / 2));
-            objview.setLayoutY(obj_box.getMinY()-(objview.height()/2)+(obj_box.getHeight() / 2));
-            arena.getChildren().add(objview);
+            if(entity instanceof Bullet){
+                if(((Bullet) entity).getDirection() == Direction.NORTH || ((Bullet) entity).getDirection() ==
+                        Direction.SOUTH){
+                    entityView.setSize(obj_box.getHeight(), obj_box.getWidth());
+                }
+                else {
+                    entityView.setSize(obj_box.getWidth(), obj_box.getHeight());
+                }
+            }
+            else{
+                entityView.setSize(entityView.WIDTH() * sprite_ratio, entityView.HEIGHT() * sprite_ratio);
+            }
+
+
+            entityView.setLayoutX(obj_box.getMinX()-(entityView.WIDTH()/2)+(obj_box.getWidth() / 2));
+            entityView.setLayoutY(obj_box.getMinY()-(entityView.HEIGHT()/2)+(obj_box.getHeight() / 2));
+            arena.getChildren().add(entityView);
 
             if(debug) {
-                if(obj.isMoveable()){
-                    showCollisionBox(obj.getBounds(), Color.GREENYELLOW);
+                if(entity instanceof CharacterEntity){
+                    showCollisionBox(entity.getBounds(), Color.PURPLE);
                 }
-                else{
-                    showCollisionBox(obj.getBounds(), Color.RED);
+                else if(entity instanceof MoveableEntity){
+                    showCollisionBox(entity.getBounds(), Color.GREENYELLOW);
+                }
+                else if(entity instanceof StaticEntity){
+                    showCollisionBox(entity.getBounds(), Color.RED);
                 }
             }
         }
-        // ----------------------------------------------------------------------------
-
-        // AFFICHAGE DES VAMPIRES
-        LinkedList<Vampire> vampires_liste = game.getVampires();
-        for(int i=0; i < vampires.size(); i++){
-            Vampire vamp = vampires_liste.get(i);
-            VampireView vampview = vampires.get(i);
-
-            vampview.setAnimation(CharacterView.Animations.WALK, vamp.getDirection());
-            vampview.setSize(vampview.width() * sprite_ratio, vampview.height() * sprite_ratio);
-
-            BoundingBox obj_box = vamp.getBounds();
-            vampview.setLayoutX(obj_box.getMinX()-(vampview.width()/2)+(obj_box.getWidth() / 2));
-            vampview.setLayoutY(obj_box.getMinY()-(vampview.height()/2)+(obj_box.getHeight() / 2));
-            arena.getChildren().add(vampview);
-
-            if(debug) {
-                showCollisionBox(vamp.getBounds(), Color.PURPLE);
-            }
-        }
-        // ----------------------------------------------------------------------------
 
         // AFFICHAGE DU JOUEUR
-        Character player = game.getPlayer();
+        Player player = game.getPlayer();
+        EntityView entityView = player.getEntityView();
 
-        playerView.setSize(playerView.width() * sprite_ratio, playerView.height() * sprite_ratio);
+        entityView.setSize(entityView.WIDTH() * sprite_ratio, entityView.HEIGHT() * sprite_ratio);
+
         BoundingBox player_box = player.getBounds();
-        playerView.setLayoutX(player_box.getMinX()-(playerView.width()/2)+(player_box.getWidth()/ 2));
-        playerView.setLayoutY(player_box.getMinY()-(playerView.height()/2)+(player_box.getHeight()/ 2)-10);
-        arena.getChildren().add(playerView);
+        entityView.setLayoutX(player_box.getMinX()-(entityView.WIDTH()/2)+(player_box.getWidth()/ 2));
+        entityView.setLayoutY(player_box.getMinY()-(entityView.HEIGHT()/2)+(player_box.getHeight()/ 2)-10);
+        arena.getChildren().add(entityView);
 
         if(!player.isAlive()){
-            playerView.setAnimation(CharacterView.Animations.DEAD, null);
+            ((AnimatedView)entityView).setAnimation(AnimatedView.Animations.DEAD, null);
         }
 
         if(debug){
             showCollisionBox(player.getBounds(), Color.BLUE);
         }
         // ----------------------------------------------------------------------------
-
-
-        // AFFICHAGE DES BALLES
-        LinkedList<Bullet> listeBullets = game.getBullets();
-
-        for(Bullet bullet : listeBullets){
-
-            BulletView bview = new BulletView(bullet.getDirection());
-            BoundingBox bullet_box = bullet.getBounds();
-
-            //System.out.println(String.format("%f : %f", bullet_ratio, bview.width()));
-            //bview.setSize((int)(bview.width() * bullet_ratio), (int)(bview.height() * bullet_ratio));
-            if(bullet.getDirection() == Direction.NORTH || bullet.getDirection() == Direction.SOUTH){
-                bview.setSize(bullet_box.getHeight(), bullet_box.getWidth());
-            }
-            else {
-                bview.setSize(bullet_box.getWidth(), bullet_box.getHeight());
-            }
-
-            bview.setLayoutX(bullet_box.getMinX()-(bview.width()/2)+(bullet_box.getWidth() / 2));
-            bview.setLayoutY(bullet_box.getMinY()-(bview.height()/2)+(bullet_box.getHeight() / 2));
-            arena.getChildren().add(bview);
-
-            if(debug) {
-                showCollisionBox(bullet_box, Color.BLUE);
-            }
-        }
 
         sprite_ratio = 1.0;
 
@@ -294,10 +232,6 @@ public class ScreenGame extends Screen{
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
         arena.getChildren().add(pane);
-    }
-
-    public GameController getGameController(){
-        return this.gameController;
     }
 
     public void displayError(String err){

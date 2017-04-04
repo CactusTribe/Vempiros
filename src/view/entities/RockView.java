@@ -1,4 +1,4 @@
-package view;
+package view.entities;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -6,12 +6,12 @@ import javafx.scene.image.ImageView;
 /**
  * Created by cactustribe on 24/03/17.
  */
-public class RockView extends ObjectView{
+public class RockView extends EntityView{
 
     private static final Image SPRITE_ROCK = new Image("images/rock.png");
 
     public RockView(){
-        sprite = new ImageView(SPRITE_ROCK);
-        setSize(80,80);
+        this.sprite = new ImageView(SPRITE_ROCK);
+        this.setSize(80,80);
     }
 }

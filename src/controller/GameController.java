@@ -8,11 +8,12 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
-import javafx.util.converter.NumberStringConverter;
 import model.*;
-import model.Character;
-import view.CharacterView;
+import model.entities.CharacterEntity;
+import model.entities.Player;
 import view.ScreenGame;
+import view.entities.AnimatedView;
+import view.entities.PlayerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ public class GameController {
     private boolean walking = false;
     private boolean paused = true;
     private long startTimeReloadBullets = 0;
-    private long TIME_BEFORE_ADD_BULLET = 5000; // seconds
+    private long TIME_BEFORE_ADD_BULLET = 5000; // ms
 
 
     public GameController(String usrname, ScreenGame view){
@@ -45,14 +46,13 @@ public class GameController {
 
     public void newGame(){
         game.init();
-        gameView.init(game);
         gameView.update(game);
 
         game.arena_width().bind(gameView.arena.widthProperty());
         game.arena_height().bind(gameView.arena.heightProperty());
 
         gameView.menubar.getPanelLives().current_life().bind(game.getPlayer().current_life());
-        gameView.menubar.getAmmoBar().progressProperty().bind( ((Cowboy)game.getPlayer()).progress_bullets());
+        gameView.menubar.getAmmoBar().progressProperty().bind((game.getPlayer()).progress_bullets());
 
         gameView.menubar.getAliveVamp().textProperty().bind(Bindings.convert(game.alive_vamp()));
         gameView.menubar.getDeadVamp().textProperty().bind(Bindings.convert(game.dead_vamp()));
@@ -68,7 +68,7 @@ public class GameController {
         gameLoop = new Timeline();
         gameLoop.setCycleCount( Timeline.INDEFINITE );
 
-        Cowboy player = (Cowboy) game.getPlayer();
+        Player player = game.getPlayer();
 
         KeyFrame kf = new KeyFrame( Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             public void handle(ActionEvent ae)
@@ -79,11 +79,15 @@ public class GameController {
                         game.apply(ActionType.MOVE);
                     } catch (Exception e){
                         gameView.displayError(e.toString());
+                        //e.printStackTrace();
                     }
                 }
 
-                game.moveBullets();
-                game.moveVampires();
+
+                game.moveEntities();
+
+                //game.moveBullets();
+                //game.moveVampires();
                 //---------------------------------------------
 
 
@@ -122,7 +126,7 @@ public class GameController {
 
 
     public void notifyEvent(KeyEvent ke){
-        Character player = game.getPlayer();
+        CharacterEntity player = game.getPlayer();
 
         if(player.isAlive()){
 
@@ -153,6 +157,7 @@ public class GameController {
                                 game.apply(current_action);
                             } catch (Exception e){
                                 gameView.displayError(e.toString());
+                                //e.printStackTrace();
                             }
                             break;
                         default:
@@ -164,8 +169,9 @@ public class GameController {
                     if(current_action != null){
                         switch (current_action){
                             case MOVE:
-                                gameView.playerView.setAnimation(CharacterView.Animations.WALK, player.getDirection());
-                                gameView.playerView.startAnimation();
+                                ((PlayerView)player.getEntityView()).setAnimation(AnimatedView.Animations.WALK, player
+                                        .getDirection());
+                                ((PlayerView)player.getEntityView()).startAnimation();
                                 walking = true;
                                 break;
                             case SHOOT:
@@ -185,7 +191,7 @@ public class GameController {
                 if(ke.getCode() != KeyCode.SPACE){
                     if(last_pressed_key == null || last_pressed_key.getCode() == ke.getCode() || last_pressed_key.getCode
                             () == KeyCode.SPACE) {
-                        gameView.playerView.setAnimation(CharacterView.Animations.IDLE, player.getDirection());
+                        ((PlayerView)player.getEntityView()).setAnimation(AnimatedView.Animations.IDLE, player.getDirection());
                         walking = false;
                     }
                 }
@@ -198,7 +204,7 @@ public class GameController {
 
 
     public void cheatCode(String str){
-        Character player = game.getPlayer();
+        CharacterEntity player = game.getPlayer();
         List<String> tokens = new ArrayList<String>(Arrays.asList(str.split(" ")));
 
         try{
@@ -225,12 +231,12 @@ public class GameController {
             }
             else if(cmd.equals("ammo")) {
                 int arg = Integer.parseInt(tokens.get(1));
-                ((Cowboy) player).addBullets(arg);
+                ((Player) player).addBullets(arg);
                 System.out.println(String.format("Cheat: %d bullets added.", arg));
             }
             else if(cmd.equals("die")) {
                 player.removeLife(9999);
-                System.out.println(String.format("Cheat: Cowboy is dead."));
+                System.out.println(String.format("Cheat: Player is dead."));
             }
             else if(cmd.equals("debug")) {
                 if(gameView.debug){

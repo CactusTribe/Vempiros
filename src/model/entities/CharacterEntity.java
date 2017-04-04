@@ -1,33 +1,15 @@
-package model;
+package model.entities;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.BoundingBox;
 
 /**
  * Created by cactustribe on 20/03/17.
  */
-public abstract class Character {
-
-    protected BoundingBox bounds = new BoundingBox(0,0,0,0);
+public abstract class CharacterEntity extends MoveableEntity{
 
     protected int total_life;
     protected IntegerProperty current_life = new SimpleIntegerProperty(0);
-    protected Direction direction = Direction.EAST;
-    protected double SPEED = 5;
-
-    public void setBounds(BoundingBox bounds){
-        this.bounds = bounds;
-    }
-
-    public void setSpeed(double speed){
-        this.SPEED = speed;
-    }
-
-
-    public void setDirection(Direction dir){
-        this.direction = dir;
-    }
 
     public void addLife(int n){
         if(current_life.getValue() + n <= total_life)
@@ -45,16 +27,6 @@ public abstract class Character {
 
     public boolean isAlive(){
         return (current_life.getValue() > 0);
-    }
-
-    public BoundingBox getBounds(){
-        return this.bounds;
-    }
-
-    public double getSpeed() { return this.SPEED; }
-
-    public Direction getDirection(){
-        return this.direction;
     }
 
     public IntegerProperty current_life(){
