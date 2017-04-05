@@ -9,7 +9,7 @@ public class Vampire extends CharacterEntity {
 
     public Vampire(){
         this.entityView = new VampireView();
-        this.setSpeed(2);
+        this.setSpeed(4);
     }
 
     public boolean canMovedBy(Entity entity){

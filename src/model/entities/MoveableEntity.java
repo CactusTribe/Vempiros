@@ -34,13 +34,10 @@ public abstract class MoveableEntity extends Entity{
                 }
                 else if(entity instanceof MoveableEntity){
 
-                    //((MoveableEntity) entity).setDirection(this.getDirection());
-
                     if( !((MoveableEntity) entity).canMovedBy(this) ){
                         move_done = false;
                         break;
                     }
-
                     else if ( !((MoveableEntity) entity).move(offset, dir) ){
                         move_done = false;
                         break;

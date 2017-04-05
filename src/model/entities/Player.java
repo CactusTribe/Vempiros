@@ -81,7 +81,12 @@ public class Player extends CharacterEntity {
         bullet.setBounds(bullet_box);
         bullet.setSpeed(game.getBulletSchema().getSpeed());
         bullet.setGame(this.game);
-        game.getEntities().add(bullet);
+
+        if(bullet.move(bullet.getSpeed(), bullet.getDirection())){
+            game.getEntities().add(bullet);
+        }
+
+        System.out.println(" >> Shoot !");
         this.removeBullet();
     }
 

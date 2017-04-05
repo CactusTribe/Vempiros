@@ -40,13 +40,17 @@ public class Game {
         this.bulletSchema = new Bullet(Direction.EAST);
         this.bulletSchema.setBounds(new BoundingBox(0,0,30,10));
 
+        int NB_ROCK = (int)(ARENA_WIDTH.getValue()/100);
+        int NB_BOX = (int)(ARENA_WIDTH.getValue()/200);
+        NB_VAMP = (int)(ARENA_WIDTH.getValue()/200);
+
         ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
         DEAD_VAMP = new SimpleIntegerProperty(0);
 
-        this.spawnEntity("model.entities.Rock", 6, 50, 50);
-        this.spawnEntity("model.entities.Box", 5, 50, 50);
-        this.spawnEntity("model.entities.Vampire", NB_VAMP, 40, 60);
-        this.spawnEntity("model.entities.Player", 1, 40, 80);
+        this.spawnEntity("model.entities.Rock", NB_ROCK, 40, 40);
+        this.spawnEntity("model.entities.Box", NB_BOX, 40, 40);
+        this.spawnEntity("model.entities.Vampire", NB_VAMP, 30, 60);
+        this.spawnEntity("model.entities.Player", 1, 30, 80);
     }
 
     public void spawnEntity(String entity_name, int number, int width, int height){
@@ -117,10 +121,17 @@ public class Game {
 
                 while(!vamp.move(vamp.getSpeed(), vamp.getDirection())){
                     possible_dir.remove(vamp.getDirection());
-                    random_dir = rand.nextInt(possible_dir.size());
-                    Direction new_dir = possible_dir.get(random_dir);
-                    vamp.setDirection(new_dir);
-                    ((AnimatedView)vamp.getEntityView()).setAnimation(AnimatedView.Animations.WALK, vamp.getDirection());
+
+                    if(possible_dir.size() > 0){
+                        random_dir = rand.nextInt(possible_dir.size());
+                        Direction new_dir = possible_dir.get(random_dir);
+                        vamp.setDirection(new_dir);
+                        ((AnimatedView)vamp.getEntityView()).setAnimation(AnimatedView.Animations.WALK, vamp.getDirection());
+                    }
+                    else{
+                        break;
+                    }
+
                 }
             }
         }
@@ -147,8 +158,9 @@ public class Game {
             if(entity != current){
 
                 if(current.collidesWith(entity)){
-                    //System.out.println(String.format("%s collide with %s", entity.getClass().getName(), current
-                    //        .getClass().getName()));
+                    System.out.println(String.format("%s collide with %s", entity.getClass().getName(), current
+                            .getClass().getName()));
+
                     entity.collidedBy(current);
                     current.collidedBy(entity);
                 }

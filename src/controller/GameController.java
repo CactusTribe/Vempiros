@@ -57,7 +57,7 @@ public class GameController {
         gameView.menubar.getAliveVamp().textProperty().bind(Bindings.convert(game.alive_vamp()));
         gameView.menubar.getDeadVamp().textProperty().bind(Bindings.convert(game.dead_vamp()));
 
-
+        //startGame();
     }
 
     public void startGame(){

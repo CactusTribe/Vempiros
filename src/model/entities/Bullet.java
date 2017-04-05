@@ -19,6 +19,5 @@ public class Bullet extends MoveableEntity{
     }
 
     public void collidedBy(Entity other){
-
     }
 }

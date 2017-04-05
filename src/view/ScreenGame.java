@@ -207,30 +207,7 @@ public class ScreenGame extends Screen{
             }
         }
 
-        /*
-        // AFFICHAGE DU JOUEUR
-        Player player = game.getPlayer();
-        EntityView entityView = player.getEntityView();
-
-        entityView.setSize(entityView.WIDTH() * sprite_ratio, entityView.HEIGHT() * sprite_ratio);
-
-        BoundingBox player_box = player.getBounds();
-        entityView.setLayoutX(player_box.getMinX()-(entityView.WIDTH()/2)+(player_box.getWidth()/ 2));
-        entityView.setLayoutY(player_box.getMinY()-(entityView.HEIGHT()/2)+(player_box.getHeight()/ 2)-10);
-        arena.getChildren().add(entityView);
-
-        if(!player.isAlive()){
-            ((AnimatedView)entityView).setAnimation(AnimatedView.Animations.DEAD, null);
-        }
-
-        if(debug){
-            showCollisionBox(player.getBounds(), Color.BLUE);
-        }
-        // ----------------------------------------------------------------------------
-
-*/
         sprite_ratio = 1.0;
-
     }
 
     public void showCollisionBox(BoundingBox box, Color color){
