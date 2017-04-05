@@ -8,8 +8,6 @@ import javafx.geometry.BoundingBox;
 import model.Direction;
 import view.entities.PlayerView;
 
-import java.util.LinkedList;
-
 /**
  * Created by cactustribe on 21/03/17.
  */
@@ -19,45 +17,22 @@ public class Player extends CharacterEntity {
     private DoubleProperty current_bullets;
     private NumberBinding progress_bullets;
 
-    public Player(int lives, double speed){
+    private long time_last_hit = 0;
+    private double TIME_BEFORE_HIT = 500; //ms
 
-        this.entityView = new PlayerView();
-        this.speed = speed;
-        this.total_life = lives;
-        this.current_life.set(lives);
+    public Player(){
+        this.speed = 10;
+        this.total_life = 3;
+
+        this.current_life.set(this.total_life);
         this.setDirection(Direction.EAST );
+        this.entityView = new PlayerView();
 
         this.total_bullets = new SimpleDoubleProperty(20);
         this.current_bullets = new SimpleDoubleProperty(total_bullets.getValue());
         this.progress_bullets = Bindings.divide(current_bullets, total_bullets);
     }
 
-    public boolean canMovedTo(double offset, Direction direction){
-        BoundingBox new_box = game.translateBounds(bounds, direction, offset);
-        LinkedList<Entity> collided = game.collidedEntities(new_box);
-
-        if(game.outOfArena(new_box)){
-            return false;
-        }
-
-        for(Entity entity : collided){
-            if(entity != this){
-                if(entity instanceof StaticEntity){
-                    return false;
-                }
-                else if(entity instanceof MoveableEntity){
-                    if( !((MoveableEntity) entity).canMovedBy(this) ){
-                        return false;
-                    }
-                    else if ( !((MoveableEntity) entity).canMovedTo(offset, direction) ){
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
 
     public boolean canMovedBy(Entity entity){
         return false;
@@ -65,7 +40,11 @@ public class Player extends CharacterEntity {
 
     public void collidedBy(Entity other){
         if(other instanceof Vampire){
-            this.removeLife(1);
+
+            if(time_last_hit == 0 || (System.currentTimeMillis() - time_last_hit >= TIME_BEFORE_HIT) ) {
+                this.removeLife(1);
+                time_last_hit = System.currentTimeMillis();
+            }
         }
     }
 

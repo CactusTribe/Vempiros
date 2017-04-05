@@ -180,13 +180,22 @@ public class ScreenGame extends Screen{
                 entityView.setSize(entityView.WIDTH() * sprite_ratio, entityView.HEIGHT() * sprite_ratio);
             }
 
+            if(entity instanceof Player){
+                if(!((Player)entity).isAlive()){
+                    ((AnimatedView)entityView).setAnimation(AnimatedView.Animations.DEAD, null);
+                }
+            }
+
 
             entityView.setLayoutX(obj_box.getMinX()-(entityView.WIDTH()/2)+(obj_box.getWidth() / 2));
             entityView.setLayoutY(obj_box.getMinY()-(entityView.HEIGHT()/2)+(obj_box.getHeight() / 2));
             arena.getChildren().add(entityView);
 
             if(debug) {
-                if(entity instanceof CharacterEntity){
+                if(entity instanceof Player){
+                    showCollisionBox(entity.getBounds(), Color.BLUE);
+                }
+                else if(entity instanceof CharacterEntity){
                     showCollisionBox(entity.getBounds(), Color.PURPLE);
                 }
                 else if(entity instanceof MoveableEntity){
@@ -198,6 +207,7 @@ public class ScreenGame extends Screen{
             }
         }
 
+        /*
         // AFFICHAGE DU JOUEUR
         Player player = game.getPlayer();
         EntityView entityView = player.getEntityView();
@@ -218,6 +228,7 @@ public class ScreenGame extends Screen{
         }
         // ----------------------------------------------------------------------------
 
+*/
         sprite_ratio = 1.0;
 
     }

@@ -35,7 +35,7 @@ public class GameController {
     private boolean walking = false;
     private boolean paused = true;
     private long startTimeReloadBullets = 0;
-    private long TIME_BEFORE_ADD_BULLET = 5000; // ms
+    private long TIME_BEFORE_ADD_BULLET = 1000; // ms
 
 
     public GameController(String usrname, ScreenGame view){
@@ -73,23 +73,6 @@ public class GameController {
         KeyFrame kf = new KeyFrame( Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             public void handle(ActionEvent ae)
             {
-                // DEPLACEMENTS
-                if(walking){
-                    try {
-                        game.apply(ActionType.MOVE);
-                    } catch (Exception e){
-                        gameView.displayError(e.toString());
-                        //e.printStackTrace();
-                    }
-                }
-
-
-                game.moveEntities();
-
-                //game.moveBullets();
-                //game.moveVampires();
-                //---------------------------------------------
-
 
                 // GAME EVENTS
                 if(player.current_bullets().getValue() == 0){
@@ -103,6 +86,18 @@ public class GameController {
                 }
                 //---------------------------------------------
 
+                // DEPLACEMENTS
+                if(walking){
+                    try {
+                        game.apply(ActionType.MOVE);
+                    } catch (Exception e){
+                        gameView.displayError(e.toString());
+                        //ze.printStackTrace();
+                    }
+                }
+                //---------------------------------------------
+
+                game.moveEntities();
                 gameView.update(game);
             }
         });
@@ -199,6 +194,9 @@ public class GameController {
                 current_action = null;
             }
         }
+        else{
+            walking = false;
+        }
 
     }
 
@@ -251,6 +249,16 @@ public class GameController {
             else if(cmd.equals("reload") || cmd.equals("rl")) {
                 newGame();
                 System.out.println(String.format("Cheat: Game reloaded."));
+            }
+            else if(cmd.equals("god")) {
+                if(!player.getImmortel()) {
+                    player.setImmortel(true);
+                    System.out.println(String.format("Cheat: God mod ON."));
+                }
+                else {
+                    player.setImmortel(false);
+                    System.out.println(String.format("Cheat: God mod OFF."));
+                }
             }
             else{
                 System.out.println("Error: Command doesn't exists.");

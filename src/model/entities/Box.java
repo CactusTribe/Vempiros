@@ -22,5 +22,9 @@ public class Box extends MoveableEntity{
         if(other instanceof Bullet){
             game.getRemovedEntities().add(other);
         }
+        else if(other instanceof Player){
+            this.direction = ((Player) other).getDirection();
+            this.move(((Player) other).getSpeed(), ((Player) other).getDirection());
+        }
     }
 }

@@ -2,6 +2,7 @@ package model.entities;
 
 import javafx.geometry.BoundingBox;
 import model.Direction;
+import view.entities.AnimatedView;
 
 import java.util.LinkedList;
 
@@ -13,33 +14,12 @@ public abstract class MoveableEntity extends Entity{
     protected double speed;
     protected Direction direction;
 
-    public void move(double offset){
+    public boolean move(double offset, Direction dir){
 
-        BoundingBox new_box = null;
-        switch (this.direction){
-            case NORTH:
-                new_box = new BoundingBox(bounds.getMinX(), bounds.getMinY() - offset, bounds.getWidth(),
-                        bounds.getHeight());
-                break;
-            case SOUTH:
-                new_box = new BoundingBox(bounds.getMinX(), bounds.getMinY() + offset, bounds.getWidth(),
-                        bounds.getHeight());
-                break;
-            case EAST:
-                new_box = new BoundingBox(bounds.getMinX() + offset, bounds.getMinY(), bounds.getWidth(),
-                        bounds.getHeight());
-                break;
-            case WEST:
-                new_box = new BoundingBox(bounds.getMinX() - offset, bounds.getMinY(), bounds.getWidth(),
-                        bounds.getHeight());
-                break;
-        }
-
-        this.setBounds(new_box);
-    }
-
-    public boolean canMovedTo(double offset, Direction direction){
-        BoundingBox new_box = game.translateBounds(bounds, direction, offset);
+        boolean move_done = true;
+        Direction old_dir = this.getDirection();
+        BoundingBox old_box = this.getBounds();
+        BoundingBox new_box = game.translateBounds(bounds, dir, offset);
         LinkedList<Entity> collided = game.collidedEntities(new_box);
 
         if(game.outOfArena(new_box)){
@@ -49,20 +29,35 @@ public abstract class MoveableEntity extends Entity{
         for(Entity entity : collided){
             if(entity != this){
                 if(entity instanceof StaticEntity){
-                    return false;
+                    move_done = false;
+                    break;
                 }
                 else if(entity instanceof MoveableEntity){
+
+                    //((MoveableEntity) entity).setDirection(this.getDirection());
+
                     if( !((MoveableEntity) entity).canMovedBy(this) ){
-                        return false;
+                        move_done = false;
+                        break;
                     }
-                    else if ( !((MoveableEntity) entity).canMovedTo(offset, direction) ){
-                        return false;
+
+                    else if ( !((MoveableEntity) entity).move(offset, dir) ){
+                        move_done = false;
+                        break;
                     }
                 }
             }
         }
 
-        return true;
+        this.setBounds(new_box);
+        game.objectCollision(this);
+
+        if(!move_done){
+            this.setDirection(old_dir);
+            this.setBounds(old_box);
+        }
+
+        return move_done;
     }
 
     public abstract boolean canMovedBy(Entity entity);
@@ -74,6 +69,10 @@ public abstract class MoveableEntity extends Entity{
 
     public void setDirection(Direction direction){
         this.direction = direction;
+
+        if(this.entityView instanceof AnimatedView){
+            ((AnimatedView)this.entityView).setAnimation(AnimatedView.Animations.WALK, this.direction);
+        }
     }
     public void setSpeed(double speed) { this.speed = speed; }
 

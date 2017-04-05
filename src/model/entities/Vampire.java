@@ -9,7 +9,7 @@ public class Vampire extends CharacterEntity {
 
     public Vampire(){
         this.entityView = new VampireView();
-        this.setSpeed(5);
+        this.setSpeed(2);
     }
 
     public boolean canMovedBy(Entity entity){
@@ -17,6 +17,7 @@ public class Vampire extends CharacterEntity {
     }
 
     public void collidedBy(Entity other){
+
         if(other instanceof Bullet){
             game.getRemovedEntities().add(other);
             game.getRemovedEntities().add(this);
