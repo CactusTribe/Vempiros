@@ -10,7 +10,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 import model.*;
 import model.entities.CharacterEntity;
+import model.entities.Entity;
 import model.entities.Player;
+import model.entities.Vampire;
 import view.ScreenGame;
 import view.entities.AnimatedView;
 import view.entities.PlayerView;
@@ -117,6 +119,29 @@ public class GameController {
     public void resizeGame(double ratio){
         game.resizeBoundingBox(ratio);
         gameView.update(game);
+    }
+
+    public void setPlayerSpeed(double ratio){
+        Player player = game.getPlayer();
+
+        if( (player.getSpeed() * ratio >= player.getInitialSpeed()) &&
+                (player.getSpeed() * ratio <= (player.getInitialSpeed() * 10) ) ){
+            player.setSpeed(player.getSpeed() * ratio);
+        }
+    }
+
+    public void setVampSpeed(double ratio){
+        for(Entity entity : game.getEntities()){
+            if(entity instanceof Vampire) {
+
+                Vampire vamp = (Vampire) entity;
+                if( (vamp.getSpeed() * ratio >= vamp.getInitialSpeed()) &&
+                        (vamp.getSpeed() * ratio <= (vamp.getInitialSpeed() * 10) ) ){
+                    vamp.setSpeed(vamp.getSpeed() * ratio);
+                }
+
+            }
+        }
     }
 
 

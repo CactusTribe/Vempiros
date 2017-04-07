@@ -21,7 +21,7 @@ public class Player extends CharacterEntity {
     private double TIME_BEFORE_HIT = 500; //ms
 
     public Player(){
-        this.speed = 10;
+        this.setInitialSpeed(10);
         this.total_life = 3;
 
         this.current_life.set(this.total_life);

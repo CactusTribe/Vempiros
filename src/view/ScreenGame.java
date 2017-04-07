@@ -87,6 +87,37 @@ public class ScreenGame extends Screen{
                 }
         );
 
+        menubar.getSliderPlayerSpeed().valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+
+                if(new_val.intValue() > old_val.intValue() ){
+                    gameController.setPlayerSpeed(new_val.intValue());
+                }
+                else if(new_val.intValue() < old_val.intValue()){
+                    gameController.setPlayerSpeed(new_val.intValue() - menubar.getSliderPlayerSpeed().getMax());
+                }
+
+               wrapperPane.requestFocus();
+            }
+        });
+
+
+        menubar.getSliderVampSpeed().valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+
+                if(new_val.intValue() > old_val.intValue() ){
+                    gameController.setVampSpeed(new_val.intValue());
+                    System.out.println("Speed up" + new_val.intValue());
+                }
+                else if(new_val.intValue() < old_val.intValue()){
+                    gameController.setVampSpeed( (new_val.intValue() - menubar.getSliderVampSpeed().getMax()) );
+                    System.out.println("Speed down" + new_val.intValue());
+                }
+
+                wrapperPane.requestFocus();
+            }
+        });
+
 
         wrapperPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {

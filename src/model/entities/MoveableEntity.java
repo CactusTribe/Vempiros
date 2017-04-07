@@ -12,6 +12,7 @@ import java.util.LinkedList;
 public abstract class MoveableEntity extends Entity{
 
     protected double speed;
+    protected double initial_speed;
     protected Direction direction;
 
     public boolean move(double offset, Direction dir){
@@ -62,7 +63,6 @@ public abstract class MoveableEntity extends Entity{
     public Direction getDirection(){
         return this.direction;
     }
-    public double getSpeed() { return this.speed; }
 
     public void setDirection(Direction direction){
         this.direction = direction;
@@ -71,6 +71,14 @@ public abstract class MoveableEntity extends Entity{
             ((AnimatedView)this.entityView).setAnimation(AnimatedView.Animations.WALK, this.direction);
         }
     }
+
+    public double getSpeed() { return this.speed; }
     public void setSpeed(double speed) { this.speed = speed; }
+
+    public double getInitialSpeed() { return this.initial_speed; }
+    public void setInitialSpeed(double speed) {
+        this.initial_speed = speed;
+        this.speed = speed;
+    }
 
 }

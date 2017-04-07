@@ -20,9 +20,9 @@ public class MenuBar extends ToolBar {
     private Button button_menu;
     private Button button_play;
     private Button button_options;
-    private Text label_cowboy_speed;
+    private Text label_player_speed;
     private Text label_vamp_speed;
-    private Slider slider_cowboy_speed;
+    private Slider slider_player_speed;
     private Slider slider_vamp_speed;
     private Text label_nb_alive;
     private Text label_nb_dead;
@@ -84,18 +84,18 @@ public class MenuBar extends ToolBar {
         panelLives = new PanelLives(3);
 
 
-        slider_cowboy_speed = new Slider();
-        slider_cowboy_speed.setMin(0);
-        slider_cowboy_speed.setMax(10);
-        slider_cowboy_speed.setValue(1);
-        slider_cowboy_speed.setBlockIncrement(1);
-        slider_cowboy_speed.setMaxWidth(80);
-        label_cowboy_speed = new Text("Player");
+        slider_player_speed = new Slider();
+        slider_player_speed.setMin(1);
+        slider_player_speed.setMax(10);
+        slider_player_speed.setValue(1);
+        slider_player_speed.setBlockIncrement(1);
+        slider_player_speed.setMaxWidth(80);
+        label_player_speed = new Text("Player");
 
         VBox cowboy_speed = new VBox();
         cowboy_speed.setSpacing(5);
         cowboy_speed.setAlignment(Pos.CENTER);
-        cowboy_speed.getChildren().addAll(slider_cowboy_speed, label_cowboy_speed);
+        cowboy_speed.getChildren().addAll(slider_player_speed, label_player_speed);
 
 
         slider_vamp_speed = new Slider();
@@ -178,5 +178,12 @@ public class MenuBar extends ToolBar {
         return this.label_nb_dead;
     }
 
+    public Slider getSliderPlayerSpeed(){
+        return this.slider_player_speed;
+    }
+
+    public Slider getSliderVampSpeed(){
+        return this.slider_vamp_speed;
+    }
 
 }

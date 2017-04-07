@@ -1,15 +1,37 @@
 package model.entities;
 
-import view.entities.VampireView;
+import view.entities.VampireFView;
+import view.entities.VampireMView;
+
+import java.util.Random;
+
+import static model.entities.Vampire.Genre.FEMALE;
 
 /**
  * Created by cactustribe on 02/04/17.
  */
 public class Vampire extends CharacterEntity {
 
+    public enum Genre{
+        FEMALE, MALE;
+    }
+
+    private Genre genre;
+
     public Vampire(){
-        this.entityView = new VampireView();
-        this.setSpeed(4);
+        Random rand = new Random();
+        this.setInitialSpeed(rand.nextInt(10) + 1);
+
+        genre = Genre.values()[rand.nextInt(Genre.values().length)];
+        switch (genre){
+            case FEMALE:
+                this.entityView = new VampireFView();
+                break;
+            case MALE:
+                this.entityView = new VampireMView();
+                break;
+        }
+
     }
 
     public boolean canMovedBy(Entity entity){
