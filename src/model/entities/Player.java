@@ -25,7 +25,7 @@ public class Player extends CharacterEntity {
         this.total_life = 3;
 
         this.current_life.set(this.total_life);
-        this.setDirection(Direction.EAST );
+        this.setDirection(Direction.EAST);
         this.entityView = new PlayerView();
 
         this.total_bullets = new SimpleDoubleProperty(20);

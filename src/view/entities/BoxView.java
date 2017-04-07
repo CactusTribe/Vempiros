@@ -11,7 +11,7 @@ public class BoxView extends EntityView{
     private static final Image SPRITE_BOX = new Image("images/box.png");
 
     public BoxView(){
-        this.sprite = new ImageView(SPRITE_BOX);
-        this.setSize(80,80);
+        this.addSprite("SPRITE_BOX", new ImageView(SPRITE_BOX), 80, 80);
+        this.setSprite("SPRITE_BOX");
     }
 }

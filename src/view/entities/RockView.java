@@ -11,7 +11,7 @@ public class RockView extends EntityView{
     private static final Image SPRITE_ROCK = new Image("images/rock.png");
 
     public RockView(){
-        this.sprite = new ImageView(SPRITE_ROCK);
-        this.setSize(80,80);
+        this.addSprite("SPRITE_ROCK", new ImageView(SPRITE_ROCK), 80, 80);
+        this.setSprite("SPRITE_ROCK");
     }
 }

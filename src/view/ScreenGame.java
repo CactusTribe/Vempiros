@@ -31,7 +31,7 @@ public class ScreenGame extends Screen{
     public Pane wrapperPane;
     public Pane arena;
 
-    public boolean debug = true;
+    public boolean debug = false;
     private boolean paused = true;
     private double sprite_ratio = 1.0;
     private double lastArenaW = 0;
@@ -165,20 +165,6 @@ public class ScreenGame extends Screen{
         for(Entity entity : entities){
 
             EntityView entityView = entity.getEntityView();
-            BoundingBox obj_box = entity.getBounds();
-
-            if(entity instanceof Bullet){
-                if(((Bullet) entity).getDirection() == Direction.NORTH || ((Bullet) entity).getDirection() ==
-                        Direction.SOUTH){
-                    entityView.setSize(obj_box.getHeight(), obj_box.getWidth());
-                }
-                else {
-                    entityView.setSize(obj_box.getWidth(), obj_box.getHeight());
-                }
-            }
-            else{
-                entityView.setSize(entityView.WIDTH() * sprite_ratio, entityView.HEIGHT() * sprite_ratio);
-            }
 
             if(entity instanceof Player){
                 if(!((Player)entity).isAlive()){
@@ -186,9 +172,8 @@ public class ScreenGame extends Screen{
                 }
             }
 
-
-            entityView.setLayoutX(obj_box.getMinX()-(entityView.WIDTH()/2)+(obj_box.getWidth() / 2));
-            entityView.setLayoutY(obj_box.getMinY()-(entityView.HEIGHT()/2)+(obj_box.getHeight() / 2));
+            entityView.setScale(sprite_ratio);
+            entityView.update(entity);
             arena.getChildren().add(entityView);
 
             if(debug) {

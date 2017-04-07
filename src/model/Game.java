@@ -100,38 +100,39 @@ public class Game {
 
     public void moveEntities(){
         for(Entity entity : entities){
-
-            if(entity instanceof Bullet){
-                Bullet bullet = (Bullet)entity;
-                if(!bullet.move(bullet.getSpeed(), bullet.getDirection())){
-                    removed_entities.add(entity);
+            if(!removed_entities.contains(entity)){
+                if(entity instanceof Bullet){
+                    Bullet bullet = (Bullet)entity;
+                    if(!bullet.move(bullet.getSpeed(), bullet.getDirection())){
+                        removed_entities.add(entity);
+                    }
                 }
-            }
 
-            else if(entity instanceof Vampire){
-                Vampire vamp = (Vampire)entity;
-                Random rand = new Random();
-                int random_dir;
+                else if(entity instanceof Vampire){
+                    Vampire vamp = (Vampire)entity;
+                    Random rand = new Random();
+                    int random_dir;
 
-                LinkedList<Direction> possible_dir = new LinkedList<>();
-                possible_dir.add(Direction.NORTH);
-                possible_dir.add(Direction.SOUTH);
-                possible_dir.add(Direction.EAST);
-                possible_dir.add(Direction.WEST);
+                    LinkedList<Direction> possible_dir = new LinkedList<>();
+                    possible_dir.add(Direction.NORTH);
+                    possible_dir.add(Direction.SOUTH);
+                    possible_dir.add(Direction.EAST);
+                    possible_dir.add(Direction.WEST);
 
-                while(!vamp.move(vamp.getSpeed(), vamp.getDirection())){
-                    possible_dir.remove(vamp.getDirection());
+                    while(!vamp.move(vamp.getSpeed(), vamp.getDirection())){
+                        possible_dir.remove(vamp.getDirection());
 
-                    if(possible_dir.size() > 0){
-                        random_dir = rand.nextInt(possible_dir.size());
-                        Direction new_dir = possible_dir.get(random_dir);
-                        vamp.setDirection(new_dir);
-                        ((AnimatedView)vamp.getEntityView()).setAnimation(AnimatedView.Animations.WALK, vamp.getDirection());
+                        if(possible_dir.size() > 0){
+                            random_dir = rand.nextInt(possible_dir.size());
+                            Direction new_dir = possible_dir.get(random_dir);
+                            vamp.setDirection(new_dir);
+                            ((AnimatedView)vamp.getEntityView()).setAnimation(AnimatedView.Animations.WALK, vamp.getDirection());
+                        }
+                        else{
+                            break;
+                        }
+
                     }
-                    else{
-                        break;
-                    }
-
                 }
             }
         }
@@ -139,27 +140,16 @@ public class Game {
         for(Entity entity : removed_entities){
             entities.remove(entity);
         }
-
         removed_entities.clear();
     }
-
-
-    public boolean intersectEntity(BoundingBox box){
-        for(Entity entity : entities){
-            BoundingBox objet_box = entity.getBounds();
-            if(box.intersects(objet_box)){ return true; }
-        }
-        return false;
-    }
-
 
     public void objectCollision(Entity current){
         for(Entity entity : entities){
             if(entity != current){
 
                 if(current.collidesWith(entity)){
-                    System.out.println(String.format("%s collide with %s", entity.getClass().getName(), current
-                            .getClass().getName()));
+                    //System.out.println(String.format("%s collide with %s", entity.getClass().getName(), current
+                    //        .getClass().getName()));
 
                     entity.collidedBy(current);
                     current.collidedBy(entity);
@@ -179,6 +169,13 @@ public class Game {
         return collided;
     }
 
+    public boolean intersectEntity(BoundingBox box){
+        for(Entity entity : entities){
+            BoundingBox objet_box = entity.getBounds();
+            if(box.intersects(objet_box)){ return true; }
+        }
+        return false;
+    }
 
     public boolean outOfArena(BoundingBox box){
         BoundingBox arena = new BoundingBox(0, 0, ARENA_WIDTH.getValue(), ARENA_HEIGHT.getValue());

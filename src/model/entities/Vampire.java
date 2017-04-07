@@ -19,6 +19,7 @@ public class Vampire extends CharacterEntity {
     public void collidedBy(Entity other){
 
         if(other instanceof Bullet){
+            System.out.println("VAMP TOUCHED");
             game.getRemovedEntities().add(other);
             game.getRemovedEntities().add(this);
 
