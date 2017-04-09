@@ -35,6 +35,7 @@ public class ImageViewAnimation extends ImageView {
     }
 
     public void stop(){
+        animation.jumpTo(Duration.millis(0));
         animation.stop();
     }
 

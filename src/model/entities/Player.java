@@ -6,6 +6,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.BoundingBox;
 import model.Direction;
+import view.entities.AnimatedView;
 import view.entities.PlayerView;
 
 /**
@@ -19,6 +20,7 @@ public class Player extends CharacterEntity {
 
     private long time_last_hit = 0;
     private double TIME_BEFORE_HIT = 500; //ms
+    private boolean walking = false;
 
     public Player(){
         this.setInitialSpeed(10);
@@ -112,6 +114,22 @@ public class Player extends CharacterEntity {
 
     public NumberBinding progress_bullets() {
         return progress_bullets;
+    }
+
+    public boolean isWalking(){
+        return this.walking;
+    }
+
+    public void setWalking(boolean bool){
+        this.walking = bool;
+
+        if(this.walking){
+            ((AnimatedView)this.entityView).startAnimation();
+        }
+        else{
+            ((AnimatedView)this.entityView).stopAnimation();
+            ((AnimatedView)this.entityView).setAnimation(AnimatedView.Animations.WALK, direction);
+        }
     }
 
 }

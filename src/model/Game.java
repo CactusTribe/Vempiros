@@ -182,6 +182,21 @@ public class Game {
         return !arena.contains(box);
     }
 
+    public void killAll(){
+        for(Entity entity : entities){
+            if(entity instanceof Vampire){
+                removed_entities.add(entity);
+                alive_vamp().set(alive_vamp().getValue() - 1);
+                dead_vamp().set(dead_vamp().getValue() + 1);
+            }
+        }
+
+        for(Entity entity : removed_entities){
+            entities.remove(entity);
+        }
+        removed_entities.clear();
+    }
+
 
     public void apply(ActionType action) throws Exception{
 
@@ -226,6 +241,22 @@ public class Game {
                 break;
             case WEST:
                 new_box = new BoundingBox(box.getMinX() - value, box.getMinY(), box.getWidth(),
+                        box.getHeight());
+                break;
+            case NORTH_EAST:
+                new_box = new BoundingBox(box.getMinX() + value, box.getMinY() - value, box.getWidth(),
+                        box.getHeight());
+                break;
+            case NORTH_WEST:
+                new_box = new BoundingBox(box.getMinX() - value, box.getMinY() - value, box.getWidth(),
+                        box.getHeight());
+                break;
+            case SOUTH_EAST:
+                new_box = new BoundingBox(box.getMinX() + value, box.getMinY() + value, box.getWidth(),
+                        box.getHeight());
+                break;
+            case SOUTH_WEST:
+                new_box = new BoundingBox(box.getMinX() - value, box.getMinY() + value, box.getWidth(),
                         box.getHeight());
                 break;
         }

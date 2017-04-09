@@ -11,7 +11,7 @@ public class Bullet extends MoveableEntity{
     public Bullet(Direction direction){
         this.direction = direction;
         this.entityView = new BulletView(this.direction);
-        this.speed = 15;
+        this.speed = 20;
     }
 
     public boolean canMovedBy(Entity entity){

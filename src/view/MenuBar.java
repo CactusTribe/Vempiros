@@ -1,5 +1,9 @@
 package view;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -30,6 +34,8 @@ public class MenuBar extends ToolBar {
     private PanelLives panelLives;
 
     private int TOOLBAR_H = 40;
+
+    private BooleanProperty paused = new SimpleBooleanProperty(true);
 
     private static Image IMG_PLAY = new Image("images/play.png");
     private static Image IMG_PAUSE = new Image("images/pause.png");
@@ -86,7 +92,7 @@ public class MenuBar extends ToolBar {
 
         slider_player_speed = new Slider();
         slider_player_speed.setMin(1);
-        slider_player_speed.setMax(10);
+        slider_player_speed.setMax(5);
         slider_player_speed.setValue(1);
         slider_player_speed.setBlockIncrement(1);
         slider_player_speed.setMaxWidth(80);
@@ -99,8 +105,8 @@ public class MenuBar extends ToolBar {
 
 
         slider_vamp_speed = new Slider();
-        slider_vamp_speed.setMin(0);
-        slider_vamp_speed.setMax(10);
+        slider_vamp_speed.setMin(1);
+        slider_vamp_speed.setMax(5);
         slider_vamp_speed.setValue(1);
         slider_vamp_speed.setBlockIncrement(1);
         slider_vamp_speed.setMaxWidth(80);
@@ -135,23 +141,30 @@ public class MenuBar extends ToolBar {
                 cowboy_speed,
                 vamp_speed);
 
+
+        this.paused.addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                ImageView icon = null;
+                if(newValue){
+                    icon = new ImageView(IMG_PLAY);
+                    icon.setFitHeight(TOOLBAR_H);
+                    icon.setFitWidth(TOOLBAR_H);
+
+                }
+                else{
+                    icon = new ImageView(IMG_PAUSE);
+                    icon.setFitHeight(TOOLBAR_H);
+                    icon.setFitWidth(TOOLBAR_H);
+                }
+
+                button_play.setGraphic(icon);
+            }
+        });
     }
 
-    public void setPaused(boolean bool) {
-        ImageView icon = null;
-
-        if (bool) {
-            icon = new ImageView(IMG_PLAY);
-            icon.setFitHeight(TOOLBAR_H);
-            icon.setFitWidth(TOOLBAR_H);
-
-        }
-        else{
-            icon = new ImageView(IMG_PAUSE);
-            icon.setFitHeight(TOOLBAR_H);
-            icon.setFitWidth(TOOLBAR_H);
-        }
-        button_play.setGraphic(icon);
+    public BooleanProperty paused_property(){
+        return this.paused;
     }
 
     public Button getButton_menu() {

@@ -3,10 +3,17 @@ package controller;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import model.*;
 import model.entities.CharacterEntity;
@@ -15,7 +22,7 @@ import model.entities.Player;
 import model.entities.Vampire;
 import view.ScreenGame;
 import view.entities.AnimatedView;
-import view.entities.PlayerView;
+import view.graphical.Splash;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,14 +35,15 @@ public class GameController {
 
     private String usrname = "";
     private Game game;
+    private Player player;
     private ScreenGame gameView;
     private Timeline gameLoop;
 
     private KeyEvent last_pressed_key;
     private ActionType current_action;
 
-    private boolean walking = false;
-    private boolean paused = true;
+    private BooleanProperty paused = new SimpleBooleanProperty(true);
+
     private long startTimeReloadBullets = 0;
     private long TIME_BEFORE_ADD_BULLET = 1000; // ms
 
@@ -48,6 +56,8 @@ public class GameController {
 
     public void newGame(){
         game.init();
+        player = game.getPlayer();
+
         gameView.update(game);
 
         game.arena_width().bind(gameView.arena.widthProperty());
@@ -59,6 +69,34 @@ public class GameController {
         gameView.menubar.getAliveVamp().textProperty().bind(Bindings.convert(game.alive_vamp()));
         gameView.menubar.getDeadVamp().textProperty().bind(Bindings.convert(game.dead_vamp()));
 
+        gameView.menubar.getSliderPlayerSpeed().valueProperty().set(1.0);
+        gameView.menubar.getSliderVampSpeed().valueProperty().set(1.0);
+
+        gameView.menubar.paused_property().bind(paused);
+
+        game.getPlayer().alive().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(!newValue){
+                    ((AnimatedView)game.getPlayer().getEntityView()).setAnimation(AnimatedView.Animations.DEAD, null);
+                    gameView.setSplash(Splash.GAME_OVER);
+                    pauseGame();
+                }
+            }
+        });
+
+        game.alive_vamp().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if(newValue.intValue() == 0){
+                    gameView.setSplash(Splash.WIN);
+                    pauseGame();
+                }
+            }
+        });
+
+        gameView.setSplash(Splash.NONE);
+        gameView.update(game);
         //startGame();
     }
 
@@ -70,7 +108,6 @@ public class GameController {
         gameLoop = new Timeline();
         gameLoop.setCycleCount( Timeline.INDEFINITE );
 
-        Player player = game.getPlayer();
 
         KeyFrame kf = new KeyFrame( Duration.seconds(0.017), new EventHandler<ActionEvent>() {
             public void handle(ActionEvent ae)
@@ -89,12 +126,12 @@ public class GameController {
                 //---------------------------------------------
 
                 // DEPLACEMENTS
-                if(walking){
+                if(player.isWalking()){
                     try {
                         game.apply(ActionType.MOVE);
                     } catch (Exception e){
                         gameView.displayError(e.toString());
-                        //ze.printStackTrace();
+                        //e.printStackTrace();
                     }
                 }
                 //---------------------------------------------
@@ -106,13 +143,13 @@ public class GameController {
 
         gameLoop.getKeyFrames().add( kf );
         gameLoop.play();
-        this.paused = false;
+        this.paused.set(false);
     }
 
     public void pauseGame(){
         if(gameLoop != null){
             gameLoop.stop();
-            this.paused = true;
+            this.paused.set(true);
         }
     }
 
@@ -123,104 +160,155 @@ public class GameController {
 
     public void setPlayerSpeed(double ratio){
         Player player = game.getPlayer();
-
-        if( (player.getSpeed() * ratio >= player.getInitialSpeed()) &&
-                (player.getSpeed() * ratio <= (player.getInitialSpeed() * 10) ) ){
-            player.setSpeed(player.getSpeed() * ratio);
-        }
+        player.setSpeed(player.getInitialSpeed() * ratio);
     }
 
     public void setVampSpeed(double ratio){
         for(Entity entity : game.getEntities()){
             if(entity instanceof Vampire) {
-
                 Vampire vamp = (Vampire) entity;
-                if( (vamp.getSpeed() * ratio >= vamp.getInitialSpeed()) &&
-                        (vamp.getSpeed() * ratio <= (vamp.getInitialSpeed() * 10) ) ){
-                    vamp.setSpeed(vamp.getSpeed() * ratio);
-                }
-
+                vamp.setSpeed(vamp.getInitialSpeed() * ratio);
             }
         }
     }
 
 
-    public void notifyEvent(KeyEvent ke){
-        CharacterEntity player = game.getPlayer();
+    public void notifyEvent(Event event){
 
-        if(player.isAlive()){
+        if(player.isAlive() && !paused.getValue()){
+            if(event instanceof KeyEvent){
+                this.notifyKeyEvent((KeyEvent) event);
+            }
+            else if(event instanceof MouseEvent){
+                this.notifyMouseEvent((MouseEvent) event);
+            }
+        }
+        else{
+            player.setWalking(false);
+        }
 
-            if(!paused && ke.getEventType() == KeyEvent.KEY_PRESSED){
-                if(last_pressed_key == null || last_pressed_key.getCode() != ke.getCode()){
+    }
 
-                    // Choix de l'action en fonction de la touche
-                    switch (ke.getCode()){
-                        case Z:
-                            current_action = ActionType.MOVE;
-                            player.setDirection(Direction.NORTH);
+    public void notifyKeyEvent(KeyEvent event){
+
+        if(event.getEventType() == KeyEvent.KEY_PRESSED){
+
+            if(last_pressed_key == null || last_pressed_key.getCode() != event.getCode()){
+
+                // Choix de l'action en fonction de la touche
+                switch (event.getCode()){
+                    case Z:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.NORTH);
+                        break;
+                    case S:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.SOUTH);
+                        break;
+                    case Q:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.WEST);
+                        break;
+                    case D:
+                        current_action = ActionType.MOVE;
+                        player.setDirection(Direction.EAST);
+                        break;
+                    case SPACE:
+                        current_action = ActionType.SHOOT;
+
+                        break;
+                    default:
+                        current_action = null;
+                        break;
+                }
+
+                // Gestion de l'annimation de l'action en cours
+                if(current_action != null){
+                    switch (current_action){
+                        case MOVE:
+                            player.setWalking(true);
                             break;
-                        case S:
-                            current_action = ActionType.MOVE;
-                            player.setDirection(Direction.SOUTH);
-                            break;
-                        case Q:
-                            current_action = ActionType.MOVE;
-                            player.setDirection(Direction.WEST);
-                            break;
-                        case D:
-                            current_action = ActionType.MOVE;
-                            player.setDirection(Direction.EAST);
-                            break;
-                        case SPACE:
-                            current_action = ActionType.SHOOT;
+                        case SHOOT:
                             try {
                                 game.apply(current_action);
                             } catch (Exception e){
                                 gameView.displayError(e.toString());
-                                //e.printStackTrace();
                             }
                             break;
-                        default:
-                            current_action = null;
-                            break;
                     }
-
-                    // Gestion de l'annimation de l'action en cours
-                    if(current_action != null){
-                        switch (current_action){
-                            case MOVE:
-                                ((PlayerView)player.getEntityView()).setAnimation(AnimatedView.Animations.WALK, player
-                                        .getDirection());
-                                ((PlayerView)player.getEntityView()).startAnimation();
-                                walking = true;
-                                break;
-                            case SHOOT:
-                                break;
-                        }
-                        last_pressed_key = ke;
-                    }
-                    else{
-                        walking = false;
-                        last_pressed_key = null;
-                    }
-
+                    last_pressed_key = event;
+                }
+                else{
+                    player.setWalking(false);
+                    last_pressed_key = null;
                 }
 
             }
-            else if(ke.getEventType() == KeyEvent.KEY_RELEASED){
-                if(ke.getCode() != KeyCode.SPACE){
-                    if(last_pressed_key == null || last_pressed_key.getCode() == ke.getCode() || last_pressed_key.getCode
-                            () == KeyCode.SPACE) {
-                        ((PlayerView)player.getEntityView()).setAnimation(AnimatedView.Animations.IDLE, player.getDirection());
-                        walking = false;
-                    }
-                }
-                last_pressed_key = null;
-                current_action = null;
-            }
+
         }
-        else{
-            walking = false;
+        else if(event.getEventType() == KeyEvent.KEY_RELEASED){
+            if(event.getCode() != KeyCode.SPACE){
+                if(last_pressed_key == null || last_pressed_key.getCode() == event.getCode() || last_pressed_key.getCode
+                        () == KeyCode.SPACE) {
+
+                    player.setWalking(false);
+                }
+            }
+            last_pressed_key = null;
+            current_action = null;
+        }
+    }
+
+    public void notifyMouseEvent(MouseEvent event){
+
+        if(!player.isWalking()){
+            BoundingBox player_box = player.getBounds();
+
+            double mouseX = event.getX();
+            double mouseY = event.getY();
+            double minX = player_box.getMinX();
+            double minY = player_box.getMinY();
+            double maxX = player_box.getMaxX();
+            double maxY = player_box.getMaxY();
+
+            double centerX = player_box.getMinX() + (player_box.getWidth() / 2);
+            double centerY = player_box.getMinY() + (player_box.getHeight() / 2);
+
+            // NORTH
+            if( mouseY < centerY && (mouseX >= minX && mouseX <= maxX) ){
+                player.setDirection(Direction.NORTH);
+            }
+            // SOUTH
+            else if ( mouseY >= centerY && (mouseX >= minX && mouseX <= maxX) ){
+                player.setDirection(Direction.SOUTH);
+            }
+            // WEST
+            else if( mouseX < centerX && (mouseY >= minY && mouseY <= maxY) ){
+                player.setDirection(Direction.WEST);
+            }
+            // EAST
+            else if( mouseX >= centerX && (mouseY >= minY && mouseY <= maxY) ){
+                player.setDirection(Direction.EAST);
+            }
+            // NORTH WEST
+            else if( mouseY < minY && mouseX < minX ){
+                player.setDirection(Direction.NORTH_WEST);
+            }
+            // NORTH EAST
+            else if( mouseY < minY && mouseX > maxX ){
+                player.setDirection(Direction.NORTH_EAST);
+            }
+            // SOUTH WEST
+            else if( mouseY >= minY && mouseX < minX ){
+                player.setDirection(Direction.SOUTH_WEST);
+            }
+            // SOUTH EAST
+            else if( mouseY >= minY && mouseX > maxX ){
+                player.setDirection(Direction.SOUTH_EAST);
+            }
+
+
+            System.out.println(player.getDirection());
         }
 
     }
@@ -231,7 +319,6 @@ public class GameController {
         List<String> tokens = new ArrayList<String>(Arrays.asList(str.split(" ")));
 
         try{
-
             String cmd = tokens.get(0);
 
             if(cmd.equals("speed")){
@@ -284,6 +371,10 @@ public class GameController {
                     player.setImmortel(false);
                     System.out.println(String.format("Cheat: God mod OFF."));
                 }
+            }
+            else if(cmd.equals("killall")) {
+                game.killAll();
+                System.out.println(String.format("Cheat: All vampires killed."));
             }
             else{
                 System.out.println("Error: Command doesn't exists.");

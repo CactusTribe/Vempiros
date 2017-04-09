@@ -8,13 +8,17 @@ import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import model.*;
 import model.entities.*;
 import view.entities.*;
+import view.graphical.Splash;
 
 import java.util.LinkedList;
 
@@ -32,16 +36,25 @@ public class ScreenGame extends Screen{
     public Pane arena;
 
     public boolean debug = false;
-    private boolean paused = true;
     private double sprite_ratio = 1.0;
     private double lastArenaW = 0;
     private double lastArenaH = 0;
+
+    private ImageView WIN_SPLASH = new ImageView(new Image("images/youwin.png"));
+    private ImageView LOOSE_SPLASH = new ImageView(new Image("images/gameover.png"));
+    private ImageView END_SPLASH = new ImageView();
 
 
     public ScreenGame(){
         screenController = new ScreenController();
         this.setWidth(860);
         this.setHeight(640);
+
+
+        this.LOOSE_SPLASH.setFitWidth(500);
+        this.LOOSE_SPLASH.setFitHeight(300);
+        this.WIN_SPLASH.setFitWidth(500);
+        this.WIN_SPLASH.setFitHeight(200);
 
         borderPane = new BorderPane();
         borderPane.setBackground(new Background(new BackgroundImage(new Image("images/sand1.jpg"),
@@ -73,14 +86,10 @@ public class ScreenGame extends Screen{
 
         menubar.getButton_play().setOnMouseClicked(
                 event -> {
-                    if(paused){
-                        paused = false;
-                        menubar.setPaused(false);
+                    if(menubar.paused_property().getValue()){
                         gameController.startGame();
                     }
                     else{
-                        paused = true;
-                        menubar.setPaused(true);
                         gameController.pauseGame();
                     }
                     wrapperPane.requestFocus();
@@ -90,14 +99,8 @@ public class ScreenGame extends Screen{
         menubar.getSliderPlayerSpeed().valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
-                if(new_val.intValue() > old_val.intValue() ){
-                    gameController.setPlayerSpeed(new_val.intValue());
-                }
-                else if(new_val.intValue() < old_val.intValue()){
-                    gameController.setPlayerSpeed(new_val.intValue() - menubar.getSliderPlayerSpeed().getMax());
-                }
-
-               wrapperPane.requestFocus();
+                gameController.setPlayerSpeed(new_val.intValue());
+                wrapperPane.requestFocus();
             }
         });
 
@@ -105,29 +108,21 @@ public class ScreenGame extends Screen{
         menubar.getSliderVampSpeed().valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
 
-                if(new_val.intValue() > old_val.intValue() ){
-                    gameController.setVampSpeed(new_val.intValue());
-                    System.out.println("Speed up" + new_val.intValue());
-                }
-                else if(new_val.intValue() < old_val.intValue()){
-                    gameController.setVampSpeed( (new_val.intValue() - menubar.getSliderVampSpeed().getMax()) );
-                    System.out.println("Speed down" + new_val.intValue());
-                }
-
+                gameController.setVampSpeed(new_val.intValue());
                 wrapperPane.requestFocus();
             }
         });
 
 
         wrapperPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                //System.out.println("Key Pressed: " + ke.getCode());
+            public void handle(KeyEvent event) {
+                System.out.println("Key Pressed: " + event.getCode());
 
-                if(ke.getCode() == KeyCode.R){
+                if(event.getCode() == KeyCode.R){
                    gameController.newGame();
                 }
                 else{
-                    gameController.notifyEvent(ke);
+                    gameController.notifyEvent(event);
                 }
 
                 wrapperPane.requestFocus();
@@ -135,11 +130,17 @@ public class ScreenGame extends Screen{
         });
 
         wrapperPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent ke) {
-                //System.out.println("Key Released: " + ke.getCode());
-                gameController.notifyEvent(ke);
-
+            public void handle(KeyEvent event) {
+                System.out.println("Key Released: " + event.getCode());
+                gameController.notifyEvent(event);
                 wrapperPane.requestFocus();
+            }
+        });
+
+        wrapperPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                gameController.notifyEvent(event);
             }
         });
 
@@ -196,13 +197,6 @@ public class ScreenGame extends Screen{
         for(Entity entity : entities){
 
             EntityView entityView = entity.getEntityView();
-
-            if(entity instanceof Player){
-                if(!((Player)entity).isAlive()){
-                    ((AnimatedView)entityView).setAnimation(AnimatedView.Animations.DEAD, null);
-                }
-            }
-
             entityView.setScale(sprite_ratio);
             entityView.update(entity);
             arena.getChildren().add(entityView);
@@ -222,8 +216,12 @@ public class ScreenGame extends Screen{
                 }
             }
         }
-
         sprite_ratio = 1.0;
+
+        this.END_SPLASH.setLayoutX( (arena.getWidth() - END_SPLASH.getFitWidth()) / 2 );
+        this.END_SPLASH.setLayoutY( (arena.getHeight() - END_SPLASH.getFitHeight()) / 2);
+        arena.getChildren().add(END_SPLASH);
+
     }
 
     public void showCollisionBox(BoundingBox box, Color color){
@@ -236,6 +234,20 @@ public class ScreenGame extends Screen{
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 
         arena.getChildren().add(pane);
+    }
+
+    public void setSplash(Splash splash){
+        switch (splash){
+            case NONE:
+                this.END_SPLASH = new ImageView();
+                break;
+            case WIN:
+                this.END_SPLASH = WIN_SPLASH;
+                break;
+            case GAME_OVER:
+                this.END_SPLASH = LOOSE_SPLASH;
+                break;
+        }
     }
 
     public void displayError(String err){
