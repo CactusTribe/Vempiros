@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import model.*;
@@ -261,56 +262,68 @@ public class GameController {
 
     public void notifyMouseEvent(MouseEvent event){
 
-        if(!player.isWalking()){
-            BoundingBox player_box = player.getBounds();
+        if(event.getEventType() == MouseEvent.MOUSE_MOVED){
 
-            double mouseX = event.getX();
-            double mouseY = event.getY();
-            double minX = player_box.getMinX();
-            double minY = player_box.getMinY();
-            double maxX = player_box.getMaxX();
-            double maxY = player_box.getMaxY();
+            if(!player.isWalking()) {
 
-            double centerX = player_box.getMinX() + (player_box.getWidth() / 2);
-            double centerY = player_box.getMinY() + (player_box.getHeight() / 2);
+                BoundingBox player_box = player.getBounds();
+                double mouseX = event.getX();
+                double mouseY = event.getY();
+                double minX = player_box.getMinX();
+                double minY = player_box.getMinY();
+                double maxX = player_box.getMaxX();
+                double maxY = player_box.getMaxY();
 
-            // NORTH
-            if( mouseY < centerY && (mouseX >= minX && mouseX <= maxX) ){
-                player.setDirection(Direction.NORTH);
-            }
-            // SOUTH
-            else if ( mouseY >= centerY && (mouseX >= minX && mouseX <= maxX) ){
-                player.setDirection(Direction.SOUTH);
-            }
-            // WEST
-            else if( mouseX < centerX && (mouseY >= minY && mouseY <= maxY) ){
-                player.setDirection(Direction.WEST);
-            }
-            // EAST
-            else if( mouseX >= centerX && (mouseY >= minY && mouseY <= maxY) ){
-                player.setDirection(Direction.EAST);
-            }
-            // NORTH WEST
-            else if( mouseY < minY && mouseX < minX ){
-                player.setDirection(Direction.NORTH_WEST);
-            }
-            // NORTH EAST
-            else if( mouseY < minY && mouseX > maxX ){
-                player.setDirection(Direction.NORTH_EAST);
-            }
-            // SOUTH WEST
-            else if( mouseY >= minY && mouseX < minX ){
-                player.setDirection(Direction.SOUTH_WEST);
-            }
-            // SOUTH EAST
-            else if( mouseY >= minY && mouseX > maxX ){
-                player.setDirection(Direction.SOUTH_EAST);
-            }
+                double centerX = player_box.getMinX() + (player_box.getWidth() / 2);
+                double centerY = player_box.getMinY() + (player_box.getHeight() / 2);
 
-
-            System.out.println(player.getDirection());
+                // NORTH
+                if (mouseY < centerY && (mouseX >= minX && mouseX <= maxX)) {
+                    player.setDirection(Direction.NORTH);
+                }
+                // SOUTH
+                else if (mouseY >= centerY && (mouseX >= minX && mouseX <= maxX)) {
+                    player.setDirection(Direction.SOUTH);
+                }
+                // WEST
+                else if (mouseX < centerX && (mouseY >= minY && mouseY <= maxY)) {
+                    player.setDirection(Direction.WEST);
+                }
+                // EAST
+                else if (mouseX >= centerX && (mouseY >= minY && mouseY <= maxY)) {
+                    player.setDirection(Direction.EAST);
+                }
+                // NORTH WEST
+                else if (mouseY < minY && mouseX < minX) {
+                    player.setDirection(Direction.NORTH_WEST);
+                }
+                // NORTH EAST
+                else if (mouseY < minY && mouseX > maxX) {
+                    player.setDirection(Direction.NORTH_EAST);
+                }
+                // SOUTH WEST
+                else if (mouseY >= minY && mouseX < minX) {
+                    player.setDirection(Direction.SOUTH_WEST);
+                }
+                // SOUTH EAST
+                else if (mouseY >= minY && mouseX > maxX) {
+                    player.setDirection(Direction.SOUTH_EAST);
+                }
+            }
         }
 
+        else if(event.getEventType() == MouseEvent.MOUSE_CLICKED){
+
+            if(event.getButton() == MouseButton.PRIMARY){
+                try {
+                    game.apply(ActionType.SHOOT);
+                } catch (Exception e){
+                    gameView.displayError(e.toString());
+                }
+            }
+        }
+
+        //System.out.println(player.getDirection());
     }
 
 

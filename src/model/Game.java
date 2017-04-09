@@ -18,6 +18,7 @@ public class Game {
     private Player player;
     private LinkedList<Entity> entities;
     private LinkedList<Entity> removed_entities;
+    private LinkedList<Entity> added_entities;
 
     private Bullet bulletSchema;
 
@@ -36,6 +37,7 @@ public class Game {
 
     public void init(){
         this.removed_entities = new LinkedList<>();
+        this.added_entities = new LinkedList<>();
         this.entities = new LinkedList<>();
         this.bulletSchema = new Bullet(Direction.EAST);
         this.bulletSchema.setBounds(new BoundingBox(0,0,30,10));
@@ -47,13 +49,13 @@ public class Game {
         ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
         DEAD_VAMP = new SimpleIntegerProperty(0);
 
-        this.spawnEntity("model.entities.Rock", NB_ROCK, 40, 40);
-        this.spawnEntity("model.entities.Box", NB_BOX, 40, 40);
-        this.spawnEntity("model.entities.Vampire", NB_VAMP, 30, 60);
-        this.spawnEntity("model.entities.Player", 1, 30, 80);
+        this.spawnEntity(entities, "model.entities.Rock", NB_ROCK, 40, 40);
+        this.spawnEntity(entities, "model.entities.Box", NB_BOX, 40, 40);
+        this.spawnEntity(entities, "model.entities.Vampire", NB_VAMP, 30, 60);
+        this.spawnEntity(entities, "model.entities.Player", 1, 30, 80);
     }
 
-    public void spawnEntity(String entity_name, int number, int width, int height){
+    public void spawnEntity(LinkedList<Entity> liste, String entity_name, int number, int width, int height){
         Random rand = new Random();
 
         for(int i=0; i < number; i++){
@@ -89,7 +91,7 @@ public class Game {
                         }
                     }
                 }
-                entities.add(object);
+                liste.add(object);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -118,6 +120,11 @@ public class Game {
                     possible_dir.add(Direction.SOUTH);
                     possible_dir.add(Direction.EAST);
                     possible_dir.add(Direction.WEST);
+                    possible_dir.add(Direction.NORTH_WEST);
+                    possible_dir.add(Direction.SOUTH_WEST);
+                    possible_dir.add(Direction.NORTH_EAST);
+                    possible_dir.add(Direction.SOUTH_EAST);
+
 
                     while(!vamp.move(vamp.getSpeed(), vamp.getDirection())){
                         possible_dir.remove(vamp.getDirection());
@@ -137,10 +144,13 @@ public class Game {
             }
         }
 
-        for(Entity entity : removed_entities){
-            entities.remove(entity);
-        }
+
+        entities.removeAll(removed_entities);
         removed_entities.clear();
+
+        entities.addAll(added_entities);
+        added_entities.clear();
+
     }
 
     public void objectCollision(Entity current){
@@ -296,6 +306,10 @@ public class Game {
 
     public LinkedList<Entity> getRemovedEntities(){
         return this.removed_entities;
+    }
+
+    public LinkedList<Entity> getAddedEntities(){
+        return this.added_entities;
     }
 
     public LinkedList<Entity> getEntities(){

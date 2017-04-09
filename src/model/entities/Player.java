@@ -57,26 +57,42 @@ public class Player extends CharacterEntity {
         BoundingBox old_box = game.getBulletSchema().getBounds();
         BoundingBox bullet_box = null;
 
+        double bullet_W = old_box.getWidth();
+        double bullet_H = old_box.getHeight();
+
+        double player_minX = player_box.getMinX();
+        double player_minY = player_box.getMinY();
+        double player_maxX = player_box.getMaxX();
+        double player_maxY = player_box.getMaxY();
+
+        double player_W = player_box.getWidth();
+        double player_H = player_box.getHeight();
+
         switch (bullet.getDirection()){
 
             case NORTH:
-                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2), player_box.getMinY
-                        () - old_box.getWidth(),
-                        old_box.getHeight(), old_box.getWidth());
+                bullet_box = new BoundingBox(player_minX + (player_W / 2), player_minY - bullet_W, bullet_H, bullet_W);
                 break;
             case SOUTH:
-                bullet_box = new BoundingBox(player_box.getMinX() + (player_box.getWidth() / 2),
-                        player_box.getMinY() + player_box.getHeight(),
-                        old_box.getHeight(), old_box.getWidth());
+                bullet_box = new BoundingBox(player_minX + (player_W / 2), player_minY + player_H, bullet_H, bullet_W);
                 break;
             case EAST:
-                bullet_box = new BoundingBox(player_box.getMinX() + player_box.getWidth(),
-                        player_box.getMinY() + (player_box.getHeight() / 2),
-                        old_box.getWidth(), old_box.getHeight());
+                bullet_box = new BoundingBox(player_minX + player_W, player_minY + (player_H / 2), bullet_W, bullet_H);
                 break;
             case WEST:
-                bullet_box = new BoundingBox(player_box.getMinX()  - old_box.getWidth() , player_box.getMinY() + (player_box.getHeight() /
-                        2), old_box.getWidth(), old_box.getHeight());
+                bullet_box = new BoundingBox(player_minX  - bullet_W , player_minY + (player_H / 2), bullet_W, bullet_H);
+                break;
+            case NORTH_EAST:
+                bullet_box = new BoundingBox(player_maxX, player_minY, bullet_W, bullet_W);
+                break;
+            case NORTH_WEST:
+                bullet_box = new BoundingBox(player_minX - bullet_W, player_minY, bullet_W, bullet_W);
+                break;
+            case SOUTH_EAST:
+                bullet_box = new BoundingBox(player_maxX, player_maxY, bullet_W, bullet_W);
+                break;
+            case SOUTH_WEST:
+                bullet_box = new BoundingBox(player_minX - bullet_W, player_maxY, bullet_W, bullet_W);
                 break;
         }
 

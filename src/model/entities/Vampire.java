@@ -43,10 +43,43 @@ public class Vampire extends CharacterEntity {
         if(other instanceof Bullet){
             System.out.println("VAMP TOUCHED");
             game.getRemovedEntities().add(other);
-            game.getRemovedEntities().add(this);
 
-            game.alive_vamp().set(game.alive_vamp().getValue() - 1);
-            game.dead_vamp().set(game.dead_vamp().getValue() + 1);
+            if(!game.getRemovedEntities().contains(this)) {
+                game.getRemovedEntities().add(this);
+
+                game.alive_vamp().set(game.alive_vamp().getValue() - 1);
+                game.dead_vamp().set(game.dead_vamp().getValue() + 1);
+            }
         }
+
+        else if(other instanceof Vampire){
+            Vampire vamp = (Vampire)other;
+
+            if(vamp.getGenre() == this.genre){
+                if(this.genre == Genre.MALE){
+
+                    if(!game.getRemovedEntities().contains(this)){
+                        game.getRemovedEntities().add(this);
+                        game.alive_vamp().set(game.alive_vamp().getValue() - 1);
+                    }
+                }
+            }
+            else{
+                if(this.genre == Genre.FEMALE){
+                    if(game.alive_vamp().getValue() < 30){
+                        System.out.println("VAMP SPAWNED");
+                        game.spawnEntity(game.getAddedEntities(), "model.entities.Vampire", 1,
+                                (int)this.getBounds().getWidth() , (int)this.getBounds().getHeight());
+
+                        game.alive_vamp().set(game.alive_vamp().getValue() + 1);
+                    }
+
+                }
+            }
+        }
+    }
+
+    public Genre getGenre(){
+        return this.genre;
     }
 }

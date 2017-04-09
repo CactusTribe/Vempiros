@@ -43,26 +43,40 @@ public class VampireFView extends AnimatedView{
             if(sprite != null)
                 ((ImageViewAnimation)sprite).stop();
 
-            switch (anim){
-                case WALK:
-                    if(dir == Direction.NORTH){
+            if(anim == Animations.WALK){
+                switch (dir){
+
+                    case NORTH:
                         this.setSprite("WALK_NORTH");
-                    }
-                    else if(dir == Direction.SOUTH){
+                        break;
+                    case SOUTH:
                         this.setSprite("WALK_SOUTH");
-                    }
-                    else if(dir == Direction.EAST){
+                        break;
+                    case EAST:
                         this.setSprite("WALK_EAST");
-                    }
-                    else if(dir == Direction.WEST){
+                        break;
+                    case WEST:
                         this.setSprite("WALK_WEST");
-                    }
-                    break;
-                case ATTACK:
-                    break;
-                case DEAD:
-                    this.setSprite("DEAD");
-                    break;
+                        break;
+                    case NORTH_EAST:
+                        this.setSprite("WALK_EAST");
+                        break;
+                    case NORTH_WEST:
+                        this.setSprite("WALK_WEST");
+                        break;
+                    case SOUTH_EAST:
+                        this.setSprite("WALK_EAST");
+                        break;
+                    case SOUTH_WEST:
+                        this.setSprite("WALK_WEST");
+                        break;
+                }
+            }
+            else if(anim == Animations.ATTACK){
+
+            }
+            else if(anim == Animations.DEAD){
+                this.setSprite("DEAD");
             }
 
             this.startAnimation();

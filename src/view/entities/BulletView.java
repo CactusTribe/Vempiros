@@ -20,7 +20,7 @@ public class BulletView extends EntityView{
 
         switch (this.direction){
             case NORTH:
-                this.setRotate(270);
+                this.setRotate(-90);
                 break;
             case SOUTH:
                 this.setRotate(90);
@@ -31,19 +31,23 @@ public class BulletView extends EntityView{
             case WEST:
                 this.setRotate(180);
                 break;
+            case NORTH_EAST:
+                this.setRotate(-45);
+                break;
+            case NORTH_WEST:
+                this.setRotate(-135);
+                break;
+            case SOUTH_EAST:
+                this.setRotate(45);
+                break;
+            case SOUTH_WEST:
+                this.setRotate(135);
+                break;
         }
     }
 
     public void update(Entity entity) {
         BoundingBox obj_box = entity.getBounds();
-
-        if(this.direction == Direction.NORTH || this.direction == Direction.SOUTH){
-            sprite.setFitWidth(obj_box.getHeight());
-            sprite.setFitHeight(obj_box.getWidth());
-        }else{
-            sprite.setFitWidth(obj_box.getWidth());
-            sprite.setFitHeight(obj_box.getHeight());
-        }
 
         this.setLayoutX(obj_box.getMinX() - (WIDTH() / 2) + (obj_box.getWidth() / 2));
         this.setLayoutY(obj_box.getMinY() - (HEIGHT() / 2) + (obj_box.getHeight() / 2));

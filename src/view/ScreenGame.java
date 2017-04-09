@@ -35,7 +35,7 @@ public class ScreenGame extends Screen{
     public Pane wrapperPane;
     public Pane arena;
 
-    public boolean debug = false;
+    public boolean debug = true;
     private double sprite_ratio = 1.0;
     private double lastArenaW = 0;
     private double lastArenaH = 0;
@@ -116,7 +116,7 @@ public class ScreenGame extends Screen{
 
         wrapperPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent event) {
-                System.out.println("Key Pressed: " + event.getCode());
+                //System.out.println("Key Pressed: " + event.getCode());
 
                 if(event.getCode() == KeyCode.R){
                    gameController.newGame();
@@ -131,13 +131,20 @@ public class ScreenGame extends Screen{
 
         wrapperPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent event) {
-                System.out.println("Key Released: " + event.getCode());
+                //System.out.println("Key Released: " + event.getCode());
                 gameController.notifyEvent(event);
                 wrapperPane.requestFocus();
             }
         });
 
-        wrapperPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+        arena.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                gameController.notifyEvent(event);
+            }
+        });
+
+        arena.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 gameController.notifyEvent(event);
