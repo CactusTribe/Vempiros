@@ -1,11 +1,13 @@
 package model.entities;
 
+import common.Sounds;
+import javafx.scene.media.AudioClip;
+import model.Modification;
 import view.entities.VampireFView;
 import view.entities.VampireMView;
 
+import java.nio.file.Paths;
 import java.util.Random;
-
-import static model.entities.Vampire.Genre.FEMALE;
 
 /**
  * Created by cactustribe on 02/04/17.
@@ -42,13 +44,11 @@ public class Vampire extends CharacterEntity {
 
         if(other instanceof Bullet){
             System.out.println("VAMP TOUCHED");
-            game.getRemovedEntities().add(other);
 
-            if(!game.getRemovedEntities().contains(this)) {
-                game.getRemovedEntities().add(this);
+            game.getModifications().add(new Modification(Modification.ModificationType.REMOVE, other));
 
-                game.alive_vamp().set(game.alive_vamp().getValue() - 1);
-                game.dead_vamp().set(game.dead_vamp().getValue() + 1);
+            if(!game.entityModified(this)){
+                game.getModifications().add(new Modification(Modification.ModificationType.KILL, this));
             }
         }
 
@@ -58,22 +58,15 @@ public class Vampire extends CharacterEntity {
             if(vamp.getGenre() == this.genre){
                 if(this.genre == Genre.MALE){
 
-                    if(!game.getRemovedEntities().contains(this)){
-                        game.getRemovedEntities().add(this);
-                        game.alive_vamp().set(game.alive_vamp().getValue() - 1);
+                    if(!game.entityModified(this)){
+                        game.getModifications().add(new Modification(Modification.ModificationType.REMOVE, this));
                     }
                 }
             }
             else{
                 if(this.genre == Genre.FEMALE){
-                    if(game.alive_vamp().getValue() < 30){
-                        System.out.println("VAMP SPAWNED");
-                        game.spawnEntity(game.getAddedEntities(), "model.entities.Vampire", 1,
-                                (int)this.getBounds().getWidth() , (int)this.getBounds().getHeight());
-
-                        game.alive_vamp().set(game.alive_vamp().getValue() + 1);
-                    }
-
+                    System.out.println("VAMP SPAWNED");
+                    game.getModifications().add(new Modification(Modification.ModificationType.SPAWN, new Vampire()));
                 }
             }
         }

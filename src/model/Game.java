@@ -1,12 +1,19 @@
 package model;
 
+import common.Sounds;
+import javafx.animation.FadeTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
+import javafx.scene.effect.BoxBlur;
+import javafx.util.Duration;
 import model.entities.*;
 import view.entities.AnimatedView;
+
+import java.awt.*;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -17,12 +24,12 @@ public class Game {
 
     private Player player;
     private LinkedList<Entity> entities;
-    private LinkedList<Entity> removed_entities;
-    private LinkedList<Entity> added_entities;
+    private LinkedList<Modification> modifications;
 
     private Bullet bulletSchema;
 
     private int NB_VAMP = 5;
+    private int MAX_VAMP = 50;
 
     private IntegerProperty ALIVE_VAMP;
     private IntegerProperty DEAD_VAMP;
@@ -30,33 +37,42 @@ public class Game {
     private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(820);
     private DoubleProperty ARENA_HEIGHT = new SimpleDoubleProperty(550);
 
+    private HashMap<String, Dimension> entity_dimensions;
 
     public Game(){
 
     }
 
     public void init(){
-        this.removed_entities = new LinkedList<>();
-        this.added_entities = new LinkedList<>();
+        this.modifications = new LinkedList<>();
         this.entities = new LinkedList<>();
         this.bulletSchema = new Bullet(Direction.EAST);
         this.bulletSchema.setBounds(new BoundingBox(0,0,30,10));
 
+        this.entity_dimensions = new HashMap<>();
+        this.entity_dimensions.put("model.entities.Rock", new Dimension(50, 50));
+        this.entity_dimensions.put("model.entities.Box", new Dimension(50, 50));
+        this.entity_dimensions.put("model.entities.Vampire", new Dimension(30, 60));
+        this.entity_dimensions.put("model.entities.Player", new Dimension(30, 80));
+
         int NB_ROCK = (int)(ARENA_WIDTH.getValue()/100);
-        int NB_BOX = (int)(ARENA_WIDTH.getValue()/200);
-        NB_VAMP = (int)(ARENA_WIDTH.getValue()/200);
+        int NB_BOX = (int)(ARENA_WIDTH.getValue()/150);
+        NB_VAMP = (int)(ARENA_WIDTH.getValue()/150);
 
         ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
         DEAD_VAMP = new SimpleIntegerProperty(0);
 
-        this.spawnEntity(entities, "model.entities.Rock", NB_ROCK, 40, 40);
-        this.spawnEntity(entities, "model.entities.Box", NB_BOX, 40, 40);
-        this.spawnEntity(entities, "model.entities.Vampire", NB_VAMP, 30, 60);
-        this.spawnEntity(entities, "model.entities.Player", 1, 30, 80);
+        this.spawnEntity(entities, "model.entities.Rock", NB_ROCK);
+        this.spawnEntity(entities, "model.entities.Box", NB_BOX);
+        this.spawnEntity(entities, "model.entities.Vampire", NB_VAMP);
+        this.spawnEntity(entities, "model.entities.Player", 1);
     }
 
-    public void spawnEntity(LinkedList<Entity> liste, String entity_name, int number, int width, int height){
+    public void spawnEntity(LinkedList<Entity> liste, String entity_name, int number){
         Random rand = new Random();
+
+        double width = entity_dimensions.get(entity_name).getWidth();
+        double height = entity_dimensions.get(entity_name).getHeight();
 
         for(int i=0; i < number; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - width);
@@ -102,18 +118,19 @@ public class Game {
 
     public void moveEntities(){
         for(Entity entity : entities){
-            if(!removed_entities.contains(entity)){
+
+            if(!entityModified(entity)){
+
                 if(entity instanceof Bullet){
                     Bullet bullet = (Bullet)entity;
                     if(!bullet.move(bullet.getSpeed(), bullet.getDirection())){
-                        removed_entities.add(entity);
+                        modifications.add(new Modification(Modification.ModificationType.REMOVE, bullet));
                     }
                 }
 
                 else if(entity instanceof Vampire){
                     Vampire vamp = (Vampire)entity;
                     Random rand = new Random();
-                    int random_dir;
 
                     LinkedList<Direction> possible_dir = new LinkedList<>();
                     possible_dir.add(Direction.NORTH);
@@ -125,32 +142,60 @@ public class Game {
                     possible_dir.add(Direction.NORTH_EAST);
                     possible_dir.add(Direction.SOUTH_EAST);
 
-
                     while(!vamp.move(vamp.getSpeed(), vamp.getDirection())){
                         possible_dir.remove(vamp.getDirection());
 
                         if(possible_dir.size() > 0){
-                            random_dir = rand.nextInt(possible_dir.size());
+                            int random_dir = rand.nextInt(possible_dir.size());
                             Direction new_dir = possible_dir.get(random_dir);
                             vamp.setDirection(new_dir);
-                            ((AnimatedView)vamp.getEntityView()).setAnimation(AnimatedView.Animations.WALK, vamp.getDirection());
                         }
-                        else{
-                            break;
-                        }
-
+                        else{ break; }
                     }
                 }
             }
         }
+    }
 
+    public boolean entityModified(Entity entity){
+        for(Modification modif : modifications){
+            if(modif.getEntity() == entity)
+                return true;
+        }
+        return false;
+    }
 
-        entities.removeAll(removed_entities);
-        removed_entities.clear();
+    public void applyModifications(){
 
-        entities.addAll(added_entities);
-        added_entities.clear();
+        for(Modification modif : modifications){
 
+            switch (modif.getType()){
+
+                case KILL:
+                    entities.remove(modif.getEntity());
+                    Sounds.play(Sounds.SoundType.DEATH_VAMP);
+                    this.alive_vamp().set(this.alive_vamp().getValue() - 1);
+                    this.dead_vamp().set(this.dead_vamp().getValue() + 1);
+
+                    break;
+                case REMOVE:
+                    entities.remove(modif.getEntity());
+                    if(modif.getEntity() instanceof Vampire){
+                        this.alive_vamp().set(this.alive_vamp().getValue() - 1);
+                    }
+                    break;
+                case SPAWN:
+                    if(modif.getEntity() instanceof Vampire){
+                        if(this.alive_vamp().getValue() < this.getMAX_VAMP()) {
+                            this.spawnEntity(entities, "model.entities.Vampire", 1);
+                            this.alive_vamp().set(this.alive_vamp().getValue() + 1);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        modifications.clear();
     }
 
     public void objectCollision(Entity current){
@@ -195,16 +240,10 @@ public class Game {
     public void killAll(){
         for(Entity entity : entities){
             if(entity instanceof Vampire){
-                removed_entities.add(entity);
-                alive_vamp().set(alive_vamp().getValue() - 1);
-                dead_vamp().set(dead_vamp().getValue() + 1);
+                modifications.add(new Modification(Modification.ModificationType.KILL, entity));
             }
         }
-
-        for(Entity entity : removed_entities){
-            entities.remove(entity);
-        }
-        removed_entities.clear();
+        applyModifications();
     }
 
 
@@ -215,12 +254,10 @@ public class Game {
         }
 
         switch (action){
-
             case MOVE:
                 if(!player.move(player.getSpeed(), player.getDirection())){
                     throw new Exception("Mouvement impossible.");
                 }
-
                 break;
 
             case SHOOT:
@@ -294,6 +331,12 @@ public class Game {
             }
         }
 
+        // MODIFICATION DES DIMENSIONS PAR DEFAUT
+        for(HashMap.Entry<String, Dimension> entry : entity_dimensions.entrySet()) {
+            Dimension dimension = entry.getValue();
+            dimension.setSize(dimension.getWidth() * ratio, dimension.getHeight() * ratio);
+        }
+
         // MODIFICATION DU SCHEMA DE LA BALLE
         this.bulletSchema.setBounds(new BoundingBox(0,0,
                 bulletSchema.getBounds().getWidth() * ratio, bulletSchema.getBounds().getHeight() * ratio));
@@ -304,16 +347,12 @@ public class Game {
         return this.player;
     }
 
-    public LinkedList<Entity> getRemovedEntities(){
-        return this.removed_entities;
-    }
-
-    public LinkedList<Entity> getAddedEntities(){
-        return this.added_entities;
-    }
-
     public LinkedList<Entity> getEntities(){
         return this.entities;
+    }
+
+    public LinkedList<Modification> getModifications(){
+        return this.modifications;
     }
 
     public DoubleProperty arena_width(){
@@ -335,5 +374,7 @@ public class Game {
     public Bullet getBulletSchema(){
         return this.bulletSchema;
     }
+
+    public int getMAX_VAMP(){ return this.MAX_VAMP; }
 
 }

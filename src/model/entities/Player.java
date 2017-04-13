@@ -1,5 +1,6 @@
 package model.entities;
 
+import common.Sounds;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.DoubleProperty;
@@ -30,7 +31,7 @@ public class Player extends CharacterEntity {
         this.setDirection(Direction.EAST);
         this.entityView = new PlayerView();
 
-        this.total_bullets = new SimpleDoubleProperty(20);
+        this.total_bullets = new SimpleDoubleProperty(25);
         this.current_bullets = new SimpleDoubleProperty(total_bullets.getValue());
         this.progress_bullets = Bindings.divide(current_bullets, total_bullets);
     }
@@ -106,6 +107,7 @@ public class Player extends CharacterEntity {
 
         System.out.println(" >> Shoot !");
         this.removeBullet();
+        Sounds.play(Sounds.SoundType.GUN_FIRE);
     }
 
     public void addBullets(int n) {
@@ -144,7 +146,6 @@ public class Player extends CharacterEntity {
         }
         else{
             ((AnimatedView)this.entityView).stopAnimation();
-            ((AnimatedView)this.entityView).setAnimation(AnimatedView.Animations.WALK, direction);
         }
     }
 

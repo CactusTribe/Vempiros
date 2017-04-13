@@ -1,5 +1,6 @@
 package controller;
 
+import common.Sounds;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
@@ -24,7 +25,6 @@ import model.entities.Vampire;
 import view.ScreenGame;
 import view.entities.AnimatedView;
 import view.graphical.Splash;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +47,8 @@ public class GameController {
 
     private long startTimeReloadBullets = 0;
     private long TIME_BEFORE_ADD_BULLET = 1000; // ms
+
+    public boolean debug = false;
 
 
     public GameController(String usrname, ScreenGame view){
@@ -79,9 +81,14 @@ public class GameController {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if(!newValue){
-                    ((AnimatedView)game.getPlayer().getEntityView()).setAnimation(AnimatedView.Animations.DEAD, null);
+                    System.out.println("GAME OVER");
                     gameView.setSplash(Splash.GAME_OVER);
+                    Sounds.play(Sounds.SoundType.GAME_OVER);
                     pauseGame();
+                    ((AnimatedView)game.getPlayer().getEntityView()).setAnimation(AnimatedView.Animations.DEAD, null);
+                }
+                else{
+                    gameView.setSplash(Splash.NONE);
                 }
             }
         });
@@ -90,7 +97,9 @@ public class GameController {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 if(newValue.intValue() == 0){
+                    System.out.println("YOU WIN");
                     gameView.setSplash(Splash.WIN);
+                    Sounds.play(Sounds.SoundType.GAME_WIN);
                     pauseGame();
                 }
             }
@@ -121,6 +130,7 @@ public class GameController {
                     }
                     else if(System.currentTimeMillis() - startTimeReloadBullets >= TIME_BEFORE_ADD_BULLET){
                         player.addBullets(9999);
+                        Sounds.play(Sounds.SoundType.GUN_RELOAD);
                         startTimeReloadBullets = 0;
                     }
                 }
@@ -132,12 +142,12 @@ public class GameController {
                         game.apply(ActionType.MOVE);
                     } catch (Exception e){
                         gameView.displayError(e.toString());
-                        //e.printStackTrace();
                     }
                 }
                 //---------------------------------------------
 
                 game.moveEntities();
+                game.applyModifications();
                 gameView.update(game);
             }
         });
@@ -148,6 +158,8 @@ public class GameController {
     }
 
     public void pauseGame(){
+        player.setWalking(false);
+
         if(gameLoop != null){
             gameLoop.stop();
             this.paused.set(true);
@@ -184,10 +196,6 @@ public class GameController {
                 this.notifyMouseEvent((MouseEvent) event);
             }
         }
-        else{
-            player.setWalking(false);
-        }
-
     }
 
     public void notifyKeyEvent(KeyEvent event){
@@ -216,14 +224,12 @@ public class GameController {
                         break;
                     case SPACE:
                         current_action = ActionType.SHOOT;
-
                         break;
                     default:
                         current_action = null;
                         break;
                 }
 
-                // Gestion de l'annimation de l'action en cours
                 if(current_action != null){
                     switch (current_action){
                         case MOVE:
@@ -251,7 +257,6 @@ public class GameController {
             if(event.getCode() != KeyCode.SPACE){
                 if(last_pressed_key == null || last_pressed_key.getCode() == event.getCode() || last_pressed_key.getCode
                         () == KeyCode.SPACE) {
-
                     player.setWalking(false);
                 }
             }
@@ -312,7 +317,7 @@ public class GameController {
             }
         }
 
-        else if(event.getEventType() == MouseEvent.MOUSE_CLICKED){
+        else if(event.getEventType() == MouseEvent.MOUSE_PRESSED){
 
             if(event.getButton() == MouseButton.PRIMARY){
                 try {
@@ -322,7 +327,6 @@ public class GameController {
                 }
             }
         }
-
         //System.out.println(player.getDirection());
     }
 
@@ -362,12 +366,12 @@ public class GameController {
                 System.out.println(String.format("Cheat: Player is dead."));
             }
             else if(cmd.equals("debug")) {
-                if(gameView.debug){
-                    gameView.debug = false;
+                if(debug){
+                    debug = false;
                     System.out.println(String.format("Cheat: Debug disabled."));
                 }
                 else{
-                    gameView.debug = true;
+                    debug = true;
                     System.out.println(String.format("Cheat: Debug enabled."));
                 }
             }

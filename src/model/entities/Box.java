@@ -1,5 +1,6 @@
 package model.entities;
 
+import model.Modification;
 import view.entities.BoxView;
 
 /**
@@ -20,7 +21,7 @@ public class Box extends MoveableEntity{
 
     public void collidedBy(Entity other){
         if(other instanceof Bullet){
-            game.getRemovedEntities().add(other);
+            game.getModifications().add(new Modification(Modification.ModificationType.REMOVE, other));
         }
         else if(other instanceof Player){
             this.direction = ((Player) other).getDirection();

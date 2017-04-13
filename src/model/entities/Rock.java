@@ -1,5 +1,6 @@
 package model.entities;
 
+import model.Modification;
 import view.entities.RockView;
 
 /**
@@ -13,7 +14,7 @@ public class Rock extends StaticEntity{
 
     public void collidedBy(Entity other){
         if(other instanceof Bullet){
-            game.getRemovedEntities().add(other);
+            game.getModifications().add(new Modification(Modification.ModificationType.REMOVE, other));
         }
     }
 }

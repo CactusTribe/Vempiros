@@ -51,4 +51,5 @@ public abstract class EntityView extends StackPane {
     public double HEIGHT() {
         return this.sprite.getFitHeight();
     }
+    public ImageView getSprite(){ return this.sprite; }
 }

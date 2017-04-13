@@ -18,7 +18,6 @@ public abstract class MoveableEntity extends Entity{
     public boolean move(double offset, Direction dir){
 
         boolean move_done = true;
-        Direction old_dir = this.getDirection();
         BoundingBox old_box = this.getBounds();
         BoundingBox new_box = game.translateBounds(bounds, dir, offset);
         LinkedList<Entity> collided = game.collidedEntities(new_box);
@@ -51,7 +50,6 @@ public abstract class MoveableEntity extends Entity{
         game.objectCollision(this);
 
         if(!move_done){
-            this.setDirection(old_dir);
             this.setBounds(old_box);
         }
 

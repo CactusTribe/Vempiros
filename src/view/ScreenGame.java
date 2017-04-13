@@ -35,7 +35,6 @@ public class ScreenGame extends Screen{
     public Pane wrapperPane;
     public Pane arena;
 
-    public boolean debug = true;
     private double sprite_ratio = 1.0;
     private double lastArenaW = 0;
     private double lastArenaH = 0;
@@ -144,7 +143,7 @@ public class ScreenGame extends Screen{
             }
         });
 
-        arena.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        arena.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 gameController.notifyEvent(event);
@@ -188,6 +187,7 @@ public class ScreenGame extends Screen{
 
         arena.widthProperty().addListener(resizeListener);
         arena.heightProperty().addListener(resizeListener);
+
     }
 
 
@@ -208,7 +208,7 @@ public class ScreenGame extends Screen{
             entityView.update(entity);
             arena.getChildren().add(entityView);
 
-            if(debug) {
+            if(gameController.debug) {
                 if(entity instanceof Player){
                     showCollisionBox(entity.getBounds(), Color.BLUE);
                 }
@@ -223,7 +223,7 @@ public class ScreenGame extends Screen{
                 }
             }
         }
-        sprite_ratio = 1.0;
+        //sprite_ratio = 1.0;
 
         this.END_SPLASH.setLayoutX( (arena.getWidth() - END_SPLASH.getFitWidth()) / 2 );
         this.END_SPLASH.setLayoutY( (arena.getHeight() - END_SPLASH.getFitHeight()) / 2);
