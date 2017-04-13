@@ -171,6 +171,10 @@ public class MenuBar extends ToolBar {
         return this.button_menu;
     }
 
+    public Button getButton_options() {
+        return this.button_options;
+    }
+
     public Button getButton_play() {
         return this.button_play;
     }

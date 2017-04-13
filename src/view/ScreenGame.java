@@ -2,10 +2,12 @@ package view;
 
 import controller.GameController;
 import controller.ScreenController;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -80,6 +82,13 @@ public class ScreenGame extends Screen{
                 event -> {
                     gameController.pauseGame();
                     this.screenController.screensController.setScreen("menu");
+                }
+        );
+
+        menubar.getButton_options().setOnAction(
+                event -> {
+                    gameController.pauseGame();
+                    ConfigDialog options = new ConfigDialog();
                 }
         );
 
@@ -188,6 +197,7 @@ public class ScreenGame extends Screen{
         arena.widthProperty().addListener(resizeListener);
         arena.heightProperty().addListener(resizeListener);
 
+        Platform.runLater(() -> wrapperPane.requestFocus());
     }
 
 
