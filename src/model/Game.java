@@ -29,7 +29,7 @@ public class Game {
     private Bullet bulletSchema;
 
     private int NB_VAMP = 5;
-    private int MAX_VAMP = 50;
+    private int MAX_VAMP = 20;
 
     private IntegerProperty ALIVE_VAMP;
     private IntegerProperty DEAD_VAMP;

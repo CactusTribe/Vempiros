@@ -24,7 +24,7 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
 
     private GridPane grid;
     private LinkedHashMap<String, TextField> fields_liste;
-    private LinkedHashMap<String, KeyCode> keycode_liste;
+    public static LinkedHashMap<String, KeyCode> keycode_liste;
 
     public ConfigDialog(){
         super();
@@ -79,7 +79,8 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
         });
     }
 
-    public void readBindingsFile(){
+    public static void readBindingsFile(){
+        keycode_liste = new LinkedHashMap<>();
 
         try (Stream<String> stream = Files.lines(Paths.get("resources/bindings"))) {
             List<String> list = stream.sequential().collect(Collectors.toList());

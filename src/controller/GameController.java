@@ -22,6 +22,7 @@ import model.entities.CharacterEntity;
 import model.entities.Entity;
 import model.entities.Player;
 import model.entities.Vampire;
+import view.ConfigDialog;
 import view.ScreenGame;
 import view.entities.AnimatedView;
 import view.graphical.Splash;
@@ -60,6 +61,7 @@ public class GameController {
     public void newGame(){
         game.init();
         player = game.getPlayer();
+        ConfigDialog.readBindingsFile();
 
         gameView.update(game);
 
@@ -204,6 +206,26 @@ public class GameController {
 
             if(last_pressed_key == null || last_pressed_key.getCode() != event.getCode()){
 
+                if(event.getCode() == ConfigDialog.keycode_liste.get("Forward")){
+                    current_action = ActionType.MOVE;
+                    player.setDirection(Direction.NORTH);
+                }
+                else if(event.getCode() == ConfigDialog.keycode_liste.get("Backward")){
+                    current_action = ActionType.MOVE;
+                    player.setDirection(Direction.SOUTH);
+                }
+                else if(event.getCode() == ConfigDialog.keycode_liste.get("Left")){
+                    current_action = ActionType.MOVE;
+                    player.setDirection(Direction.WEST);
+                }
+                else if(event.getCode() == ConfigDialog.keycode_liste.get("Right")){
+                    current_action = ActionType.MOVE;
+                    player.setDirection(Direction.EAST);
+                }
+                else if(event.getCode() == ConfigDialog.keycode_liste.get("Shoot")){
+                    current_action = ActionType.SHOOT;
+                }
+/*
                 // Choix de l'action en fonction de la touche
                 switch (event.getCode()){
                     case Z:
@@ -229,7 +251,7 @@ public class GameController {
                         current_action = null;
                         break;
                 }
-
+*/
                 if(current_action != null){
                     switch (current_action){
                         case MOVE:
