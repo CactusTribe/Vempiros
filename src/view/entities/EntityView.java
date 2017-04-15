@@ -1,10 +1,13 @@
 package view.entities;
 
 import javafx.geometry.BoundingBox;
+import javafx.geometry.Dimension2D;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import model.Direction;
 import model.entities.Entity;
+
+import java.awt.*;
 import java.util.HashMap;
 
 /**
@@ -15,6 +18,7 @@ public abstract class EntityView extends StackPane {
     protected Direction direction;
 
     protected HashMap<String, ImageView> sprites = new HashMap<>();
+
     protected ImageView sprite;
 
     public void setScale(double factor){
@@ -52,4 +56,6 @@ public abstract class EntityView extends StackPane {
         return this.sprite.getFitHeight();
     }
     public ImageView getSprite(){ return this.sprite; }
+    public HashMap<String, ImageView> getSprites(){ return this.sprites; }
+    public void setSprites(HashMap<String, ImageView> sprites){ this.sprites = sprites; }
 }

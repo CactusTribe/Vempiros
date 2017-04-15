@@ -10,6 +10,7 @@ import javafx.geometry.BoundingBox;
 import javafx.scene.effect.BoxBlur;
 import javafx.util.Duration;
 import model.entities.*;
+import view.ScreenGame;
 import view.entities.AnimatedView;
 
 import java.awt.*;
@@ -34,8 +35,11 @@ public class Game {
     private IntegerProperty ALIVE_VAMP;
     private IntegerProperty DEAD_VAMP;
 
-    private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(820);
-    private DoubleProperty ARENA_HEIGHT = new SimpleDoubleProperty(550);
+    private double INITIAL_WIDTH = 820;
+    private double INITIAL_HEIGHT = 550;
+
+    private DoubleProperty ARENA_WIDTH = new SimpleDoubleProperty(INITIAL_WIDTH);
+    private DoubleProperty ARENA_HEIGHT = new SimpleDoubleProperty(INITIAL_HEIGHT);
 
     private HashMap<String, Dimension> entity_dimensions;
 
@@ -50,14 +54,14 @@ public class Game {
         this.bulletSchema.setBounds(new BoundingBox(0,0,30,10));
 
         this.entity_dimensions = new HashMap<>();
-        this.entity_dimensions.put("model.entities.Rock", new Dimension(50, 50));
-        this.entity_dimensions.put("model.entities.Box", new Dimension(50, 50));
-        this.entity_dimensions.put("model.entities.Vampire", new Dimension(30, 60));
-        this.entity_dimensions.put("model.entities.Player", new Dimension(30, 80));
+        this.entity_dimensions.put("model.entities.Rock", new Dimension(40, 40));
+        this.entity_dimensions.put("model.entities.Box", new Dimension(40, 40));
+        this.entity_dimensions.put("model.entities.Vampire", new Dimension(20, 50));
+        this.entity_dimensions.put("model.entities.Player", new Dimension(20, 70));
 
-        int NB_ROCK = (int)(ARENA_WIDTH.getValue()/100);
-        int NB_BOX = (int)(ARENA_WIDTH.getValue()/150);
-        NB_VAMP = (int)(ARENA_WIDTH.getValue()/150);
+        int NB_ROCK = (int)(INITIAL_WIDTH/80);
+        int NB_BOX = (int)(INITIAL_WIDTH/100);
+        NB_VAMP = (int)(INITIAL_WIDTH/100);
 
         ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
         DEAD_VAMP = new SimpleIntegerProperty(0);
@@ -71,8 +75,10 @@ public class Game {
     public void spawnEntity(LinkedList<Entity> liste, String entity_name, int number){
         Random rand = new Random();
 
-        double width = entity_dimensions.get(entity_name).getWidth();
-        double height = entity_dimensions.get(entity_name).getHeight();
+        double ratio = this.ARENA_WIDTH.doubleValue() / this.INITIAL_WIDTH;
+
+        double width = entity_dimensions.get(entity_name).getWidth() * ratio;
+        double height = entity_dimensions.get(entity_name).getHeight() * ratio;
 
         for(int i=0; i < number; i++){
             int MAX_X = (int)(ARENA_WIDTH.getValue() - width);
@@ -96,17 +102,20 @@ public class Game {
                     Direction new_dir = Direction.values()[random_dir];
                     ((MoveableEntity)object).setDirection(new_dir);
 
+                    ((MoveableEntity)object).setSpeed(((MoveableEntity)object).getSpeed() * ratio);
 
                     if(object instanceof CharacterEntity){
-                        ((AnimatedView)object.getEntityView()).setAnimation(AnimatedView.Animations.WALK, (
-                                (CharacterEntity)object)
-                                .getDirection());
+                        ((AnimatedView)object.getEntityView()).setAnimation(AnimatedView.Animations.WALK,
+                                ((CharacterEntity)object).getDirection());
 
                         if(object instanceof Player){
                             this.player = (Player) object;
                         }
                     }
                 }
+
+                object.getEntityView().setScale(ratio);
+
                 liste.add(object);
 
             } catch (Exception e) {
@@ -203,9 +212,6 @@ public class Game {
             if(entity != current){
 
                 if(current.collidesWith(entity)){
-                    //System.out.println(String.format("%s collide with %s", entity.getClass().getName(), current
-                    //        .getClass().getName()));
-
                     entity.collidedBy(current);
                     current.collidedBy(entity);
                 }

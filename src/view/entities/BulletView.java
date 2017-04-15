@@ -13,8 +13,11 @@ public class BulletView extends EntityView{
 
     private static final Image SPRITE_BULLET = new Image("images/bullet.png");
 
+    private int WIDTH = 30;
+    private int HEIGHT = 10;
+
     public BulletView(Direction dir){
-        this.addSprite("SPRITE_BULLET", new ImageView(SPRITE_BULLET), 30, 10);
+        this.addSprite("SPRITE_BULLET", new ImageView(SPRITE_BULLET), WIDTH, HEIGHT);
         this.setSprite("SPRITE_BULLET");
         this.direction = dir;
 

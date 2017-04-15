@@ -25,13 +25,15 @@ public class VampireFView extends AnimatedView{
     private final ImageViewAnimation DEAD = new ImageViewAnimation(
             RIP_VAMP, 1, 1, 0, 0, 128, 128, FPS_ANIM);
 
+    private int WIDTH = 40;
+    private int HEIGHT = 60;
 
     public VampireFView(){
-        this.addSprite("WALK_NORTH", WALK_NORTH, 60, 80);
-        this.addSprite("WALK_SOUTH", WALK_SOUTH, 60, 80);
-        this.addSprite("WALK_EAST", WALK_EAST, 60, 80);
-        this.addSprite("WALK_WEST", WALK_WEST, 60, 80);
-        this.addSprite("DEAD", DEAD, 32, 80);
+        this.addSprite("WALK_NORTH", WALK_NORTH, WIDTH, HEIGHT);
+        this.addSprite("WALK_SOUTH", WALK_SOUTH, WIDTH, HEIGHT);
+        this.addSprite("WALK_EAST", WALK_EAST, WIDTH, HEIGHT);
+        this.addSprite("WALK_WEST", WALK_WEST, WIDTH, HEIGHT);
+        this.addSprite("DEAD", DEAD, WIDTH, HEIGHT);
 
         this.setAnimation(Animations.WALK, Direction.EAST);
     }

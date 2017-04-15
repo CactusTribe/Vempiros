@@ -1,9 +1,6 @@
 package common;
 
 import javafx.scene.media.AudioClip;
-
-import java.nio.file.Paths;
-
 /**
  * Created by cactustribe on 13/04/17.
  */
@@ -13,11 +10,12 @@ public class Sounds {
         DEATH_VAMP, GAME_OVER, GAME_WIN, GUN_FIRE, GUN_RELOAD;
     }
 
-    public static AudioClip DEATH_VAMP = new AudioClip(Paths.get("resources/sounds/dead_sound.mp3").toUri().toString());
-    public static AudioClip GUN_FIRE = new AudioClip(Paths.get("resources/sounds/gun_fire.mp3").toUri().toString());
-    public static AudioClip GUN_RELOAD = new AudioClip(Paths.get("resources/sounds/gun_reload.mp3").toUri().toString());
-    public static AudioClip GAME_OVER = new AudioClip(Paths.get("resources/sounds/game_over.mp3").toUri().toString());
-    public static AudioClip GAME_WIN = new AudioClip(Paths.get("resources/sounds/game_win.mp3").toUri().toString());
+    public static AudioClip GUN_FIRE = new AudioClip(Sounds.class.getClassLoader().getResource("sounds/gun_fire.mp3").toString());
+    public static AudioClip GUN_RELOAD = new AudioClip(Sounds.class.getClassLoader().getResource("sounds/gun_reload.mp3").toString());
+    public static AudioClip DEATH_VAMP = new AudioClip(Sounds.class.getClassLoader().getResource("sounds/dead_sound.mp3").toString());
+    public static AudioClip GAME_OVER = new AudioClip(Sounds.class.getClassLoader().getResource("sounds/game_over.mp3").toString());
+    public static AudioClip GAME_WIN = new AudioClip(Sounds.class.getClassLoader().getResource("sounds/game_win.mp3").toString());
+
 
     public static void play(SoundType type){
         switch (type){

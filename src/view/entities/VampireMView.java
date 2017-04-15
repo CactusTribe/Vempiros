@@ -26,12 +26,15 @@ public class VampireMView extends AnimatedView{
             RIP_VAMP, 1, 1, 0, 0, 128, 128, FPS_ANIM);
 
 
+    private int WIDTH = 60;
+    private int HEIGHT = 60;
+
     public VampireMView(){
-        this.addSprite("WALK_NORTH", WALK_NORTH, 80, 80);
-        this.addSprite("WALK_SOUTH", WALK_SOUTH, 80, 80);
-        this.addSprite("WALK_EAST", WALK_EAST, 80, 80);
-        this.addSprite("WALK_WEST", WALK_WEST, 80, 80);
-        this.addSprite("DEAD", DEAD, 80, 80);
+        this.addSprite("WALK_NORTH", WALK_NORTH, WIDTH, HEIGHT);
+        this.addSprite("WALK_SOUTH", WALK_SOUTH, WIDTH, HEIGHT);
+        this.addSprite("WALK_EAST", WALK_EAST, WIDTH, HEIGHT);
+        this.addSprite("WALK_WEST", WALK_WEST, WIDTH, HEIGHT);
+        this.addSprite("DEAD", DEAD, WIDTH, HEIGHT);
 
         this.setAnimation(Animations.WALK, Direction.EAST);
     }

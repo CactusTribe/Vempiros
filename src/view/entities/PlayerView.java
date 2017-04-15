@@ -38,18 +38,19 @@ public class PlayerView extends AnimatedView{
     private final ImageViewAnimation DEAD = new ImageViewAnimation(
             RIP_COWBOY, 1, 1, 0, 0, 128, 128, FPS_ANIM);
 
-
+    private int WIDTH = 100;
+    private int HEIGHT = 100;
 
     public PlayerView(){
-        this.addSprite("WALK_NORTH", WALK_NORTH, 128, 128);
-        this.addSprite("WALK_SOUTH", WALK_SOUTH, 128, 128);
-        this.addSprite("WALK_EAST", WALK_EAST, 128, 128);
-        this.addSprite("WALK_WEST", WALK_WEST, 128, 128);
-        this.addSprite("WALK_NORTH_EAST", WALK_NORTH_EAST, 128, 128);
-        this.addSprite("WALK_SOUTH_EAST", WALK_SOUTH_EAST, 128, 128);
-        this.addSprite("WALK_NORTH_WEST", WALK_NORTH_WEST, 128, 128);
-        this.addSprite("WALK_SOUTH_WEST", WALK_SOUTH_WEST, 128, 128);
-        this.addSprite("DEAD", DEAD, 80, 80);
+        this.addSprite("WALK_NORTH", WALK_NORTH, WIDTH, HEIGHT);
+        this.addSprite("WALK_SOUTH", WALK_SOUTH, WIDTH, HEIGHT);
+        this.addSprite("WALK_EAST", WALK_EAST, WIDTH, HEIGHT);
+        this.addSprite("WALK_WEST", WALK_WEST, WIDTH, HEIGHT);
+        this.addSprite("WALK_NORTH_EAST", WALK_NORTH_EAST, WIDTH, HEIGHT);
+        this.addSprite("WALK_SOUTH_EAST", WALK_SOUTH_EAST, WIDTH, HEIGHT);
+        this.addSprite("WALK_NORTH_WEST", WALK_NORTH_WEST, WIDTH, HEIGHT);
+        this.addSprite("WALK_SOUTH_WEST", WALK_SOUTH_WEST, WIDTH, HEIGHT);
+        this.addSprite("DEAD", DEAD, 60, 60);
 
         this.setAnimation(Animations.WALK, Direction.EAST);
     }
@@ -57,7 +58,7 @@ public class PlayerView extends AnimatedView{
     public void update(Entity entity) {
         BoundingBox obj_box = entity.getBounds();
         this.setLayoutX(obj_box.getMinX() - (WIDTH() / 2) + (obj_box.getWidth() / 2));
-        this.setLayoutY(obj_box.getMinY() - (HEIGHT() / 2) + (obj_box.getHeight() / 2) - 15);
+        this.setLayoutY(obj_box.getMinY() - (HEIGHT() / 2) + (obj_box.getHeight() / 2) - 8);
     }
 
 

@@ -37,7 +37,7 @@ public class ScreenGame extends Screen{
     public Pane wrapperPane;
     public Pane arena;
 
-    private double sprite_ratio = 1.0;
+    private static double sprite_ratio = 1.0;
     private double lastArenaW = 0;
     private double lastArenaH = 0;
 
@@ -177,6 +177,8 @@ public class ScreenGame extends Screen{
                 if(lastArenaW > 0 && lastArenaH > 0){
                     double ratio = arena.getWidth() / lastArenaW;
                     sprite_ratio = ratio;
+
+                    //EntityView.setScale(ratio);
                     gameController.resizeGame(ratio);
                 }
 
@@ -269,5 +271,9 @@ public class ScreenGame extends Screen{
 
     public void displayError(String err){
         System.out.println(err);
+    }
+
+    public static double getSpriteRatio(){
+        return sprite_ratio;
     }
 }

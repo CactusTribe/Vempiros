@@ -22,7 +22,7 @@ public class Vampire extends CharacterEntity {
 
     public Vampire(){
         Random rand = new Random();
-        this.setInitialSpeed(rand.nextInt(10) + 1);
+        this.setInitialSpeed(rand.nextInt(5) + 1);
 
         genre = Genre.values()[rand.nextInt(Genre.values().length)];
         switch (genre){
