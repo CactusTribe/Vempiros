@@ -41,16 +41,13 @@ public class GameController {
     private ScreenGame gameView;
     private Timeline gameLoop;
 
-    private KeyEvent last_pressed_key;
-    private ActionType current_action;
-
     private BooleanProperty paused = new SimpleBooleanProperty(true);
-
     private long startTimeReloadBullets = 0;
     private long TIME_BEFORE_ADD_BULLET = 1000; // ms
 
     public boolean debug = false;
-
+    private boolean goNorth, goSouth, goEast, goWest = false;
+    private ActionType current_action;
 
     public GameController(String usrname, ScreenGame view){
         this.usrname = usrname;
@@ -187,6 +184,20 @@ public class GameController {
         }
     }
 
+    public void applyPlayerDirection(){
+
+        if(goNorth && goEast)       { player.setDirection(Direction.NORTH_EAST); }
+        else if(goNorth && goWest)  { player.setDirection(Direction.NORTH_WEST); }
+        else if(goSouth && goEast)  { player.setDirection(Direction.SOUTH_EAST); }
+        else if(goSouth && goWest)  { player.setDirection(Direction.SOUTH_WEST); }
+        else if(goNorth)            { player.setDirection(Direction.NORTH); }
+        else if(goSouth)            { player.setDirection(Direction.SOUTH); }
+        else if(goEast)             { player.setDirection(Direction.EAST); }
+        else if(goWest)             { player.setDirection(Direction.WEST); }
+
+        this.player.setWalking(true);
+    }
+
 
     public void notifyEvent(Event event){
 
@@ -204,86 +215,65 @@ public class GameController {
 
         if(event.getEventType() == KeyEvent.KEY_PRESSED){
 
-            if(last_pressed_key == null || last_pressed_key.getCode() != event.getCode()){
-
-                if(event.getCode() == ConfigDialog.keycode_liste.get("Forward")){
-                    current_action = ActionType.MOVE;
-                    player.setDirection(Direction.NORTH);
-                }
-                else if(event.getCode() == ConfigDialog.keycode_liste.get("Backward")){
-                    current_action = ActionType.MOVE;
-                    player.setDirection(Direction.SOUTH);
-                }
-                else if(event.getCode() == ConfigDialog.keycode_liste.get("Left")){
-                    current_action = ActionType.MOVE;
-                    player.setDirection(Direction.WEST);
-                }
-                else if(event.getCode() == ConfigDialog.keycode_liste.get("Right")){
-                    current_action = ActionType.MOVE;
-                    player.setDirection(Direction.EAST);
-                }
-                else if(event.getCode() == ConfigDialog.keycode_liste.get("Shoot")){
-                    current_action = ActionType.SHOOT;
-                }
-/*
-                // Choix de l'action en fonction de la touche
-                switch (event.getCode()){
-                    case Z:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.NORTH);
-                        break;
-                    case S:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.SOUTH);
-                        break;
-                    case Q:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.WEST);
-                        break;
-                    case D:
-                        current_action = ActionType.MOVE;
-                        player.setDirection(Direction.EAST);
-                        break;
-                    case SPACE:
-                        current_action = ActionType.SHOOT;
-                        break;
-                    default:
-                        current_action = null;
-                        break;
-                }
-*/
-                if(current_action != null){
-                    switch (current_action){
-                        case MOVE:
-                            player.setWalking(true);
-                            break;
-                        case SHOOT:
-                            try {
-                                game.apply(current_action);
-                            } catch (Exception e){
-                                gameView.displayError(e.toString());
-                            }
-                            break;
-                    }
-                    last_pressed_key = event;
-                }
-                else{
-                    player.setWalking(false);
-                    last_pressed_key = null;
-                }
-
+            if(event.getCode() == ConfigDialog.keycode_liste.get("Forward")){
+                current_action = ActionType.MOVE;
+                goNorth = true;
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Backward")){
+                current_action = ActionType.MOVE;
+                goSouth = true;
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Left")){
+                current_action = ActionType.MOVE;
+                goWest = true;
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Right")){
+                current_action = ActionType.MOVE;
+                goEast = true;
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Shoot")){
+                current_action = ActionType.SHOOT;
             }
 
+            if(current_action != null){
+                switch (current_action){
+                    case MOVE:
+                        this.applyPlayerDirection();
+                        break;
+                    case SHOOT:
+                        try { game.apply(current_action); }
+                        catch (Exception e){
+                            gameView.displayError(e.toString());
+                        }
+                        break;
+                }
+            }
+            else{
+                player.setWalking(false);
+            }
         }
         else if(event.getEventType() == KeyEvent.KEY_RELEASED){
-            if(event.getCode() != KeyCode.SPACE){
-                if(last_pressed_key == null || last_pressed_key.getCode() == event.getCode() || last_pressed_key.getCode
-                        () == KeyCode.SPACE) {
-                    player.setWalking(false);
-                }
+
+            if(event.getCode() == ConfigDialog.keycode_liste.get("Forward")){
+                if(goNorth){ goNorth = false; }
             }
-            last_pressed_key = null;
-            current_action = null;
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Backward")){
+                if(goSouth){ goSouth = false; }
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Left")){
+                if(goWest){ goWest = false; }
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Right")){
+                if(goEast){ goEast = false; }
+            }
+            else if(event.getCode() == ConfigDialog.keycode_liste.get("Shoot")){
+            }
+
+            this.applyPlayerDirection();
+
+            if(!(goNorth || goSouth || goEast || goWest)){
+                player.setWalking(false);
+            }
         }
     }
 

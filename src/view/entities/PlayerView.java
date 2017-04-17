@@ -63,44 +63,47 @@ public class PlayerView extends AnimatedView{
 
 
     public void setAnimation(Animations anim, Direction dir){
-        if(sprite != null){
-            ((ImageViewAnimation)sprite).stop();
-        }
+        if(this.direction == null || this.direction != dir){
+            if(sprite != null){
+                ((ImageViewAnimation)sprite).stop();
+            }
 
-        if(anim == Animations.WALK){
-            switch (dir){
+            if(anim == Animations.WALK){
+                switch (dir){
 
-                case NORTH:
-                    this.setSprite("WALK_NORTH");
-                    break;
-                case SOUTH:
-                    this.setSprite("WALK_SOUTH");
-                    break;
-                case EAST:
-                    this.setSprite("WALK_EAST");
-                    break;
-                case WEST:
-                    this.setSprite("WALK_WEST");
-                    break;
-                case NORTH_EAST:
-                    this.setSprite("WALK_NORTH_EAST");
-                    break;
-                case NORTH_WEST:
-                    this.setSprite("WALK_NORTH_WEST");
-                    break;
-                case SOUTH_EAST:
-                    this.setSprite("WALK_SOUTH_EAST");
-                    break;
-                case SOUTH_WEST:
-                    this.setSprite("WALK_SOUTH_WEST");
-                    break;
+                    case NORTH:
+                        this.setSprite("WALK_NORTH");
+                        break;
+                    case SOUTH:
+                        this.setSprite("WALK_SOUTH");
+                        break;
+                    case EAST:
+                        this.setSprite("WALK_EAST");
+                        break;
+                    case WEST:
+                        this.setSprite("WALK_WEST");
+                        break;
+                    case NORTH_EAST:
+                        this.setSprite("WALK_NORTH_EAST");
+                        break;
+                    case NORTH_WEST:
+                        this.setSprite("WALK_NORTH_WEST");
+                        break;
+                    case SOUTH_EAST:
+                        this.setSprite("WALK_SOUTH_EAST");
+                        break;
+                    case SOUTH_WEST:
+                        this.setSprite("WALK_SOUTH_WEST");
+                        break;
+                }
+            }
+            else if(anim == Animations.ATTACK){
+
+            }
+            else if(anim == Animations.DEAD){
+                this.setSprite("DEAD");
             }
         }
-        else if(anim == Animations.ATTACK){
-
-        }
-        else if(anim == Animations.DEAD){
-            this.setSprite("DEAD");
-        }
+        this.direction = dir;
     }
 }

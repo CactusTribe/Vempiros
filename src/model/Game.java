@@ -59,9 +59,9 @@ public class Game {
         this.entity_dimensions.put("model.entities.Vampire", new Dimension(20, 50));
         this.entity_dimensions.put("model.entities.Player", new Dimension(20, 70));
 
-        int NB_ROCK = (int)(INITIAL_WIDTH/80);
-        int NB_BOX = (int)(INITIAL_WIDTH/100);
-        NB_VAMP = (int)(INITIAL_WIDTH/100);
+        int NB_ROCK = (int)(INITIAL_WIDTH/150);
+        int NB_BOX = (int)(INITIAL_WIDTH/150);
+        NB_VAMP = (int)(INITIAL_WIDTH/150);
 
         ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
         DEAD_VAMP = new SimpleIntegerProperty(0);
@@ -297,19 +297,19 @@ public class Game {
                         box.getHeight());
                 break;
             case NORTH_EAST:
-                new_box = new BoundingBox(box.getMinX() + value, box.getMinY() - value, box.getWidth(),
+                new_box = new BoundingBox(box.getMinX() + (value / 2), box.getMinY() - (value / 2), box.getWidth(),
                         box.getHeight());
                 break;
             case NORTH_WEST:
-                new_box = new BoundingBox(box.getMinX() - value, box.getMinY() - value, box.getWidth(),
+                new_box = new BoundingBox(box.getMinX() - (value / 2), box.getMinY() - (value / 2), box.getWidth(),
                         box.getHeight());
                 break;
             case SOUTH_EAST:
-                new_box = new BoundingBox(box.getMinX() + value, box.getMinY() + value, box.getWidth(),
+                new_box = new BoundingBox(box.getMinX() + (value / 2), box.getMinY() + (value / 2), box.getWidth(),
                         box.getHeight());
                 break;
             case SOUTH_WEST:
-                new_box = new BoundingBox(box.getMinX() - value, box.getMinY() + value, box.getWidth(),
+                new_box = new BoundingBox(box.getMinX() - (value / 2), box.getMinY() + (value / 2), box.getWidth(),
                         box.getHeight());
                 break;
         }

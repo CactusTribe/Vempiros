@@ -24,7 +24,7 @@ public class Player extends CharacterEntity {
     private boolean walking = false;
 
     public Player(){
-        this.setInitialSpeed(10);
+        this.setInitialSpeed(8);
         this.total_life = 3;
 
         this.current_life.set(this.total_life);
