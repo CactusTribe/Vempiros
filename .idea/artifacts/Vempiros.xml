@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact name="Vempiros">
+    <output-path>$PROJECT_DIR$/out/artifacts/Vempiros</output-path>
+    <root id="root">
+      <element id="file-copy" path="$PROJECT_DIR$/bindings" />
+      <element id="artifact" artifact-name="vempiros:jar" />
+      <element id="archive" name="Vempiros.tar">
+        <element id="artifact" artifact-name="vempiros:jar" />
+        <element id="file-copy" path="$PROJECT_DIR$/bindings" />
+      </element>
+    </root>
+  </artifact>
+</component>

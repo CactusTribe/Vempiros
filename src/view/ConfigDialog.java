@@ -3,19 +3,13 @@ package view;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 
 /**
  * Created by cactustribe on 13/04/17.
@@ -25,6 +19,7 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
     private GridPane grid;
     private LinkedHashMap<String, TextField> fields_liste;
     public static LinkedHashMap<String, KeyCode> keycode_liste;
+    private static String FILE_BINDINGS = "bindings";
 
     public ConfigDialog(){
         super();
@@ -72,7 +67,14 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
             }
 
             try{
-                Files.write(Paths.get("resources/bindings"), text.getBytes());
+                File jarPath = new File(ConfigDialog.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+                String bindingsPath = jarPath.getParentFile().getAbsolutePath() + "/" + FILE_BINDINGS;
+
+                PrintWriter writer = new PrintWriter(new File(bindingsPath));
+                writer.write(text);
+                writer.close();
+                System.out.println(String.format(" -> Write %d binds", keycode_liste.size()));
+
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -82,21 +84,39 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
     public static void readBindingsFile(){
         keycode_liste = new LinkedHashMap<>();
 
-        try (Stream<String> stream = Files.lines(Paths.get("resources/bindings"))) {
-            List<String> list = stream.sequential().collect(Collectors.toList());
+        File jarPath = new File(ConfigDialog.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        String bindingsPath = jarPath.getParentFile().getAbsolutePath() + "/" + FILE_BINDINGS;
 
-            for(String line : list){
+        try {
+
+            File file = new File(bindingsPath);
+            if(file.createNewFile()){
+                PrintWriter writer = new PrintWriter(file);
+                writer.write("Forward Z\n" +
+                        "Backward S\n" +
+                        "Left Q\n" +
+                        "Right D\n" +
+                        "Shoot Space");
+                writer.close();
+            }
+
+            FileReader fr = new FileReader(file);
+            BufferedReader reader = new BufferedReader(fr);
+            String line;
+
+            while ((line = reader.readLine()) != null) {
                 String[] args = line.split(" ");
                 if( KeyCode.getKeyCode(args[1]) != null)
                     keycode_liste.put(args[0],  KeyCode.getKeyCode(args[1]));
             }
 
+            reader.close();
+            fr.close();
             System.out.println(String.format(" -> Read %d binds", keycode_liste.size()));
-
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void buildForm(){
