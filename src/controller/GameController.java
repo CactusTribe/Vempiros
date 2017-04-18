@@ -26,6 +26,11 @@ import view.ConfigDialog;
 import view.ScreenGame;
 import view.entities.AnimatedView;
 import view.graphical.Splash;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +53,7 @@ public class GameController {
     public boolean debug = false;
     private boolean goNorth, goSouth, goEast, goWest = false;
     private ActionType current_action;
+    private static String FILE_SCORES = "scores";
 
     public GameController(String usrname, ScreenGame view){
         this.usrname = usrname;
@@ -100,6 +106,7 @@ public class GameController {
                     gameView.setSplash(Splash.WIN);
                     Sounds.play(Sounds.SoundType.GAME_WIN);
                     pauseGame();
+                    saveScores();
                 }
             }
         });
@@ -181,6 +188,23 @@ public class GameController {
                 Vampire vamp = (Vampire) entity;
                 vamp.setSpeed(vamp.getInitialSpeed() * ratio);
             }
+        }
+    }
+
+    public void saveScores(){
+        try{
+            File jarPath = new File(ConfigDialog.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            String bindingsPath = jarPath.getParentFile().getAbsolutePath() + "/" + FILE_SCORES;
+
+            FileWriter fw = new FileWriter(new File(bindingsPath), true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw);
+
+            out.println(String.format("%s:%s", usrname, game.dead_vamp().getValue()+1));
+            out.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
