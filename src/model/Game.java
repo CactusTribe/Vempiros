@@ -61,7 +61,7 @@ public class Game {
 
         int NB_ROCK = (int)(INITIAL_WIDTH/150);
         int NB_BOX = (int)(INITIAL_WIDTH/150);
-        NB_VAMP = (int)(INITIAL_WIDTH/150);
+        NB_VAMP = (int)(INITIAL_WIDTH/100);
 
         ALIVE_VAMP = new SimpleIntegerProperty(NB_VAMP);
         DEAD_VAMP = new SimpleIntegerProperty(0);
