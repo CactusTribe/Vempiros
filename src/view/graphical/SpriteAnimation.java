@@ -6,6 +6,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+/**
+ * Animated Sprite
+ */
 public class SpriteAnimation extends Transition {
 
     private final ImageView imageView;
@@ -35,6 +38,10 @@ public class SpriteAnimation extends Transition {
         setInterpolator(Interpolator.LINEAR);
     }
 
+    /**
+     * Move the viewport at the correct position in the image
+     * @param k factor
+     */
     protected void interpolate(double k) {
         final int index = Math.min((int) Math.floor(k * count), count - 1);
         if (index != lastIndex) {

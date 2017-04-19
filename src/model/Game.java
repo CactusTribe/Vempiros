@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 
+/**
+ * Game model class. Contains all methods to interact with the model.
+ */
 public class Game {
 
     private Player player;
@@ -39,6 +42,9 @@ public class Game {
 
     }
 
+    /**
+     * Init the model
+     */
     public void init(){
         this.modifications = new LinkedList<>();
         this.entities = new LinkedList<>();
@@ -64,6 +70,12 @@ public class Game {
         this.spawnEntity(entities, "model.entities.Player", 1);
     }
 
+    /**
+     * Add new entity on a list
+     * @param liste List of entities
+     * @param entity_name Class name of entity
+     * @param number Number of entity to spawn
+     */
     public void spawnEntity(LinkedList<Entity> liste, String entity_name, int number){
         Random rand = new Random();
 
@@ -116,7 +128,9 @@ public class Game {
         }
     }
 
-
+    /**
+     * Move all entities
+     */
     public void moveEntities(){
         for(Entity entity : entities){
 
@@ -158,6 +172,11 @@ public class Game {
         }
     }
 
+    /**
+     * Test if an entity is modified
+     * @param entity Entity
+     * @return True if modified
+     */
     public boolean entityModified(Entity entity){
         for(Modification modif : modifications){
             if(modif.getEntity() == entity)
@@ -166,6 +185,9 @@ public class Game {
         return false;
     }
 
+    /**
+     * Apply all modifications to the game
+     */
     public void applyModifications(){
 
         for(Modification modif : modifications){
@@ -199,6 +221,10 @@ public class Game {
         modifications.clear();
     }
 
+    /**
+     * Check collisions by and entity
+     * @param current entity
+     */
     public void objectCollision(Entity current){
         for(Entity entity : entities){
             if(entity != current){
@@ -211,6 +237,11 @@ public class Game {
         }
     }
 
+    /**
+     * Return the list of all entities collided
+     * @param box Collision box of the entity
+     * @return List of collided entities
+     */
     public LinkedList<Entity> collidedEntities(BoundingBox box){
         LinkedList<Entity> collided = new LinkedList<>();
 
@@ -222,6 +253,11 @@ public class Game {
         return collided;
     }
 
+    /**
+     * Test the collision
+     * @param box Collision box of the entity
+     * @return True of collided
+     */
     public boolean intersectEntity(BoundingBox box){
         for(Entity entity : entities){
             BoundingBox objet_box = entity.getBounds();
@@ -230,11 +266,19 @@ public class Game {
         return false;
     }
 
+    /**
+     * Test the presence in the arena
+     * @param box Collision box of the entity
+     * @return True if not in arena
+     */
     public boolean outOfArena(BoundingBox box){
         BoundingBox arena = new BoundingBox(0, 0, ARENA_WIDTH.getValue(), ARENA_HEIGHT.getValue());
         return !arena.contains(box);
     }
 
+    /**
+     * Kill all vampires
+     */
     public void killAll(){
         for(Entity entity : entities){
             if(entity instanceof Vampire){
@@ -244,7 +288,11 @@ public class Game {
         applyModifications();
     }
 
-
+    /**
+     * Apply the action send by GameController
+     * @param action Action type
+     * @throws Exception Error
+     */
     public void apply(ActionType action) throws Exception{
 
         if(!player.isAlive()){
@@ -269,6 +317,13 @@ public class Game {
         }
     }
 
+    /**
+     * Translate a collision box
+     * @param box Collision box
+     * @param dir Direction of translation
+     * @param value Offset of translation
+     * @return New boundingbox
+     */
     public BoundingBox translateBounds(BoundingBox box, Direction dir, double value){
         BoundingBox new_box = null;
         switch (dir){
@@ -308,6 +363,10 @@ public class Game {
         return new_box;
     }
 
+    /**
+     * Resize all entities
+     * @param ratio Scale ratio
+     */
     public void resizeBoundingBox(double ratio){
         double new_X, new_Y, new_W, new_H;
 

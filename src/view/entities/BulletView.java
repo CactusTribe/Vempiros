@@ -6,6 +6,9 @@ import javafx.scene.image.ImageView;
 import model.Direction;
 import model.entities.Entity;
 
+/**
+ * Representation of a Bullet
+ */
 public class BulletView extends EntityView{
 
     private static final Image SPRITE_BULLET = new Image("images/bullet.png");
@@ -13,6 +16,10 @@ public class BulletView extends EntityView{
     private int WIDTH = 30;
     private int HEIGHT = 10;
 
+    /**
+     * Constructor
+     * @param dir Direction of the bullet
+     */
     public BulletView(Direction dir){
         this.addSprite("SPRITE_BULLET", new ImageView(SPRITE_BULLET), WIDTH, HEIGHT);
         this.setSprite("SPRITE_BULLET");

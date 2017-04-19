@@ -5,6 +5,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import view.ScreenMenu;
 
+/**
+ * Main class of program
+ */
 public class Main extends Application {
 
     public static final String MENU_SCREEN = "menu";

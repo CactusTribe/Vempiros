@@ -8,6 +8,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
+/**
+ * Lives panel, show life level of player
+ */
 public class PanelLives extends HBox{
 
     private int nbLives;
@@ -16,6 +19,10 @@ public class PanelLives extends HBox{
     private static Image HEART = new Image("images/heart.png");
     private static Image HEART_OFF = new Image("images/heart-off.png");
 
+    /**
+     * Constructor
+     * @param nbLives Number of maximum lives
+     */
     public PanelLives(int nbLives){
         this.nbLives = nbLives;
         this.current_life.set(nbLives);
@@ -33,6 +40,9 @@ public class PanelLives extends HBox{
         return this.current_life;
     }
 
+    /**
+     * Update the number of full heart
+     */
     public void repaint(){
         this.getChildren().clear();
 

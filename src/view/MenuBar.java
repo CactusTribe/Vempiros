@@ -16,6 +16,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * Menu bar of the game, with status, buttons etc
+ */
 public class MenuBar extends ToolBar {
 
     private Button button_menu;

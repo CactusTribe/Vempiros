@@ -13,15 +13,28 @@ import view.Screen;
 
 import java.util.HashMap;
 
-
+/**
+ * Screens manager
+ */
 public class ScreensController extends StackPane {
 
     private HashMap<String, Node> screens = new HashMap<>();
 
+    /**
+     * Add a new screen
+     * @param name Name of screen
+     * @param screen Screen
+     */
     public void addScreen(String name, Node screen) {
         screens.put(name, screen);
     }
 
+    /**
+     * Load the screen
+     * @param name Name of screen
+     * @param screen Screen
+     * @return Success
+     */
     public boolean loadScreen(String name, Screen screen) {
         try {
 
@@ -37,6 +50,11 @@ public class ScreensController extends StackPane {
         }
     }
 
+    /**
+     * Show the screen
+     * @param name Name of screen
+     * @return Success
+     */
     public boolean setScreen(final String name) {
 
         if (screens.get(name) != null) {
@@ -93,6 +111,11 @@ public class ScreensController extends StackPane {
 
     }
 
+    /**
+     * Unload the screen
+     * @param name Name of screen
+     * @return Success
+     */
     public boolean unloadScreen(String name) {
         if(screens.remove(name) == null) {
             System.out.println("Screen didn't exist");

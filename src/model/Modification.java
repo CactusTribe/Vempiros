@@ -2,6 +2,9 @@ package model;
 
 import model.entities.Entity;
 
+/**
+ * Modification of the game
+ */
 public class Modification {
 
     public enum ModificationType{

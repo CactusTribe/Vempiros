@@ -4,6 +4,9 @@ import javafx.scene.image.Image;
 import model.Direction;
 import view.graphical.ImageViewAnimation;
 
+/**
+ * Representation of female vampire
+ */
 public class VampireFView extends AnimatedView{
 
     private static final Image SPRITE_VAMP = new Image("images/vampire_F.png");

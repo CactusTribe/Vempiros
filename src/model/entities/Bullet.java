@@ -3,6 +3,9 @@ package model.entities;
 import model.Direction;
 import view.entities.BulletView;
 
+/**
+ * Bullet entity
+ */
 public class Bullet extends MoveableEntity{
 
     public Bullet(Direction direction){

@@ -10,6 +10,9 @@ import model.entities.Entity;
 import java.awt.*;
 import java.util.HashMap;
 
+/**
+ * Graphic representation of an Entity
+ */
 public abstract class EntityView extends StackPane {
 
     protected Direction direction;
@@ -18,6 +21,10 @@ public abstract class EntityView extends StackPane {
 
     protected ImageView sprite;
 
+    /**
+     * Resize the sprite
+     * @param factor Scale ratio
+     */
     public void setScale(double factor){
         for(ImageView img : sprites.values()){
             img.setFitWidth(img.getFitWidth() * factor);
@@ -25,6 +32,10 @@ public abstract class EntityView extends StackPane {
         }
     }
 
+    /**
+     * Show the sprite
+     * @param name Sprite name
+     */
     public void setSprite(String name){
         this.sprite = this.sprites.get(name);
 
@@ -34,12 +45,23 @@ public abstract class EntityView extends StackPane {
         }
     }
 
+    /**
+     * Add a sprite
+     * @param name Sprite name
+     * @param view ImageView of sprite
+     * @param width width of sprite
+     * @param height height of sprite
+     */
     public void addSprite(String name, ImageView view, double width, double height){
         view.setFitWidth(width);
         view.setFitHeight(height);
         this.sprites.put(name, view);
     }
 
+    /**
+     * Update the sprite according to the entity model
+     * @param entity Entity model
+     */
     public void update(Entity entity){
         BoundingBox obj_box = entity.getBounds();
         this.setLayoutX(obj_box.getMinX()-(WIDTH()/2)+(obj_box.getWidth() / 2));

@@ -11,6 +11,9 @@ import javafx.scene.layout.GridPane;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Dialog configuration of bindings
+ */
 public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
 
     private GridPane grid;
@@ -78,6 +81,9 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
         });
     }
 
+    /**
+     * Read the binding file
+     */
     public static void readBindingsFile(){
         keycode_liste = new LinkedHashMap<>();
 
@@ -116,6 +122,9 @@ public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
         }
     }
 
+    /**
+     * Build the form
+     */
     public void buildForm(){
 
         int count = 0;

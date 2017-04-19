@@ -6,6 +6,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+/**
+ * ImageView with animation
+ */
 public class ImageViewAnimation extends ImageView {
 
     private Animation animation;

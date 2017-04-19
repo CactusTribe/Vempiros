@@ -2,6 +2,9 @@ package common;
 
 import javafx.scene.media.AudioClip;
 
+/**
+ * Library of sounds
+ */
 public class Sounds {
 
     public enum SoundType{
@@ -15,6 +18,10 @@ public class Sounds {
     public static AudioClip GAME_WIN = new AudioClip(Sounds.class.getClassLoader().getResource("sounds/game_win.mp3").toString());
 
 
+    /**
+     * Play a sound in library
+     * @param type Type of the sound
+     */
     public static void play(SoundType type){
         switch (type){
 

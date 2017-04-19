@@ -3,6 +3,9 @@ package view.entities;
 import model.Direction;
 import view.graphical.ImageViewAnimation;
 
+/**
+ * Animated entity view
+ */
 public abstract class AnimatedView extends EntityView{
 
     public final static int FPS_ANIM = 15;

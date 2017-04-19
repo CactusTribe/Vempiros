@@ -10,6 +10,9 @@ import model.Direction;
 import view.entities.AnimatedView;
 import view.entities.PlayerView;
 
+/**
+ * Player entity
+ */
 public class Player extends CharacterEntity {
 
     private DoubleProperty total_bullets;
@@ -48,6 +51,9 @@ public class Player extends CharacterEntity {
         }
     }
 
+    /**
+     * Gun fire, new bullet appears
+     */
     public void shoot(){
         Bullet bullet = new Bullet(this.direction);
 
@@ -107,6 +113,10 @@ public class Player extends CharacterEntity {
         Sounds.play(Sounds.SoundType.GUN_FIRE);
     }
 
+    /**
+     * Add bullets
+     * @param n Add n bullets
+     */
     public void addBullets(int n) {
         if(n <= total_bullets.getValue())
             this.current_bullets.set(current_bullets.getValue() + n);
@@ -114,6 +124,9 @@ public class Player extends CharacterEntity {
             this.current_bullets.set(total_bullets.getValue());
     }
 
+    /**
+     * Remove one bullet
+     */
     public void removeBullet(){
         if(current_bullets.getValue() > 0)
             current_bullets.set(current_bullets.getValue() - 1);

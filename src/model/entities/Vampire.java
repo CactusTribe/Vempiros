@@ -5,6 +5,9 @@ import view.entities.VampireFView;
 import view.entities.VampireMView;
 import java.util.Random;
 
+/**
+ * Vampire entity
+ */
 public class Vampire extends CharacterEntity {
 
     public enum Genre{

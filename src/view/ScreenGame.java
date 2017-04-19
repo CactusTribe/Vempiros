@@ -24,6 +24,9 @@ import view.graphical.Splash;
 
 import java.util.LinkedList;
 
+/**
+ * ScreenGame is a VIEW of the Game
+ */
 public class ScreenGame extends Screen{
 
     private BorderPane borderPane;
@@ -199,12 +202,19 @@ public class ScreenGame extends Screen{
         Platform.runLater(() -> wrapperPane.requestFocus());
     }
 
-
+    /**
+     * Link the controller with the view and init new game
+     * @param controller GameController
+     */
     public void bindController(GameController controller){
         this.gameController = controller;
         this.gameController.newGame();
     }
 
+    /**
+     * Update the view with the game model
+     * @param game Game model
+     */
     public void update(Game game){
         arena.getChildren().clear();
 
@@ -240,6 +250,11 @@ public class ScreenGame extends Screen{
 
     }
 
+    /**
+     * Show the collisions box for debug
+     * @param box Collision box
+     * @param color Color of the box
+     */
     public void showCollisionBox(BoundingBox box, Color color){
         Pane pane = new Pane();
         pane.setLayoutX(box.getMinX());
@@ -252,6 +267,10 @@ public class ScreenGame extends Screen{
         arena.getChildren().add(pane);
     }
 
+    /**
+     * Modify the splash to show
+     * @param splash Splash to show
+     */
     public void setSplash(Splash splash){
         switch (splash){
             case NONE:
@@ -268,9 +287,5 @@ public class ScreenGame extends Screen{
 
     public void displayError(String err){
         System.out.println(err);
-    }
-
-    public static double getSpriteRatio(){
-        return sprite_ratio;
     }
 }

@@ -6,12 +6,21 @@ import view.entities.AnimatedView;
 
 import java.util.LinkedList;
 
+/**
+ * Moveable entity (Box, player, etc)
+ */
 public abstract class MoveableEntity extends Entity{
 
     protected double speed;
     protected double initial_speed;
     protected Direction direction;
 
+    /**
+     * Move the entity
+     * @param offset Offset of movement
+     * @param dir Direction of movement
+     * @return Success
+     */
     public boolean move(double offset, Direction dir){
 
         boolean move_done = true;
@@ -53,6 +62,11 @@ public abstract class MoveableEntity extends Entity{
         return move_done;
     }
 
+    /**
+     * Test if the entity can be moved by another one
+     * @param entity Other entity
+     * @return True if is possible
+     */
     public abstract boolean canMovedBy(Entity entity);
 
     public Direction getDirection(){

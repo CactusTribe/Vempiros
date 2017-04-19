@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * List of all possible directions
+ */
 public enum Direction {
     NORTH,
     SOUTH,

@@ -2,6 +2,9 @@ package controller;
 
 import common.ControlledScreen;
 
+/**
+ * Controller of screen
+ */
 public class ScreenController implements ControlledScreen {
 
     public ScreensController screensController;

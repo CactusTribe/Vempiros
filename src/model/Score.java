@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * Representation of a score
+ */
 public class Score implements Comparable<Score>{
 
     private String name;

@@ -3,6 +3,9 @@ package model.entities;
 import model.Modification;
 import view.entities.BoxView;
 
+/**
+ * Box entity
+ */
 public class Box extends MoveableEntity{
 
     public Box(){

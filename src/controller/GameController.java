@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Controller of the game
+ */
 public class GameController {
 
     private String usrname = "";
@@ -51,12 +54,20 @@ public class GameController {
     private ActionType current_action;
     private static String FILE_SCORES = "scores";
 
+    /**
+     * Constructor
+     * @param usrname Name of user
+     * @param view Gameview
+     */
     public GameController(String usrname, ScreenGame view){
         this.usrname = usrname;
         this.gameView = view;
         this.game = new Game();
     }
 
+    /**
+     * Create a new game
+     */
     public void newGame(){
         game.init();
         player = game.getPlayer();
@@ -111,6 +122,9 @@ public class GameController {
         gameView.update(game);
     }
 
+    /**
+     * Start the game loop
+     */
     public void startGame(){
 
         if(gameLoop != null){
@@ -158,6 +172,9 @@ public class GameController {
         this.paused.set(false);
     }
 
+    /**
+     * Pause the game loop
+     */
     public void pauseGame(){
         player.setWalking(false);
 
@@ -167,16 +184,28 @@ public class GameController {
         }
     }
 
+    /**
+     * Resize the game
+     * @param ratio Scale ratio
+     */
     public void resizeGame(double ratio){
         game.resizeBoundingBox(ratio);
         gameView.update(game);
     }
 
+    /**
+     * Modify the speed of the player
+     * @param ratio Scale ratio
+     */
     public void setPlayerSpeed(double ratio){
         Player player = game.getPlayer();
         player.setSpeed(player.getInitialSpeed() * ratio);
     }
 
+    /**
+     * Modify the speed of vampires
+     * @param ratio Scale ratio
+     */
     public void setVampSpeed(double ratio){
         for(Entity entity : game.getEntities()){
             if(entity instanceof Vampire) {
@@ -186,6 +215,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Save scores in the file
+     */
     public void saveScores(){
         try{
             File jarPath = new File(ConfigDialog.class.getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -203,6 +235,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Apply the new direction to the player
+     */
     public void applyPlayerDirection(){
 
         if(goNorth && goEast)       { player.setDirection(Direction.NORTH_EAST); }
@@ -217,7 +252,10 @@ public class GameController {
         this.player.setWalking(true);
     }
 
-
+    /**
+     * Choose the function called for the event
+     * @param event Event triggered
+     */
     public void notifyEvent(Event event){
 
         if(player.isAlive() && !paused.getValue()){
@@ -230,6 +268,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Apply KeyEvent
+     * @param event Event triggered
+     */
     public void notifyKeyEvent(KeyEvent event){
 
         if(event.getEventType() == KeyEvent.KEY_PRESSED){
@@ -296,6 +338,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Apply MouseEvent
+     * @param event Event triggered
+     */
     public void notifyMouseEvent(MouseEvent event){
 
         if(event.getEventType() == MouseEvent.MOUSE_MOVED){
@@ -360,7 +406,10 @@ public class GameController {
         }
     }
 
-
+    /**
+     * Execute the cheat code
+     * @param str Cheatcode
+     */
     public void cheatCode(String str){
         CharacterEntity player = game.getPlayer();
         List<String> tokens = new ArrayList<String>(Arrays.asList(str.split(" ")));
