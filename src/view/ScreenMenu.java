@@ -16,13 +16,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import model.Score;
-
 import java.io.*;
 import java.util.*;
 
-/**
- * Created by cactustribe on 12/03/17.
- */
+
 public class ScreenMenu extends Screen{
 
     private static String FILE_SCORES = "scores";
@@ -42,7 +39,6 @@ public class ScreenMenu extends Screen{
         background.setOpacity(0.8);
 
         Text title = new Text("Pistolero VS Vampiros");
-        //title.setFont(Font.loadFont("file:resources/fonts/something_strange.ttf", 80));
         title.setFont(Font.loadFont(getClass().getResourceAsStream("/fonts/something_strange.ttf"), 80));
         title.setFill(Color.CRIMSON);
         title.setStroke(Color.BLACK);
@@ -54,7 +50,6 @@ public class ScreenMenu extends Screen{
         scores.setMaxSize(300, 100);
         scores.setAlignment(Pos.CENTER);
         scores.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-background-radius: 10;");
-        //scores.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         this.readScores(scores);
 
 

@@ -6,9 +6,6 @@ import javafx.scene.image.ImageView;
 import model.Direction;
 import model.entities.Entity;
 
-/**
- * Created by cactustribe on 23/03/17.
- */
 public class BulletView extends EntityView{
 
     private static final Image SPRITE_BULLET = new Image("images/bullet.png");

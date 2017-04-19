@@ -1,6 +1,5 @@
 package controller;
 
-import common.ControlledScreen;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -8,16 +7,13 @@ import javafx.beans.property.DoubleProperty;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import view.Screen;
 
 import java.util.HashMap;
 
-/**
- * Created by cactustribe on 12/03/17.
- */
+
 public class ScreensController extends StackPane {
 
     private HashMap<String, Node> screens = new HashMap<>();

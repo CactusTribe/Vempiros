@@ -3,9 +3,6 @@ package model.entities;
 import model.Modification;
 import view.entities.RockView;
 
-/**
- * Created by cactustribe on 24/03/17.
- */
 public class Rock extends StaticEntity{
 
     public Rock(){

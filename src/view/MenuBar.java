@@ -16,9 +16,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
-/**
- * Created by cactustribe on 21/03/17.
- */
 public class MenuBar extends ToolBar {
 
     private Button button_menu;

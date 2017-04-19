@@ -10,9 +10,6 @@ import model.Direction;
 import view.entities.AnimatedView;
 import view.entities.PlayerView;
 
-/**
- * Created by cactustribe on 21/03/17.
- */
 public class Player extends CharacterEntity {
 
     private DoubleProperty total_bullets;

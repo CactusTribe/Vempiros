@@ -8,9 +8,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-/**
- * Created by cactustribe on 13/03/17.
- */
 public class PanelLives extends HBox{
 
     private int nbLives;
@@ -30,13 +27,6 @@ public class PanelLives extends HBox{
         });
 
         this.repaint();
-    }
-
-    public void setCurrentLife(int life){
-        if(life <= nbLives && life >= 0){
-            this.current_life.set(life);
-            this.repaint();
-        }
     }
 
     public IntegerProperty current_life(){

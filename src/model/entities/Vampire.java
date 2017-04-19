@@ -1,17 +1,10 @@
 package model.entities;
 
-import common.Sounds;
-import javafx.scene.media.AudioClip;
 import model.Modification;
 import view.entities.VampireFView;
 import view.entities.VampireMView;
-
-import java.nio.file.Paths;
 import java.util.Random;
 
-/**
- * Created by cactustribe on 02/04/17.
- */
 public class Vampire extends CharacterEntity {
 
     public enum Genre{

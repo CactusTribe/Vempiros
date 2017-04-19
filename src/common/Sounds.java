@@ -1,9 +1,7 @@
 package common;
 
 import javafx.scene.media.AudioClip;
-/**
- * Created by cactustribe on 13/04/17.
- */
+
 public class Sounds {
 
     public enum SoundType{

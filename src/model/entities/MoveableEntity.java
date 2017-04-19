@@ -6,9 +6,6 @@ import view.entities.AnimatedView;
 
 import java.util.LinkedList;
 
-/**
- * Created by cactustribe on 03/04/17.
- */
 public abstract class MoveableEntity extends Entity{
 
     protected double speed;

@@ -4,9 +4,6 @@ import javafx.scene.image.Image;
 import model.Direction;
 import view.graphical.ImageViewAnimation;
 
-/**
- * Created by cactustribe on 02/04/17.
- */
 public class VampireFView extends AnimatedView{
 
     private static final Image SPRITE_VAMP = new Image("images/vampire_F.png");

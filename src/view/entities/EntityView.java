@@ -10,9 +10,6 @@ import model.entities.Entity;
 import java.awt.*;
 import java.util.HashMap;
 
-/**
- * Created by cactustribe on 03/04/17.
- */
 public abstract class EntityView extends StackPane {
 
     protected Direction direction;

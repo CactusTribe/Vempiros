@@ -4,11 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import view.entities.AnimatedView;
 
-/**
- * Created by cactustribe on 20/03/17.
- */
 public abstract class CharacterEntity extends MoveableEntity{
 
     protected int total_life;

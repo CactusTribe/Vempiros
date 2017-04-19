@@ -12,7 +12,6 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -35,9 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by cactustribe on 21/03/17.
- */
 public class GameController {
 
     private String usrname = "";
@@ -113,7 +109,6 @@ public class GameController {
 
         gameView.setSplash(Splash.NONE);
         gameView.update(game);
-        //startGame();
     }
 
     public void startGame(){
@@ -363,7 +358,6 @@ public class GameController {
                 }
             }
         }
-        //System.out.println(player.getDirection());
     }
 
 

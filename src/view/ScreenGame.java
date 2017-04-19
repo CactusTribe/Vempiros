@@ -24,9 +24,6 @@ import view.graphical.Splash;
 
 import java.util.LinkedList;
 
-/**
- * Created by cactustribe on 12/03/17.
- */
 public class ScreenGame extends Screen{
 
     private BorderPane borderPane;

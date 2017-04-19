@@ -7,9 +7,6 @@ import model.Direction;
 import model.entities.Entity;
 import view.graphical.ImageViewAnimation;
 
-/**
- * Created by cactustribe on 20/03/17.
- */
 public class PlayerView extends AnimatedView{
 
     private static final Image SPRITE_COWBOY = new Image("images/cowboy.png");

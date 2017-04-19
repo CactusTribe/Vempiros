@@ -1,12 +1,9 @@
-import controller.GameController;
+
 import controller.ScreensController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import view.ScreenGame;
 import view.ScreenMenu;
-
 
 public class Main extends Application {
 

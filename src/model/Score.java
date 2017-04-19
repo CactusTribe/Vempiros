@@ -1,8 +1,5 @@
 package model;
 
-/**
- * Created by cactustribe on 18/04/17.
- */
 public class Score implements Comparable<Score>{
 
     private String name;

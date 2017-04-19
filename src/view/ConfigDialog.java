@@ -11,9 +11,6 @@ import javafx.scene.layout.GridPane;
 import java.io.*;
 import java.util.*;
 
-/**
- * Created by cactustribe on 13/04/17.
- */
 public class ConfigDialog extends Dialog<HashMap<String, KeyCode>>{
 
     private GridPane grid;

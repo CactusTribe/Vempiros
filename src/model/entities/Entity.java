@@ -4,9 +4,6 @@ import javafx.geometry.BoundingBox;
 import model.Game;
 import view.entities.EntityView;
 
-/**
- * Created by cactustribe on 03/04/17.
- */
 public abstract class Entity {
 
     protected Game game;

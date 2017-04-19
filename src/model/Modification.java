@@ -2,9 +2,6 @@ package model;
 
 import model.entities.Entity;
 
-/**
- * Created by cactustribe on 12/04/17.
- */
 public class Modification {
 
     public enum ModificationType{

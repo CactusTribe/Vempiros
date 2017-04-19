@@ -1,26 +1,18 @@
 package model;
 
 import common.Sounds;
-import javafx.animation.FadeTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.BoundingBox;
-import javafx.scene.effect.BoxBlur;
-import javafx.util.Duration;
 import model.entities.*;
-import view.ScreenGame;
 import view.entities.AnimatedView;
-
 import java.awt.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 
-/**
- * Created by cactustribe on 21/03/17.
- */
 public class Game {
 
     private Player player;
